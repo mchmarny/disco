@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"github.com/mchmarny/vctl/pkg/vctl"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
 )
@@ -25,7 +27,7 @@ var (
 		Subcommands: []*c.Command{
 			{
 				Name:    "disco",
-				Aliases: []string{"o"},
+				Aliases: []string{"D"},
 				Usage:   "Discover CVEs in all the currently deployed images.",
 				Action:  runDiscoCmd,
 				Flags: []c.Flag{
@@ -34,7 +36,7 @@ var (
 			},
 			{
 				Name:    "find",
-				Aliases: []string{"o"},
+				Aliases: []string{"F"},
 				Usage:   "Check if any of the currently deployed images have a CVE.",
 				Action:  runCVECmd,
 				Flags: []c.Flag{
@@ -51,12 +53,15 @@ func runDiscoCmd(c *c.Context) error {
 
 	log.Debug().Msgf("projectID: %s", projectID)
 
+	if err := vctl.DiscoverVulns(c.Context, projectID); err != nil {
+		return errors.Wrapf(err, "error discovering vulnerabilities for project: %s", projectID)
+	}
+
 	return nil
 }
 
 func runCVECmd(c *c.Context) error {
 	projectID := c.String(projectIDFlag.Name)
-
 	log.Debug().Msgf("projectID: %s", projectID)
 
 	return nil

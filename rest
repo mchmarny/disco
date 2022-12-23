@@ -1,0 +1,63 @@
+# projects 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+     "https://cloudresourcemanager.googleapis.com/v1/projects" | \
+     jq -r '.projects[] | select(.parent.type == "organization") | select(.lifecycleState == "ACTIVE") | .projectNumber'
+
+# does project has cloud run anabled? 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://serviceusage.googleapis.com/v1/projects/799736955886/services?filter=state:ENABLED" | \
+    jq -r '.services[] | select(.config.name == "run.googleapis.com") | .config.name'
+    
+# list of regions where run is supported
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://run.googleapis.com/v1/projects/799736955886/locations" | \
+    jq -r '.locations[] | .locationId'
+
+# list all services in this region for this project
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services" | \
+    jq -r '.items[] | .metadata.name'
+
+# get the service image uri
+#!/bin/bash
+
+set -o errexit
+
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator" | \
+    jq -r '.spec.template.spec.containers[0].image'
+
+
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator" | \
+    jq -r '.spec.template.spec.containers[0].image'
+
+# artifact registry get digest
+curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3" | \
+     jq -r '.config.digest'
+
+# gcr 
+curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://gcr.io/v2/cloudy-demos/hello-broken/manifests/latest" | \
+     jq -r '.config.digest'
+
+
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=resourceUrl%3D%22https%3A%2F%2Fus-docker.pkg.dev%2Fcloudy-demos%2Fworkstations%2Ftemurin-codeoss%40sha256%3A6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29%22%20AND%20kind%3D%22VULNERABILITY%22" | \
+    jq -r '.occurrences[] | .noteName'
+
+# for size 
+# jq -r '.occurrences | length'
+
+# resourceUrl="https://us-docker.pkg.dev/cloudy-demos/workstations/temurin-codeoss@sha256:6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29" AND kind="VULNERABILITY"
+

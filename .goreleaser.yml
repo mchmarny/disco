@@ -15,7 +15,9 @@ sboms:
 - artifacts: binary
 
 builds:
-- binary: "{{.ProjectName}}"
+- binary: "{{.ProjectName}}-{{ .Arch }}-{{ .Os }}"
+  no_unique_dist_dir: true
+  mod_timestamp: '{{ .CommitTimestamp }}'
   dir: ./cmd/vctl
   env:
   - CGO_ENABLED=0
@@ -23,7 +25,6 @@ builds:
   - -trimpath
   ldflags:
   - -s -w -X main.version={{.Version}}
-  mod_timestamp: '{{ .CommitTimestamp }}'
   goos:
   - linux
   - darwin

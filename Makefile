@@ -35,7 +35,13 @@ lint: ## Lints the entire project
 
 release: tidy ## Builds CLI binary
 	goreleaser release --snapshot --rm-dist --timeout 10m0s
+	mkdir -p ./bin
+	mv dist/vctl-arm64-darwin ./bin/vctl
 .PHONY: release
+
+disco: ## Runs run disco command on the compiled version of CLI
+	bin/vctl run disco
+.PHONY: disco
 
 tag: ## Creates release tag 
 	git tag -s -m "version bump to $(RELEASE_VERSION)" $(RELEASE_VERSION)

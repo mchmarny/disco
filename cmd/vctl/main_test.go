@@ -9,8 +9,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	initLogging(zerolog.DebugLevel)
-	log.Info().Msg("starting tests")
+	initLogging(zerolog.DebugLevel, version)
+	log.Debug().Msg("starting tests")
 	code := m.Run()
 	os.Exit(code)
 }

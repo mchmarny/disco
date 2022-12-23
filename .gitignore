@@ -16,7 +16,6 @@ dist
 cosign.*
 *.pem
 
-
-# Configs
-pkg/config/config.yaml
-
+# IDEs
+.idea/*
+.vscode/*
