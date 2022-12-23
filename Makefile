@@ -38,7 +38,7 @@ release: tidy ## Builds CLI binary
 .PHONY: release
 
 tag: ## Creates release tag 
-	git tag $(RELEASE_VERSION)
+	git tag -s -m "version bump to $(RELEASE_VERSION)" $(RELEASE_VERSION)
 	git push origin $(RELEASE_VERSION)
 .PHONY: tag
 

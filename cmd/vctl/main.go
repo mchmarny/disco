@@ -15,7 +15,7 @@ var (
 )
 
 func main() {
-	initLogging(name, version)
+	initLogging(zerolog.InfoLevel)
 	fatalErr(cli.Run(name, version))
 }
 
@@ -25,12 +25,7 @@ func fatalErr(err error) {
 	}
 }
 
-func initLogging(name, version string) {
+func initLogging(level zerolog.Level) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	zerolog.TimestampFieldName = "ts"
-	zerolog.LevelFieldName = "level"
-	zerolog.MessageFieldName = "msg"
-	zerolog.ErrorFieldName = "err"
-	zerolog.CallerFieldName = "caller"
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	zerolog.SetGlobalLevel(level)
 }
