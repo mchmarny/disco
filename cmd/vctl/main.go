@@ -16,8 +16,7 @@ var (
 
 func main() {
 	initLogging(name, version)
-	err := cli.Run(name, version)
-	fatalErr(err)
+	fatalErr(cli.Run(name, version))
 }
 
 func fatalErr(err error) {
