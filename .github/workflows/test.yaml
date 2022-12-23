@@ -1,0 +1,64 @@
+name: test
+
+on:
+  workflow_call:
+    
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - name: Setup Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ^1.19.4
+
+    - run: go version
+
+    - name: Cache Go Modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+
+    - name: Tidy Modules
+      run: |
+        make tidy
+
+    - name: Config Lint
+      id: golangci_config
+      uses: andstor/file-existence-action@v2
+      with:
+        files: .golangci.yaml
+
+    - name: Lint Code
+      if: steps.golangci_config.outputs.files_exists == 'true'
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+
+    - name: Unit Test
+      run: |
+        make test
+
+    - name: Scan Repo
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        ignore-unfixed: true
+        hide-progress: false
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+        exit-code: '1'

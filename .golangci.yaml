@@ -1,0 +1,75 @@
+linters:
+  disable-all: false
+  enable:
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - cyclop
+    - decorder
+    - depguard
+    - dogsled
+    - dupl
+    - dupword
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exportloopref
+    - funlen
+    - gocognit
+    - goconst
+    - gocyclo
+    - godot
+    - gofmt
+    - gomnd
+    - gosec
+    - importas
+    - interfacebloat
+    - lll
+    - maintidx
+    - misspell
+    - nestif
+    - nilerr
+    - prealloc
+    - predeclared
+    - reassign
+    - tagliatelle
+    - unconvert
+    - unparam
+    - whitespace
+    - wrapcheck
+
+linters-settings:
+  gocyclo:
+    min-complexity: 25
+  golint:
+    min-confidence: 0
+  lll:
+    line-length: 250
+  misspell:
+    locale: US
+  cyclop:
+      max-complexity: 15
+  funlen:
+    lines: -1
+    statements: 45
+
+# issues:
+#   # exclude:
+#   # - G2649
+
+run:
+  concurrency: 4
+  timeout: 5m
+  issues-exit-code: 5
+  tests: true
+
+  skip-dirs:
+    - tests
+    - tools
+
+  skip-dirs-use-default: false
+  modules-download-mode: readonly
+  go: "1.19"

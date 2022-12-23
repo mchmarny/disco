@@ -1,0 +1,14 @@
+name: tag
+
+on:  
+  push:
+    tags:
+      - 'v*.*.*'
+  
+jobs:
+
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  release:
+    uses: ./.github/workflows/release.yaml
