@@ -15,13 +15,8 @@ func Execute(name, version string) error {
 		Suggest:              true,
 		Name:                 name,
 		Version:              fmt.Sprintf("%s (%s)", name, version),
-		Usage: `S3C utility
-Helps you discover container images, the licenses they use, and any potential 
-vulnerability exposures currently being deployed in different GCP runtimes. 
-		
-Note: this is a personal project not an official Google product.
-`,
-		Compiled: time.Now(),
+		Usage:                `Discover container images, vulnerabilities, and licenses in currently deployed across your runtimes`,
+		Compiled:             time.Now(),
 		Commands: []*c.Command{
 			runCmd,
 		},

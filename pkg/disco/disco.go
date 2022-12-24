@@ -66,11 +66,15 @@ func writeOutput(path string, format OutputFormat, data any) error {
 
 	switch format {
 	case JSONFormat:
-		if err := json.NewEncoder(w).Encode(data); err != nil {
+		je := json.NewEncoder(w)
+		je.SetIndent("", "  ")
+		if err := je.Encode(data); err != nil {
 			return errors.Wrap(err, "error encoding")
 		}
 	case YAMLFormat:
-		if err := yaml.NewEncoder(w).Encode(data); err != nil {
+		ye := yaml.NewEncoder(w)
+		ye.SetIndent(2)
+		if err := ye.Encode(data); err != nil {
 			return errors.Wrap(err, "error encoding")
 		}
 	case RawFormat:

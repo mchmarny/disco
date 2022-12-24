@@ -30,7 +30,7 @@ var (
 	}
 
 	outputDigestOnlyFlag = &c.BoolFlag{
-		Name:  "digest-ids",
+		Name:  "digest",
 		Usage: "output only image digests",
 		Value: false,
 	}
@@ -49,7 +49,7 @@ var (
 			{
 				Name:    "images",
 				Aliases: []string{"img", "i"},
-				Usage:   "list deployed container images",
+				Usage:   "List deployed container images",
 				Action:  runImagesCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
@@ -61,7 +61,7 @@ var (
 			{
 				Name:    "vulnerabilities",
 				Aliases: []string{"vul", "v"},
-				Usage:   "check for exposures in deployed images (supports specific CVE filter)",
+				Usage:   "Check for OS-level exposures in deployed images (supports specific CVE filter)",
 				Action:  runVulnsCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
