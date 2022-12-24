@@ -2,6 +2,7 @@ package vctl
 
 import (
 	"context"
+	"os"
 
 	"github.com/mchmarny/vctl/pkg/project"
 	"github.com/mchmarny/vctl/pkg/region"
@@ -26,8 +27,13 @@ type ImageReport struct {
 	Image   string `json:"image"`
 }
 
+type ImagesQuery struct {
+	SimpleQuery
+	OnlyDigest bool
+}
+
 // DiscoverImages discovers all deployed images in the project.
-func DiscoverImages(ctx context.Context, in *SimpleQuery) error {
+func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -40,6 +46,14 @@ func DiscoverImages(ctx context.Context, in *SimpleQuery) error {
 
 	log.Info().Msgf("Found the following %d images:", len(images))
 
+	if in.OnlyDigest {
+		for _, img := range images {
+			os.Stdout.WriteString(img.Image.URL())
+			os.Stdout.WriteString("\n")
+		}
+		return nil
+	}
+
 	list := make([]*ImageReport, 0)
 	for _, img := range images {
 		list = append(list, &ImageReport{
@@ -50,7 +64,7 @@ func DiscoverImages(ctx context.Context, in *SimpleQuery) error {
 		})
 	}
 
-	if err := writeOutput(in.OutputPath, list); err != nil {
+	if err := writeOutput(in.OutputPath, in.OutputFmt, list); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}
 

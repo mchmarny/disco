@@ -9,6 +9,7 @@ require (
 	github.com/urfave/cli/v2 v2.23.7
 	golang.org/x/oauth2 v0.3.0
 	google.golang.org/api v0.105.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -32,5 +33,4 @@ require (
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37 // indirect
 	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -3,19 +3,55 @@ package vctl
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v3"
 )
+
+const (
+	// JSONFormat is JSON output format.
+	JSONFormat OutputFormat = iota
+	// YAMLFormat is YAML output format.
+	YAMLFormat OutputFormat = iota
+	// RawFormat is list output format.
+	RawFormat OutputFormat = iota
+	// DefaultOutputFormat is default output format.
+	DefaultOutputFormat = JSONFormat
+)
+
+type OutputFormat int64
 
 type SimpleQuery struct {
 	ProjectID  string
 	OutputPath string
+	OutputFmt  OutputFormat
 }
 
-func writeOutput(path string, data any) error {
-	w := os.Stdout
+// ParseOutputFormat parses output format.
+func ParseOutputFormat(format string) (OutputFormat, error) {
+	if format == "" {
+		return DefaultOutputFormat, nil
+	}
+
+	switch format {
+	case "json":
+		return JSONFormat, nil
+	case "yaml":
+		return YAMLFormat, nil
+	case "raw":
+		return RawFormat, nil
+	default:
+		return DefaultOutputFormat, errors.Errorf("unsupported output format: %s", format)
+	}
+}
+
+func writeOutput(path string, format OutputFormat, data any) error {
+	var w io.Writer
+	w = os.Stdout
+
 	if path != "" {
 		log.Info().Msgf("writing output to: '%s'", path)
 		f, err := os.Create(path)
@@ -27,9 +63,22 @@ func writeOutput(path string, data any) error {
 	}
 
 	fmt.Println() // add a new line before
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		return errors.Wrap(err, "error encoding")
+
+	switch format {
+	case JSONFormat:
+		if err := json.NewEncoder(w).Encode(data); err != nil {
+			return errors.Wrap(err, "error encoding")
+		}
+	case YAMLFormat:
+		if err := yaml.NewEncoder(w).Encode(data); err != nil {
+			return errors.Wrap(err, "error encoding")
+		}
+	case RawFormat:
+		os.Stdout.Write([]byte(fmt.Sprintf("%v", data)))
+	default:
+		return errors.Errorf("unsupported output format: %d", format)
 	}
+
 	return nil
 }
 

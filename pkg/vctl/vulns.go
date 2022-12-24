@@ -33,7 +33,7 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 		if err != nil {
 			return errors.Wrapf(err, "error discovering vulnerabilities for project: %s", in.ProjectID)
 		}
-		if err := writeOutput(in.OutputPath, list); err != nil {
+		if err := writeOutput(in.OutputPath, in.OutputFmt, list); err != nil {
 			return errors.Wrap(err, "error writing output")
 		}
 		return nil
@@ -59,7 +59,7 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 		list = append(list, subList...)
 	}
 
-	if err := writeOutput(in.OutputPath, list); err != nil {
+	if err := writeOutput(in.OutputPath, in.OutputFmt, list); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}
 	return nil

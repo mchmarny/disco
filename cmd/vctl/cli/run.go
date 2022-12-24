@@ -22,10 +22,23 @@ var (
 		Required: false,
 	}
 
+	outputFormatFlag = &c.StringFlag{
+		Name:     "format",
+		Aliases:  []string{"f"},
+		Usage:    "output format (json, yaml, raw)",
+		Required: false,
+	}
+
+	outputDigestOnlyFlag = &c.BoolFlag{
+		Name:  "digest-ids",
+		Usage: "output only image digests",
+		Value: false,
+	}
+
 	cveFlag = &c.StringFlag{
 		Name:     "cve",
 		Aliases:  []string{"e"},
-		Usage:    "exposure ID (CVE number)",
+		Usage:    "exposure ID (CVE number, e.g. CVE-2019-19378)",
 		Required: false,
 	}
 
@@ -48,6 +61,8 @@ var (
 				Flags: []c.Flag{
 					projectIDFlag,
 					outputPathFlag,
+					outputFormatFlag,
+					outputDigestOnlyFlag,
 				},
 			},
 			{
@@ -58,6 +73,7 @@ var (
 				Flags: []c.Flag{
 					projectIDFlag,
 					outputPathFlag,
+					outputFormatFlag,
 					cveFlag,
 				},
 			}, {
@@ -67,6 +83,8 @@ var (
 				Action:  runLicenseCmd,
 				Flags: []c.Flag{
 					digestFlag,
+					outputPathFlag,
+					outputFormatFlag,
 				},
 			},
 		},
@@ -78,10 +96,17 @@ func printVersion(c *c.Context) {
 }
 
 func runImagesCmd(c *c.Context) error {
-	in := &vctl.SimpleQuery{
-		ProjectID:  c.String(projectIDFlag.Name),
-		OutputPath: c.String(outputPathFlag.Name),
+	fmtStr := c.String(outputFormatFlag.Name)
+	outFmt, err := vctl.ParseOutputFormat(fmtStr)
+	if err != nil {
+		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
 	}
+
+	in := &vctl.ImagesQuery{}
+	in.ProjectID = c.String(projectIDFlag.Name)
+	in.OutputPath = c.String(outputPathFlag.Name)
+	in.OutputFmt = outFmt
+	in.OnlyDigest = c.Bool(outputDigestOnlyFlag.Name)
 
 	printVersion(c)
 	if err := vctl.DiscoverImages(c.Context, in); err != nil {
@@ -92,10 +117,17 @@ func runImagesCmd(c *c.Context) error {
 }
 
 func runVulnsCmd(c *c.Context) error {
+	fmtStr := c.String(outputFormatFlag.Name)
+	outFmt, err := vctl.ParseOutputFormat(fmtStr)
+	if err != nil {
+		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
+	}
+
 	in := &vctl.VulnsQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
+	in.OutputFmt = outFmt
 
 	printVersion(c)
 
