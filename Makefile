@@ -1,4 +1,4 @@
-RELEASE_VERSION    ?=$(shell cat ./.version)
+RELEASE_VERSION ?=$(shell cat ./.version)
 
 all: help
 
@@ -22,7 +22,7 @@ test: tidy ## Runs unit tests
 .PHONY: test
 
 run: tidy ## Runs uncompiled version of the app
-	go run cmd/vctl/main.go
+	go run cmd/disco/main.go
 .PHONY: run
 
 cover: test ## Runs unit tests and putputs coverage
@@ -36,19 +36,19 @@ lint: ## Lints the entire project
 release: tidy ## Builds CLI binary
 	goreleaser release --snapshot --rm-dist --timeout 10m0s
 	mkdir -p ./bin
-	mv dist/vctl-arm64-darwin ./bin/vctl
+	mv dist/disco-arm64-darwin ./bin/disco
 .PHONY: release
 
 run-img: ## Runs run image discovery command on the compiled version of CLI
-	debug=true bin/vctl run img
+	debug=true bin/disco run img
 .PHONY: run-img
 
 run-vul: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/vctl run vul
+	debug=true bin/disco run vul
 .PHONY: run-vul
 
 run-cve: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/vctl run vul --cve CVE-2017-11164
+	debug=true bin/disco run vul --cve CVE-2017-11164
 .PHONY: run-vul
 
 tag: ## Creates release tag 

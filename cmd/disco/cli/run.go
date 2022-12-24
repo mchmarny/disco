@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/mchmarny/vctl/pkg/vctl"
+	"github.com/mchmarny/disco/pkg/disco"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
@@ -80,19 +80,19 @@ func printVersion(c *c.Context) {
 
 func runImagesCmd(c *c.Context) error {
 	fmtStr := c.String(outputFormatFlag.Name)
-	outFmt, err := vctl.ParseOutputFormat(fmtStr)
+	outFmt, err := disco.ParseOutputFormat(fmtStr)
 	if err != nil {
 		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
 	}
 
-	in := &vctl.ImagesQuery{}
+	in := &disco.ImagesQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = outFmt
 	in.OnlyDigest = c.Bool(outputDigestOnlyFlag.Name)
 
 	printVersion(c)
-	if err := vctl.DiscoverImages(c.Context, in); err != nil {
+	if err := disco.DiscoverImages(c.Context, in); err != nil {
 		return errors.Wrap(err, "error discovering images")
 	}
 
@@ -101,12 +101,12 @@ func runImagesCmd(c *c.Context) error {
 
 func runVulnsCmd(c *c.Context) error {
 	fmtStr := c.String(outputFormatFlag.Name)
-	outFmt, err := vctl.ParseOutputFormat(fmtStr)
+	outFmt, err := disco.ParseOutputFormat(fmtStr)
 	if err != nil {
 		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
 	}
 
-	in := &vctl.VulnsQuery{}
+	in := &disco.VulnsQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
@@ -118,7 +118,7 @@ func runVulnsCmd(c *c.Context) error {
 		log.Info().Msg("Note: vulnerability scans currently limited to base OS only")
 	}
 
-	if err := vctl.DiscoverVulns(c.Context, in); err != nil {
+	if err := disco.DiscoverVulns(c.Context, in); err != nil {
 		return errors.Wrap(err, "error excuting command")
 	}
 

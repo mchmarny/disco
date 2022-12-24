@@ -3,13 +3,13 @@ package main
 import (
 	"os"
 
-	"github.com/mchmarny/vctl/cmd/vctl/cli"
+	"github.com/mchmarny/disco/cmd/disco/cli"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 const (
-	name           = "vctl"
+	name           = "disco"
 	logLevelEnvVar = "debug"
 )
 

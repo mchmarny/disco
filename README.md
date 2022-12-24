@@ -1,6 +1,6 @@
-# vctl 
+# disco 
 
-Helper utility for containerize workload security. 
+Helper utility for containerize workload discovery.
 
 
 

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mchmarny/vctl/pkg/client"
+	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

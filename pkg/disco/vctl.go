@@ -1,4 +1,4 @@
-package vctl
+package disco
 
 import (
 	"encoding/json"

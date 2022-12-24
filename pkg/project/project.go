@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/mchmarny/vctl/pkg/client"
+	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 )
 

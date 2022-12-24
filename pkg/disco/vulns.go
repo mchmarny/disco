@@ -1,10 +1,10 @@
-package vctl
+package disco
 
 import (
 	"context"
 
-	"github.com/mchmarny/vctl/pkg/analysis"
-	"github.com/mchmarny/vctl/pkg/project"
+	"github.com/mchmarny/disco/pkg/analysis"
+	"github.com/mchmarny/disco/pkg/project"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

@@ -1,4 +1,4 @@
-project_name: vctl
+project_name: disco
 
 env:
 - GO111MODULE=on
@@ -17,7 +17,7 @@ builds:
 - binary: "{{.ProjectName}}-{{ .Arch }}-{{ .Os }}"
   no_unique_dist_dir: true
   mod_timestamp: '{{ .CommitTimestamp }}'
-  dir: ./cmd/vctl
+  dir: ./cmd/disco
   env:
   - CGO_ENABLED=0
   flags:
@@ -41,7 +41,7 @@ snapshot:
 release:
   github:
     owner: mchmarny
-    name: vctl
+    name: disco
   prerelease: auto
 
 archives:

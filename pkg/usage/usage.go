@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mchmarny/vctl/pkg/client"
+	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 )
 

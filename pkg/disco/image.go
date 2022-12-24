@@ -1,14 +1,14 @@
-package vctl
+package disco
 
 import (
 	"context"
 	"os"
 
-	"github.com/mchmarny/vctl/pkg/project"
-	"github.com/mchmarny/vctl/pkg/region"
-	"github.com/mchmarny/vctl/pkg/registry"
-	"github.com/mchmarny/vctl/pkg/service"
-	"github.com/mchmarny/vctl/pkg/usage"
+	"github.com/mchmarny/disco/pkg/project"
+	"github.com/mchmarny/disco/pkg/region"
+	"github.com/mchmarny/disco/pkg/registry"
+	"github.com/mchmarny/disco/pkg/service"
+	"github.com/mchmarny/disco/pkg/usage"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
