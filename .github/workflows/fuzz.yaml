@@ -2,11 +2,8 @@ name: fuzz
 on:
   workflow_call:
 
-env:
-  project-name: "vctl"
-
 jobs:
-  Fuzzing:
+  fuzz:
     runs-on: ubuntu-latest
     steps:
 
@@ -14,15 +11,15 @@ jobs:
         id: build
         uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@master
         with:
-          oss-fuzz-project-name: ${{ env.project-name }}
+          oss-fuzz-project-name: "vctl"
           dry-run: false
     
       - name: Run
         uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
         with:
-          oss-fuzz-project-name: ${{ env.project-name }}
+          oss-fuzz-project-name: "vctl"
           fuzz-seconds: 600
-          dry-run: false
+          language: "go"
       
       - name: Upload
         uses: actions/upload-artifact@v3

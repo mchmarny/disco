@@ -10,5 +10,11 @@ jobs:
   test:
     uses: ./.github/workflows/test.yaml
 
+  fuzz:
+    uses: ./.github/workflows/fuzz.yaml
+
   release:
+    needs: 
+    - test
+    - fuzz
     uses: ./.github/workflows/release.yaml
