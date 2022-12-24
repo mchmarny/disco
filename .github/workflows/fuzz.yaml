@@ -1,0 +1,32 @@
+name: fuzz
+on:
+  workflow_call:
+
+env:
+  project-name: "vctl"
+
+jobs:
+  Fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Build
+        id: build
+        uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@master
+        with:
+          oss-fuzz-project-name: ${{ env.project-name }}
+          dry-run: false
+    
+      - name: Run
+        uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
+        with:
+          oss-fuzz-project-name: ${{ env.project-name }}
+          fuzz-seconds: 600
+          dry-run: false
+      
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        if: failure() && steps.build.outcome == 'success'
+        with:
+          name: artifacts
+          path: ./out/artifacts

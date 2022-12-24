@@ -1,4 +1,4 @@
-RELEASE_VERSION    ?=$(shell cat ./version)
+RELEASE_VERSION    ?=$(shell cat ./.version)
 
 all: help
 
