@@ -9,12 +9,15 @@ import (
 	c "github.com/urfave/cli/v2"
 )
 
-func Run(name, version string) error {
+func Execute(name, version string) error {
 	app := &c.App{
-		Name:     name,
-		Version:  fmt.Sprintf("%s - %s", name, version),
-		Compiled: time.Now(),
-		Usage:    name,
+		EnableBashCompletion: true,
+		Suggest:              true,
+		Name:                 name,
+		Version:              fmt.Sprintf("%s (%s)", name, version),
+		Usage:                "Vulnerability scanner for Cloud Run.",
+		UsageText:            "vctl - Vulnerability scanner for Cloud Run.",
+		Compiled:             time.Now(),
 		Commands: []*c.Command{
 			runCmd,
 		},

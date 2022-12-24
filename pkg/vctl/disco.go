@@ -7,6 +7,7 @@ import (
 
 	"github.com/mchmarny/vctl/pkg/project"
 	"github.com/mchmarny/vctl/pkg/region"
+	"github.com/mchmarny/vctl/pkg/registry"
 	"github.com/mchmarny/vctl/pkg/service"
 	"github.com/mchmarny/vctl/pkg/usage"
 	"github.com/pkg/errors"
@@ -14,55 +15,35 @@ import (
 )
 
 type DiscoReport struct {
-	Items []*DiscoItem `json:"items"`
+	Images []*RunningImage
 }
 
-type DiscoItem struct {
-	Project  *project.Project   `json:"project"`
-	Services []*service.Service `json:"services"`
+type RunningImage struct {
+	Image   *registry.ImageInfo
+	Service *service.Service
+	Project *project.Project
+	Region  *region.Region
 }
 
 func DiscoverVulns(ctx context.Context, projectID string) error {
-	log.Debug().Msgf("discovering vulnerabilities for project: %s", projectID)
-	projects, err := project.GetProjects(ctx)
+	if projectID != "" {
+		log.Info().Msgf("Discovering vulnerabilities for project: '%s'.", projectID)
+	} else {
+		log.Info().Msgf("Discovering vulnerabilities for all projects accessible to current user.")
+	}
+
+	images, err := getDeployedImages(ctx, projectID)
 	if err != nil {
-		return errors.Wrap(err, "error getting projects")
+		return errors.Wrap(err, "error getting images")
 	}
 
-	// TODO: for now just spool everything
 	report := &DiscoReport{
-		Items: make([]*DiscoItem, 0),
+		Images: images,
 	}
-
-	for _, p := range projects {
-		log.Debug().Msgf("getting project details: %+v", p)
-
-		if projectID != "" && p.ProjectID != projectID {
-			log.Debug().Msgf("skipping project (not selected): %s", p.ProjectID)
-			continue
-		}
-
-		if p.LifecycleState != project.ProjectStateActive {
-			log.Debug().Msgf("skipping project (inactive): %s", p.ProjectID)
-			continue
-		}
-		on, err := usage.IsAPIEnabled(ctx, p.ProjectNumber, usage.CloudRunAPI)
-		if err != nil {
-			return errors.Wrap(err, "error checking if Cloud Run API is enabled")
-		}
-		if !on {
-			log.Debug().Msgf("skipping project (API not enabled): %s", p.ProjectID)
-			continue
-		}
-
-		if err := discoServices(ctx, p, report); err != nil {
-			return errors.Wrapf(err, "error discovering services: %s", p.ProjectID)
-		}
-	}
-
-	// TODO: process the report
 
 	// TODO: convert report to vuln report
+
+	log.Info().Msgf("Done, found %d images.", len(images))
 
 	if err := json.NewEncoder(os.Stdout).Encode(report); err != nil {
 		return errors.Wrap(err, "error encoding report")
@@ -71,37 +52,86 @@ func DiscoverVulns(ctx context.Context, projectID string) error {
 	return nil
 }
 
-func discoServices(ctx context.Context, project *project.Project, report *DiscoReport) error {
-	if project == nil {
-		return errors.New("project is nil")
-	}
-	if report == nil {
-		return errors.New("report is nil")
+func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, error) {
+	if projectID != "" {
+		log.Debug().Msgf("discovering images for project: %s.", projectID)
 	}
 
-	reg, err := region.GetRegions(ctx, project.ProjectNumber)
+	projects, err := project.GetProjects(ctx)
 	if err != nil {
-		return errors.Wrapf(err, "error getting regions for project: %s (#%s)",
-			project.ProjectID, project.ProjectNumber)
-	}
-	log.Debug().Msgf("found %d regions", len(reg))
-
-	item := &DiscoItem{
-		Project:  project,
-		Services: make([]*service.Service, 0),
+		return nil, errors.Wrap(err, "Error getting projects.")
 	}
 
-	for _, r := range reg {
-		log.Debug().Msgf("region: %s (%s)", r.ID, r.ID)
-		svcs, err := service.GetServices(ctx, project.ProjectNumber, r.ID)
-		if err != nil {
-			return errors.Wrapf(err, "error getting services for project: %s in region %s",
-				project.ProjectID, r.ID)
+	list := make([]*RunningImage, 0)
+
+	for _, p := range projects {
+		log.Debug().Msgf("Quering project: %s (%s - %s).", p.ID, p.Number, p.State)
+
+		if !isQualifiedProject(ctx, p, projectID) {
+			continue
 		}
-		log.Debug().Msgf("found %d services in %s/%s", len(svcs), project.ProjectID, r.ID)
-		item.Services = append(item.Services, svcs...)
+
+		reg, err := region.GetRegions(ctx, p.Number)
+		if err != nil {
+			log.Error().Err(err).Msgf("Error getting regions for project: %s (#%s).", p.ID, p.Number)
+			continue
+		}
+		log.Info().Msgf("Found %d regions where Cloud Run is supported.", len(reg))
+
+		for _, r := range reg {
+			svcs, err := service.GetServices(ctx, p.Number, r.ID)
+			if err != nil {
+				log.Error().Err(err).Msgf("error getting services for project: %s in region %s.", p.Number, r.ID)
+				continue
+			}
+
+			log.Debug().Msgf("Found %d services in: %s/%s.", len(svcs), p.ID, r.ID)
+			for _, s := range svcs {
+				log.Info().Msgf("Processing service: %s.", s.Metadata.Name)
+
+				for _, c := range s.Spec.Template.Spec.Containers {
+					f, err := registry.GetImageInfo(ctx, c.Image)
+					if err != nil {
+						log.Error().Err(err).Msgf("Error getting manifest for: %s.", c.Image)
+						continue
+					}
+
+					log.Info().Msgf("Found container digest %s.", f.Digest)
+					list = append(list, &RunningImage{
+						Project: p,
+						Region:  r,
+						Service: s,
+						Image:   f,
+					})
+				}
+			}
+		}
 	}
 
-	report.Items = append(report.Items, item)
-	return nil
+	return list, nil
+}
+
+func isQualifiedProject(ctx context.Context, p *project.Project, filterID string) bool {
+	if filterID != "" && p.ID != filterID {
+		log.Debug().Msgf("Skipping project: %s (filter: %s).", p.ID, filterID)
+		return false
+	}
+
+	if p.State != project.ProjectStateActive {
+		log.Debug().Msgf("Skipping project: %s (inactive).", p.ID)
+		return false
+	}
+
+	on, err := usage.IsAPIEnabled(ctx, p.Number, usage.CloudRunAPI)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error checking if Cloud Run API is enabled for project: %s.", p.ID)
+		return false
+	}
+
+	if !on {
+		log.Debug().Msgf("Skipping project: %s (API not enabled).", p.ID)
+		return false
+	}
+
+	return true
 }

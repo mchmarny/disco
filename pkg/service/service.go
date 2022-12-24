@@ -22,9 +22,8 @@ type serviceList struct {
 
 type Service struct {
 	Metadata struct {
-		Name   string            `json:"name"`
-		ID     string            `json:"uid"`
-		Labels map[string]string `json:"labels"`
+		Name string `json:"name"`
+		ID   string `json:"uid"`
 	} `json:"metadata"`
 	Annotations map[string]string `json:"annotations"`
 	Created     string            `json:"creationTimestamp"`

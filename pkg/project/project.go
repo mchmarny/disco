@@ -21,9 +21,9 @@ type projectList struct {
 
 // Project represents GCP project.
 type Project struct {
-	ProjectNumber  string `json:"projectNumber"`
-	ProjectID      string `json:"projectId"`
-	LifecycleState string `json:"lifecycleState"`
+	Number string `json:"projectNumber"`
+	ID     string `json:"projectId"`
+	State  string `json:"lifecycleState"`
 }
 
 // GetProjects returns list of projects available to the current user.

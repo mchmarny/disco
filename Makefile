@@ -40,7 +40,7 @@ release: tidy ## Builds CLI binary
 .PHONY: release
 
 disco: ## Runs run disco command on the compiled version of CLI
-	bin/vctl run disco
+	debug=true bin/vctl run disco
 .PHONY: disco
 
 tag: ## Creates release tag 

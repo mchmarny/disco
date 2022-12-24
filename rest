@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -o errexit
+
 # projects 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
@@ -23,9 +27,6 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
     jq -r '.items[] | .metadata.name'
 
 # get the service image uri
-#!/bin/bash
-
-set -o errexit
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
@@ -43,6 +44,11 @@ curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3" | \
      jq -r '.config.digest'
+
+curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://us-docker.pkg.dev/v2/cloudrun/container/hello/manifests/latest"
+     
 
 # gcr 
 curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \

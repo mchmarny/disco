@@ -16,15 +16,15 @@ const (
 )
 
 type RegionList struct {
-	Locations []*Location `json:"locations"`
+	Regions []*Region `json:"locations"`
 }
 
-type Location struct {
+type Region struct {
 	ID   string `json:"locationId"`
 	Name string `json:"displayName"`
 }
 
-func GetRegions(ctx context.Context, projectNumber string) ([]*Location, error) {
+func GetRegions(ctx context.Context, projectNumber string) ([]*Region, error) {
 	if projectNumber == "" {
 		return nil, errors.New("project number is empty")
 	}
@@ -39,5 +39,5 @@ func GetRegions(ctx context.Context, projectNumber string) ([]*Location, error) 
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 
-	return list.Locations, nil
+	return list.Regions, nil
 }

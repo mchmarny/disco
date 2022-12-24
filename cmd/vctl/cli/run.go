@@ -51,10 +51,8 @@ var (
 func runDiscoCmd(c *c.Context) error {
 	projectID := c.String(projectIDFlag.Name)
 
-	log.Debug().Msgf("projectID: %s", projectID)
-
 	if err := vctl.DiscoverVulns(c.Context, projectID); err != nil {
-		return errors.Wrapf(err, "error discovering vulnerabilities for project: %s", projectID)
+		return errors.Wrapf(err, "Error discovering vulnerabilities for project: %s.", projectID)
 	}
 
 	return nil
@@ -62,7 +60,7 @@ func runDiscoCmd(c *c.Context) error {
 
 func runCVECmd(c *c.Context) error {
 	projectID := c.String(projectIDFlag.Name)
-	log.Debug().Msgf("projectID: %s", projectID)
-
+	cveID := c.String(cveFlag.Name)
+	log.Debug().Msgf("ProjectID: %s, CVE: %s.", projectID, cveID)
 	return nil
 }

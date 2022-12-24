@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/mchmarny/vctl/cmd/vctl/cli"
@@ -21,28 +20,22 @@ var (
 func main() {
 	logLevel := zerolog.InfoLevel
 	levStr := os.Getenv(logLevelEnvVar)
-	if levStr != "" {
-		lev, err := zerolog.ParseLevel(levStr)
-		if err != nil {
-			fmt.Printf("invalid log level: %s, using default: %v", levStr, logLevel)
-		}
-		logLevel = lev
+	if levStr == "true" {
+		logLevel = zerolog.DebugLevel
 	}
-	initLogging(logLevel, version)
-	fatalErr(cli.Run(name, version))
-}
-
-func fatalErr(err error) {
+	initLogging(logLevel)
+	err := cli.Execute(name, version)
 	if err != nil {
-		log.Fatal().Err(err).Msg("fatal error")
+		log.Fatal().Err(err).Msg("Fatal error.")
 	}
 }
 
-func initLogging(level zerolog.Level, version string) {
-	log.Logger = log.With().Caller().Str("ver", version).Logger()
-	zerolog.TimestampFieldName = "ts"
-	zerolog.LevelFieldName = "lev"
-	zerolog.MessageFieldName = "msg"
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+func initLogging(level zerolog.Level) {
 	zerolog.SetGlobalLevel(level)
+	log.Logger = log.Output(zerolog.ConsoleWriter{
+		Out: os.Stderr,
+		PartsExclude: []string{
+			zerolog.TimestampFieldName,
+		},
+	})
 }
