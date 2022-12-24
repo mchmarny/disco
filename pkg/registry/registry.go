@@ -9,12 +9,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type manifest struct {
-	Config struct {
-		Digest string `json:"digest"`
-		Size   int64  `json:"size"`
-	} `json:"config"`
-}
+const (
+	digestHeaderKey = "docker-content-digest"
+)
 
 func GetImageInfo(ctx context.Context, image string) (*ImageInfo, error) {
 	if image == "" {
@@ -32,7 +29,7 @@ func GetImageInfo(ctx context.Context, image string) (*ImageInfo, error) {
 	}
 
 	u := info.ManifestURL()
-	req, err := http.NewRequest(http.MethodGet, u, nil)
+	req, err := http.NewRequest(http.MethodHead, u, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Error creating registry request.")
 	}
@@ -42,16 +39,16 @@ func GetImageInfo(ctx context.Context, image string) (*ImageInfo, error) {
 
 	log.Debug().Msgf("Getting image digest from %s.", u)
 
-	var m manifest
-	if err := client.Request(ctx, req, &m); err != nil {
+	val, err := client.RequestHead(ctx, req, digestHeaderKey)
+	if err != nil {
 		return nil, errors.Wrap(err, "Error decoding registry response.")
 	}
 
-	if m.Config.Digest == "" {
-		return nil, errors.Errorf("Unable to find digest for this image using %s.", u)
+	if val == "" {
+		return nil, errors.Errorf("No digest found in response from: %s", u)
 	}
 
-	info.Digest = m.Config.Digest
+	info.Digest = val
 
 	return info, nil
 }

@@ -39,9 +39,13 @@ release: tidy ## Builds CLI binary
 	mv dist/vctl-arm64-darwin ./bin/vctl
 .PHONY: release
 
-disco: ## Runs run disco command on the compiled version of CLI
-	debug=true bin/vctl run disco
-.PHONY: disco
+run-img: ## Runs run image discovery command on the compiled version of CLI
+	debug=true bin/vctl run img
+.PHONY: run-img
+
+run-vul: ## Runs image vulnerability discovery command on the compiled version of CLI
+	debug=true bin/vctl run vul
+.PHONY: run-vul
 
 tag: ## Creates release tag 
 	git tag -s -m "version bump to $(RELEASE_VERSION)" $(RELEASE_VERSION)

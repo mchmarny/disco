@@ -5,50 +5,56 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/mchmarny/vctl/pkg/client"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 const (
 	// occurrencesAPIBaseURL is the base URL for the Container Analysis API (projectID).
 	occurrencesAPIBaseURL = "https://containeranalysis.googleapis.com/v1/projects/%s/occurrences?pageSize=500&filter="
 
-	occurrencesAPIFilter = `resourceUrl="%q" kind="VULNERABILITY"`
+	occurrencesAPIFilter = `resourceUrl="%s" AND kind="VULNERABILITY"`
 )
 
-type occurrence struct {
+type occurrenceList struct {
 	Occurrences []*Occurrence `json:"occurrences,omitempty"`
 }
 
 // Occurrence represents a single vulnerability occurrence.
-type Occurrence []struct {
+type Occurrence struct {
 	Name          string `json:"name,omitempty"`
 	URI           string `json:"resourceUri,omitempty"`
-	Note          string `json:"noteName,omitempty"`
-	Kind          string `json:"kind,omitempty"`
 	Updated       string `json:"updateTime,omitempty"`
 	Vulnerability struct {
-		Severity    string `json:"severity,omitempty"`
-		Score       int    `json:"cvssScore,omitempty"`
-		Description string `json:"shortDescription,omitempty"`
-		RelatedURLs []struct {
-			URL   string `json:"url,omitempty"`
-			Label string `json:"label,omitempty"`
-		} `json:"relatedUrls,omitempty"`
-		Packages []struct {
-			Name              string `json:"affectedPackage"`
-			Affected          string `json:"affectedCpeUri"`
-			Type              string `json:"packageType"`
-			EffectiveSeverity string `json:"effectiveSeverity"`
-			Version           struct {
+		Severity     string  `json:"severity,omitempty"`
+		CVSSScore    float64 `json:"cvssScore,omitempty"`
+		PackageIssue []struct {
+			AffectedPackage string `json:"affectedPackage,omitempty"`
+			AffectedVersion struct {
 				Name     string `json:"name,omitempty"`
 				Revision string `json:"revision,omitempty"`
 				Kind     string `json:"kind,omitempty"`
 				FullName string `json:"fullName,omitempty"`
 			} `json:"affectedVersion,omitempty"`
+			Fixed        string `json:"fixedPackage,omitempty"`
+			FixedVersion struct {
+				Name     string `json:"name,omitempty"`
+				Revision string `json:"revision,omitempty"`
+				Kind     string `json:"kind,omitempty"`
+				FullName string `json:"fullName,omitempty"`
+			} `json:"fixedVersion,omitempty"`
+			Type              string `json:"packageType"`
+			EffectiveSeverity string `json:"effectiveSeverity"`
 		} `json:"packageIssue,omitempty"`
-		CVSSv3 struct {
+		ShortDescription string `json:"shortDescription,omitempty"`
+		RelatedURLs      []struct {
+			URL string `json:"url,omitempty"`
+		} `json:"relatedUrls,omitempty"`
+		EffectiveSeverity string `json:"effectiveSeverity"`
+		CVSSv3            struct {
 			BaseScore             float64 `json:"baseScore,omitempty"`
 			EmployabilityScore    float64 `json:"exploitabilityScore,omitempty"`
 			ImpactScore           float64 `json:"impactScore,omitempty"`
@@ -64,22 +70,26 @@ type Occurrence []struct {
 	} `json:"vulnerability,omitempty"`
 }
 
-func GetImageVulnerabilities(ctx context.Context, projectID, digest string) ([]*Occurrence, error) {
-	if digest == "" {
-		return nil, errors.New("project number is empty")
+func GetImageVulnerabilities(ctx context.Context, projectID, imageURL string) ([]*Occurrence, error) {
+	if imageURL == "" {
+		return nil, errors.New("imageURL is empty")
 	}
 	if projectID == "" {
 		return nil, errors.New("projectID is empty")
 	}
 
-	q := fmt.Sprintf(occurrencesAPIFilter, digest)
+	q := fmt.Sprintf(occurrencesAPIFilter, strings.TrimSpace(imageURL))
+	log.Debug().Msgf("Query: '%s'.", q)
+
 	u := fmt.Sprintf(occurrencesAPIBaseURL, projectID) + url.QueryEscape(q)
+	log.Debug().Msgf("Encoded URL: '%s'.", u)
+
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Error creating image vulnerability request: %s", u)
 	}
 
-	var list occurrence
+	var list occurrenceList
 	if err := client.Request(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}

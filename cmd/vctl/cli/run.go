@@ -10,57 +10,90 @@ import (
 var (
 	projectIDFlag = &c.StringFlag{
 		Name:     "project",
-		Usage:    "ID of the project to scope discovery to.",
+		Aliases:  []string{"p"},
+		Usage:    "ID of the project.",
 		Required: false,
 	}
 
 	cveFlag = &c.StringFlag{
 		Name:     "cve",
-		Usage:    "ID of the CVE to search for.",
+		Aliases:  []string{"e"},
+		Usage:    "ID of the exposure.",
+		Required: false,
+	}
+
+	digestFlag = &c.StringFlag{
+		Name:     "digest",
+		Aliases:  []string{"d"},
+		Usage:    "Image digest.",
 		Required: true,
 	}
 
 	runCmd = &c.Command{
-		Name:    "run",
-		Aliases: []string{"s"},
-		Usage:   "Cloud Run commands.",
+		Name:  "run",
+		Usage: "Cloud Run commands.",
 		Subcommands: []*c.Command{
 			{
-				Name:    "disco",
-				Aliases: []string{"D"},
-				Usage:   "Discover CVEs in all the currently deployed images.",
-				Action:  runDiscoCmd,
+				Name:    "images",
+				Aliases: []string{"img", "i"},
+				Usage:   "List container images used in Cloud Run.",
+				Action:  runImagesCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
 				},
 			},
 			{
-				Name:    "find",
-				Aliases: []string{"F"},
-				Usage:   "Check if any of the currently deployed images have a CVE.",
-				Action:  runCVECmd,
+				Name:    "vulnerabilities",
+				Aliases: []string{"vul", "v"},
+				Usage:   "Check if any of the currently deployed images have that specific CVE.",
+				Action:  runVulnsCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
 					cveFlag,
+				},
+			}, {
+				Name:    "licenses",
+				Aliases: []string{"lic", "l"},
+				Usage:   "List a unique list of licenses used in this image.",
+				Action:  runLicenseCmd,
+				Flags: []c.Flag{
+					digestFlag,
 				},
 			},
 		},
 	}
 )
 
-func runDiscoCmd(c *c.Context) error {
+func printVersion(c *c.Context) {
+	log.Info().Msgf(c.App.Version)
+}
+
+func runImagesCmd(c *c.Context) error {
 	projectID := c.String(projectIDFlag.Name)
 
-	if err := vctl.DiscoverVulns(c.Context, projectID); err != nil {
-		return errors.Wrapf(err, "Error discovering vulnerabilities for project: %s.", projectID)
+	printVersion(c)
+	if err := vctl.DiscoverImages(c.Context, projectID); err != nil {
+		return errors.Wrap(err, "Error discovering images.")
 	}
 
 	return nil
 }
 
-func runCVECmd(c *c.Context) error {
+func runVulnsCmd(c *c.Context) error {
 	projectID := c.String(projectIDFlag.Name)
 	cveID := c.String(cveFlag.Name)
-	log.Debug().Msgf("ProjectID: %s, CVE: %s.", projectID, cveID)
+
+	printVersion(c)
+	if err := vctl.DiscoverVulns(c.Context, projectID, cveID); err != nil {
+		return errors.Wrap(err, "Error discovering vulnerabilities.")
+	}
+
+	return nil
+}
+
+func runLicenseCmd(c *c.Context) error {
+	digest := c.String(digestFlag.Name)
+	printVersion(c)
+	log.Debug().Msgf("Digest: %s.", digest)
 	return nil
 }

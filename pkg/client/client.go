@@ -53,6 +53,27 @@ func Request(ctx context.Context, req *http.Request, v any) error {
 	return nil
 }
 
+func RequestHead(ctx context.Context, req *http.Request, key string) (string, error) {
+	c, err := NewClient(ctx)
+	if err != nil {
+		return "", errors.Wrap(err, "error creating client")
+	}
+
+	r, err := c.Do(req)
+	if err != nil {
+		return "", errors.Wrap(err, "error executing request")
+	}
+	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		return "", errors.Wrapf(err, "error getting projects: %s", r.Status)
+	}
+
+	v := r.Header.Get(key)
+
+	return v, nil
+}
+
 func getCredentials(ctx context.Context) (*google.Credentials, error) {
 	credentials, err := google.FindDefaultCredentials(ctx, ScopeDefault)
 	if err != nil {
