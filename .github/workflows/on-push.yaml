@@ -10,8 +10,5 @@ on:
   
 jobs:
 
-  test:
-    uses: ./.github/workflows/test.yaml
-
   fuzz:
     uses: ./.github/workflows/fuzz.yaml

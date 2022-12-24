@@ -15,6 +15,13 @@ var (
 		Required: false,
 	}
 
+	outputPathFlag = &c.StringFlag{
+		Name:     "output",
+		Aliases:  []string{"o"},
+		Usage:    "Path where to save the output.",
+		Required: false,
+	}
+
 	cveFlag = &c.StringFlag{
 		Name:     "cve",
 		Aliases:  []string{"e"},
@@ -40,6 +47,7 @@ var (
 				Action:  runImagesCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
+					outputPathFlag,
 				},
 			},
 			{
@@ -49,6 +57,7 @@ var (
 				Action:  runVulnsCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
+					outputPathFlag,
 					cveFlag,
 				},
 			}, {
@@ -69,10 +78,13 @@ func printVersion(c *c.Context) {
 }
 
 func runImagesCmd(c *c.Context) error {
-	projectID := c.String(projectIDFlag.Name)
+	in := &vctl.SimpleQuery{
+		ProjectID:  c.String(projectIDFlag.Name),
+		OutputPath: c.String(outputPathFlag.Name),
+	}
 
 	printVersion(c)
-	if err := vctl.DiscoverImages(c.Context, projectID); err != nil {
+	if err := vctl.DiscoverImages(c.Context, in); err != nil {
 		return errors.Wrap(err, "Error discovering images.")
 	}
 
@@ -80,11 +92,13 @@ func runImagesCmd(c *c.Context) error {
 }
 
 func runVulnsCmd(c *c.Context) error {
-	projectID := c.String(projectIDFlag.Name)
-	cveID := c.String(cveFlag.Name)
+	in := &vctl.VulnsQuery{}
+	in.ProjectID = c.String(projectIDFlag.Name)
+	in.OutputPath = c.String(outputPathFlag.Name)
+	in.CVE = c.String(cveFlag.Name)
 
 	printVersion(c)
-	if err := vctl.DiscoverVulns(c.Context, projectID, cveID); err != nil {
+	if err := vctl.DiscoverVulns(c.Context, in); err != nil {
 		return errors.Wrap(err, "Error discovering vulnerabilities.")
 	}
 
