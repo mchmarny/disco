@@ -42,13 +42,6 @@ var (
 		Required: false,
 	}
 
-	digestFlag = &c.StringFlag{
-		Name:     "digest",
-		Aliases:  []string{"d"},
-		Usage:    "image digest",
-		Required: true,
-	}
-
 	runCmd = &c.Command{
 		Name:  "run",
 		Usage: "Cloud Run commands",
@@ -75,16 +68,6 @@ var (
 					outputPathFlag,
 					outputFormatFlag,
 					cveFlag,
-				},
-			}, {
-				Name:    "licenses",
-				Aliases: []string{"lic", "l"},
-				Usage:   "list licenses used in currently deployed image",
-				Action:  runLicenseCmd,
-				Flags: []c.Flag{
-					digestFlag,
-					outputPathFlag,
-					outputFormatFlag,
 				},
 			},
 		},
@@ -139,12 +122,5 @@ func runVulnsCmd(c *c.Context) error {
 		return errors.Wrap(err, "error excuting command")
 	}
 
-	return nil
-}
-
-func runLicenseCmd(c *c.Context) error {
-	digest := c.String(digestFlag.Name)
-	printVersion(c)
-	log.Debug().Msgf("digest: %s", digest)
 	return nil
 }

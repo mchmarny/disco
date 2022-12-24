@@ -32,19 +32,25 @@ type ImageInfo struct {
 	Folder   string `json:"registryFolder"`
 }
 
-func (i *ImageInfo) URL() string {
-	// https://gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6
+func (i *ImageInfo) withPrefix(v string) string {
+	// gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7
 	if i.IsGCR {
-		return fmt.Sprintf("https://%s/%s/%s@%s",
-			i.Registry, i.Project, i.Name, i.Digest)
+		return fmt.Sprintf("%s%s/%s/%s@%s", v, i.Registry, i.Project, i.Name, i.Digest)
 	}
 
-	// https://us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d
+	// us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc
 	if i.IsAR {
-		return fmt.Sprintf("https://%s/%s/%s/%s@%s",
-			i.Registry, i.Project, i.Folder, i.Name, i.Digest)
+		return fmt.Sprintf("%s%s/%s/%s/%s@%s", v, i.Registry, i.Project, i.Folder, i.Name, i.Digest)
 	}
 	return ""
+}
+
+func (i *ImageInfo) URI() string {
+	return i.withPrefix("")
+}
+
+func (i *ImageInfo) URL() string {
+	return i.withPrefix("https://")
 }
 
 // ManifestURL returns manifest URL for the image.

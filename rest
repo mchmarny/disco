@@ -61,13 +61,21 @@ curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
 
 # `noteProjectId="%s" AND noteId="%s"`
 
+# resourceUrl="https://us-docker.pkg.dev/cloudy-demos/workstations/temurin-codeoss@sha256:6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29" AND kind="PACKAGE"
+
+kind="PACKAGE" AND noteProjectId="cloudy-demos"
+
 export FILTER="resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3A0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6%22%20AND%20kind%3D%22VULNERABILITY%22"
 
 export FILTER="noteId%3D%22CVE-2017-11164%22"
 
+		kind="PACKAGE"
+		noteProjectId="cloudy-demos"
+		resourceUrl="projects/PROJECT_ID/locations/LOCATION/repositories/REPOSITORY/mavenArtifacts/PACKAGE_NAME:VERSION"
+
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=$FILTER" 
+    "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=noteProjectId%3D%22cloudy-demos%22" 
 
 
 

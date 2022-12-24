@@ -48,7 +48,7 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 
 	if in.OnlyDigest {
 		for _, img := range images {
-			os.Stdout.WriteString(img.Image.URL())
+			os.Stdout.WriteString(img.Image.URI())
 			os.Stdout.WriteString("\n")
 		}
 		return nil
