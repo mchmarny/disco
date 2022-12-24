@@ -8,7 +8,7 @@ before:
   - go mod tidy
 
 gomod:
-  proxy: true
+  proxy: false
 
 sboms:
 - artifacts: binary
