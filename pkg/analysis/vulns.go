@@ -20,6 +20,13 @@ const (
 
 	// https://cloud.google.com/container-analysis/docs/go-scanning-automatically
 	cveAPIFilter = `noteId="%s"`
+
+	/*
+		kind="PACKAGE"
+		noteProjectId="goog-analysis"
+		resourceUrl="projects/PROJECT_ID/locations/LOCATION/repositories/REPOSITORY/mavenArtifacts/PACKAGE_NAME:VERSION"
+	*/
+
 )
 
 type occurrenceList struct {

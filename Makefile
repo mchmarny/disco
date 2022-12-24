@@ -52,7 +52,7 @@ run-cve: ## Runs image vulnerability discovery command on the compiled version o
 .PHONY: run-vul
 
 tag: ## Creates release tag 
-	git tag -s -m "version bump to $(RELEASE_VERSION)" $(RELEASE_VERSION)
+	git tag -s -m "release $(RELEASE_VERSION)" $(RELEASE_VERSION)
 	git push origin $(RELEASE_VERSION)
 .PHONY: tag
 
