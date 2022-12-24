@@ -15,9 +15,9 @@ type SimpleQuery struct {
 }
 
 func writeOutput(path string, data any) error {
-	fmt.Println()
 	w := os.Stdout
 	if path != "" {
+		log.Info().Msgf("writing output to: '%s'", path)
 		f, err := os.Create(path)
 		if err != nil {
 			return errors.Wrapf(err, "error creating file: %s", path)
@@ -26,6 +26,7 @@ func writeOutput(path string, data any) error {
 		w = f
 	}
 
+	fmt.Println() // add a new line before
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		return errors.Wrap(err, "error encoding")
 	}
@@ -34,8 +35,8 @@ func writeOutput(path string, data any) error {
 
 func printProjectScope(projectID string) {
 	if projectID != "" {
-		log.Info().Msgf("Scanning project: '%s'.", projectID)
+		log.Info().Msgf("scanning project: '%s'", projectID)
 	} else {
-		log.Info().Msgf("Scanning all projects accessible to current user.")
+		log.Info().Msgf("scanning all projects accessible to current user")
 	}
 }

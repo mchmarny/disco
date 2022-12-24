@@ -47,6 +47,10 @@ run-vul: ## Runs image vulnerability discovery command on the compiled version o
 	debug=true bin/vctl run vul
 .PHONY: run-vul
 
+run-cve: ## Runs image vulnerability discovery command on the compiled version of CLI
+	debug=true bin/vctl run vul --cve CVE-2017-11164
+.PHONY: run-vul
+
 tag: ## Creates release tag 
 	git tag -s -m "version bump to $(RELEASE_VERSION)" $(RELEASE_VERSION)
 	git push origin $(RELEASE_VERSION)

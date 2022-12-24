@@ -59,50 +59,48 @@ func DiscoverImages(ctx context.Context, in *SimpleQuery) error {
 
 func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, error) {
 	if projectID != "" {
-		log.Debug().Msgf("discovering images for project: %s.", projectID)
+		log.Debug().Msgf("discovering images for project: %s", projectID)
 	}
 
 	projects, err := project.GetProjects(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "Error getting projects.")
+		return nil, errors.Wrap(err, "error getting projects")
 	}
 
 	list := make([]*RunningImage, 0)
 
 	for _, p := range projects {
-		log.Debug().Msgf("Quering project: %s (%s - %s).", p.ID, p.Number, p.State)
-
 		if !isQualifiedProject(ctx, p, projectID) {
 			continue
 		}
 
 		reg, err := region.GetRegions(ctx, p.Number)
 		if err != nil {
-			log.Error().Err(err).Msgf("Error getting regions for project: %s (#%s).", p.ID, p.Number)
+			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
 			continue
 		}
-		log.Info().Msgf("Found %d regions where Cloud Run is supported.", len(reg))
+		log.Info().Msgf("found %d regions where Cloud Run is supported", len(reg))
 
 		for _, r := range reg {
 			svcs, err := service.GetServices(ctx, p.Number, r.ID)
 			if err != nil {
-				log.Error().Err(err).Msgf("error getting services for project: %s in region %s.", p.Number, r.ID)
+				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
 				continue
 			}
 
-			log.Debug().Msgf("Found %d services in: %s/%s.", len(svcs), p.ID, r.ID)
+			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Info().Msgf("Processing service: %s (Project: %s, Region: %s).", s.Metadata.Name, p.ID, r.ID)
+				log.Info().Msgf("processing service: %s (Project: %s, Region: %s)", s.Metadata.Name, p.ID, r.ID)
 
 				for _, c := range s.Spec.Template.Spec.Containers {
 					f, err := registry.GetImageInfo(ctx, c.Image)
 					if err != nil {
-						log.Error().Err(err).Msgf("Error getting manifest for: %s.", c.Image)
+						log.Error().Err(err).Msgf("error getting manifest for: %s", c.Image)
 						continue
 					}
 
 					if f.Deployed != f.Digest {
-						log.Info().Msgf("Resolved %s to %s.", f.Deployed, f.Digest)
+						log.Info().Msgf("resolved %s to %s", f.Deployed, f.Digest)
 					}
 					list = append(list, &RunningImage{
 						Project: p,
@@ -119,24 +117,26 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 }
 
 func isQualifiedProject(ctx context.Context, p *project.Project, filterID string) bool {
+	log.Debug().Msgf("qualifying project: %s (%s - %s)", p.ID, p.Number, p.State)
+
 	if filterID != "" && p.ID != filterID {
-		log.Debug().Msgf("Skipping project: %s (filter: %s).", p.ID, filterID)
+		log.Debug().Msgf("skipping: %s (filter: %s)", p.ID, filterID)
 		return false
 	}
 
 	if p.State != project.ProjectStateActive {
-		log.Debug().Msgf("Skipping project: %s (inactive).", p.ID)
+		log.Debug().Msgf("skipping: %s (inactive)", p.ID)
 		return false
 	}
 
 	on, err := usage.IsAPIEnabled(ctx, p.Number, usage.CloudRunAPI)
 	if err != nil {
-		log.Error().Err(err).Msgf("Error checking if Cloud Run API is enabled for project: %s.", p.ID)
+		log.Error().Err(err).Msgf("error checking Cloud Run API: %s", p.ID)
 		return false
 	}
 
 	if !on {
-		log.Debug().Msgf("Skipping project: %s (API not enabled).", p.ID)
+		log.Debug().Msgf("skipping: %s (API not enabled)", p.ID)
 		return false
 	}
 

@@ -26,7 +26,7 @@ func main() {
 	initLogging(logLevel)
 	err := cli.Execute(name, version)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Fatal error.")
+		log.Error().Msg(err.Error())
 	}
 }
 

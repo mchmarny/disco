@@ -17,6 +17,9 @@ const (
 	occurrencesAPIBaseURL = "https://containeranalysis.googleapis.com/v1/projects/%s/occurrences?pageSize=500&filter="
 
 	occurrencesAPIFilter = `resourceUrl="%s" AND kind="VULNERABILITY"`
+
+	// https://cloud.google.com/container-analysis/docs/go-scanning-automatically
+	cveAPIFilter = `noteId="%s"`
 )
 
 type occurrenceList struct {
@@ -70,28 +73,47 @@ type Occurrence struct {
 	} `json:"vulnerability,omitempty"`
 }
 
+// GetCVEVulnerabilities returns all vulnerabilities for a given CVE.
+func GetCVEVulnerabilities(ctx context.Context, projectID, cveID string) ([]*Occurrence, error) {
+	return getVulnerabilities(ctx, projectID, "", cveID)
+}
+
+// GetImageVulnerabilities returns all vulnerabilities for a given image.
 func GetImageVulnerabilities(ctx context.Context, projectID, imageURL string) ([]*Occurrence, error) {
-	if imageURL == "" {
-		return nil, errors.New("imageURL is empty")
-	}
+	return getVulnerabilities(ctx, projectID, imageURL, "")
+}
+
+func getVulnerabilities(ctx context.Context, projectID, imageURL, cveID string) ([]*Occurrence, error) {
 	if projectID == "" {
 		return nil, errors.New("projectID is empty")
 	}
+	if imageURL == "" && cveID == "" {
+		return nil, errors.New("either CVE or image are required")
+	}
 
-	q := fmt.Sprintf(occurrencesAPIFilter, strings.TrimSpace(imageURL))
-	log.Debug().Msgf("Query: '%s'.", q)
-
-	u := fmt.Sprintf(occurrencesAPIBaseURL, projectID) + url.QueryEscape(q)
-	log.Debug().Msgf("Encoded URL: '%s'.", u)
+	u := fmt.Sprintf(occurrencesAPIBaseURL, projectID)
+	q := ""
+	if cveID != "" {
+		q = fmt.Sprintf(cveAPIFilter, strings.TrimSpace(cveID))
+	} else {
+		q = fmt.Sprintf(occurrencesAPIFilter, strings.TrimSpace(imageURL))
+	}
+	log.Debug().Msgf("query: '%s'", q)
+	u += url.QueryEscape(q)
+	log.Debug().Msgf("encoded URL: '%s'", u)
 
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Error creating image vulnerability request: %s", u)
+		return nil, errors.Wrapf(err, "error creating image vulnerability request: %s", u)
 	}
 
 	var list occurrenceList
 	if err := client.Request(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
+	}
+
+	if len(list.Occurrences) == 0 {
+		return make([]*Occurrence, 0), nil
 	}
 
 	return list.Occurrences, nil

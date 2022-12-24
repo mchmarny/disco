@@ -11,39 +11,39 @@ var (
 	projectIDFlag = &c.StringFlag{
 		Name:     "project",
 		Aliases:  []string{"p"},
-		Usage:    "ID of the project.",
+		Usage:    "project ID",
 		Required: false,
 	}
 
 	outputPathFlag = &c.StringFlag{
 		Name:     "output",
 		Aliases:  []string{"o"},
-		Usage:    "Path where to save the output.",
+		Usage:    "path where to save the output",
 		Required: false,
 	}
 
 	cveFlag = &c.StringFlag{
 		Name:     "cve",
 		Aliases:  []string{"e"},
-		Usage:    "ID of the exposure.",
+		Usage:    "exposure ID (CVE number)",
 		Required: false,
 	}
 
 	digestFlag = &c.StringFlag{
 		Name:     "digest",
 		Aliases:  []string{"d"},
-		Usage:    "Image digest.",
+		Usage:    "image digest",
 		Required: true,
 	}
 
 	runCmd = &c.Command{
 		Name:  "run",
-		Usage: "Cloud Run commands.",
+		Usage: "Cloud Run commands",
 		Subcommands: []*c.Command{
 			{
 				Name:    "images",
 				Aliases: []string{"img", "i"},
-				Usage:   "List container images used in Cloud Run.",
+				Usage:   "list deployed container images",
 				Action:  runImagesCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
@@ -53,7 +53,7 @@ var (
 			{
 				Name:    "vulnerabilities",
 				Aliases: []string{"vul", "v"},
-				Usage:   "Check if any of the currently deployed images have that specific CVE.",
+				Usage:   "check for exposures in deployed images (supports specific CVE filter)",
 				Action:  runVulnsCmd,
 				Flags: []c.Flag{
 					projectIDFlag,
@@ -63,7 +63,7 @@ var (
 			}, {
 				Name:    "licenses",
 				Aliases: []string{"lic", "l"},
-				Usage:   "List a unique list of licenses used in this image.",
+				Usage:   "list licenses used in currently deployed image",
 				Action:  runLicenseCmd,
 				Flags: []c.Flag{
 					digestFlag,
@@ -85,7 +85,7 @@ func runImagesCmd(c *c.Context) error {
 
 	printVersion(c)
 	if err := vctl.DiscoverImages(c.Context, in); err != nil {
-		return errors.Wrap(err, "Error discovering images.")
+		return errors.Wrap(err, "error discovering images")
 	}
 
 	return nil
@@ -98,8 +98,13 @@ func runVulnsCmd(c *c.Context) error {
 	in.CVE = c.String(cveFlag.Name)
 
 	printVersion(c)
+
+	if in.CVE != "" {
+		log.Info().Msg("Note: vulnerability scans currently limited to base OS only")
+	}
+
 	if err := vctl.DiscoverVulns(c.Context, in); err != nil {
-		return errors.Wrap(err, "Error discovering vulnerabilities.")
+		return errors.Wrap(err, "error excuting command")
 	}
 
 	return nil
@@ -108,6 +113,6 @@ func runVulnsCmd(c *c.Context) error {
 func runLicenseCmd(c *c.Context) error {
 	digest := c.String(digestFlag.Name)
 	printVersion(c)
-	log.Debug().Msgf("Digest: %s.", digest)
+	log.Debug().Msgf("digest: %s", digest)
 	return nil
 }
