@@ -2,6 +2,7 @@ package disco
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mchmarny/disco/pkg/analysis"
 	"github.com/mchmarny/disco/pkg/project"
@@ -14,10 +15,16 @@ type VulnsQuery struct {
 	CVE string
 }
 
+func (q *VulnsQuery) String() string {
+	return fmt.Sprintf("ProjectID:%s, CVE:%s, Output:%s, Format:%s",
+		q.ProjectID, q.CVE, q.OutputPath, q.OutputFmt)
+}
+
 func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
+	log.Debug().Msgf("Discovering vulnerabilities with: %s", in)
 	printProjectScope(in.ProjectID)
 
 	var list []*analysis.Occurrence

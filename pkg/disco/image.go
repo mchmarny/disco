@@ -2,6 +2,7 @@ package disco
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/mchmarny/disco/pkg/project"
@@ -32,11 +33,17 @@ type ImagesQuery struct {
 	OnlyDigest bool
 }
 
+func (q *ImagesQuery) String() string {
+	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, Digest:%t",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.OnlyDigest)
+}
+
 // DiscoverImages discovers all deployed images in the project.
 func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
+	log.Debug().Msgf("Discovering images with: %s", in)
 	printProjectScope(in.ProjectID)
 
 	images, err := getDeployedImages(ctx, in.ProjectID)

@@ -79,16 +79,10 @@ func printVersion(c *c.Context) {
 }
 
 func runImagesCmd(c *c.Context) error {
-	fmtStr := c.String(outputFormatFlag.Name)
-	outFmt, err := disco.ParseOutputFormat(fmtStr)
-	if err != nil {
-		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
-	}
-
 	in := &disco.ImagesQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
-	in.OutputFmt = outFmt
+	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.OnlyDigest = c.Bool(outputDigestOnlyFlag.Name)
 
 	printVersion(c)
@@ -100,17 +94,11 @@ func runImagesCmd(c *c.Context) error {
 }
 
 func runVulnsCmd(c *c.Context) error {
-	fmtStr := c.String(outputFormatFlag.Name)
-	outFmt, err := disco.ParseOutputFormat(fmtStr)
-	if err != nil {
-		return errors.Wrapf(err, "error parsing output format: %s", fmtStr)
-	}
-
 	in := &disco.VulnsQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
-	in.OutputFmt = outFmt
+	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 
 	printVersion(c)
 

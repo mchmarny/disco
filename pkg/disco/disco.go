@@ -24,29 +24,50 @@ const (
 
 type OutputFormat int64
 
+func (o OutputFormat) String() string {
+	switch o {
+	case JSONFormat:
+		return "json"
+	case YAMLFormat:
+		return "yaml"
+	case RawFormat:
+		return "raw"
+	default:
+		return "unknown"
+	}
+}
+
 type SimpleQuery struct {
 	ProjectID  string
 	OutputPath string
 	OutputFmt  OutputFormat
 }
 
+func (q *SimpleQuery) String() string {
+	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s",
+		q.ProjectID, q.OutputPath, q.OutputFmt)
+}
+
 // ParseOutputFormat parses output format.
-func ParseOutputFormat(format string) (OutputFormat, error) {
+func ParseOutputFormatOrDefault(format string) OutputFormat {
 	if format == "" {
-		return DefaultOutputFormat, nil
+		return DefaultOutputFormat
 	}
 
 	switch format {
 	case "json":
-		return JSONFormat, nil
+		return JSONFormat
 	case "yaml":
-		return YAMLFormat, nil
+		return YAMLFormat
 	case "raw":
-		return RawFormat, nil
+		return RawFormat
 	default:
-		return DefaultOutputFormat, errors.Errorf("unsupported output format: %s", format)
+		log.Error().Msgf("unsupported output format: %s", format)
+		return DefaultOutputFormat
 	}
 }
+
+const yamlIndent = 2
 
 func writeOutput(path string, format OutputFormat, data any) error {
 	var w io.Writer
@@ -73,7 +94,7 @@ func writeOutput(path string, format OutputFormat, data any) error {
 		}
 	case YAMLFormat:
 		ye := yaml.NewEncoder(w)
-		ye.SetIndent(2)
+		ye.SetIndent(yamlIndent)
 		if err := ye.Encode(data); err != nil {
 			return errors.Wrap(err, "error encoding")
 		}
