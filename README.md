@@ -7,7 +7,7 @@
 
 # disco 
 
-Utility for containerize workload discovery on GCP.
+Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP.
 
 > Note: this is a personal project not an official Google product.
 
