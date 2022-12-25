@@ -4,6 +4,7 @@
 # Test binaries
 *.test
 tmp
+test.json
 
 # Coverage
 *.out

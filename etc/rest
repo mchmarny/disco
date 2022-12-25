@@ -94,3 +94,8 @@ curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
 curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/blobs/sha256:d7c0d989fcda512c38cf95c6cb674e5da5f6c08f80589be2938a53c51c230565"
+
+
+curl -X POST -d \
+    '{"version": "2.4.1", "package": {"name": "jinja2", "ecosystem": "PyPI"}}' \
+    "https://api.osv.dev/v1/query"
