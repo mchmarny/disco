@@ -9,7 +9,7 @@
 
 Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP.
 
-> Note: this is a personal project not an official Google product.
+> Note: this is a personal project, not an official Google product.
 
 Features:
 
