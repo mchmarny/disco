@@ -108,9 +108,7 @@ disco run images
 
 All the generic options listed above, plus: 
 
-* `--digest`  - outputs only image digests (default: false)
-
-> The `--digest` flag is helpful when you want to pipe the resulting list to another program.
+* `--digest`  - outputs only image digests (default: false). Helpful when you want to pipe the resulting list to another program.
 
 The resulting JSON formatted report looks something like this (abbreviated):
 
@@ -168,9 +166,7 @@ disco run licenses
 All the generic options listed above, plus: 
 
 * `--cve` - filters report only to a specific CVE
-* `--ca`  - invokes Container Analysis API in stead of the local scanner (default: false)
-
-> The `--cve` is a quick way to finding out if anything currently running is exposed to new CVE.                       
+* `--ca`  - invokes Container Analysis API in stead of the local scanner (default: false). Quick way to finding out if anything currently running is exposed to new CVE.                       
 
 The resulting JSON formatted report looks something like this (abbreviated):
 
