@@ -1,5 +1,5 @@
-[![tests](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml/badge.svg?branch=main&label=test)](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml)
-[![build](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml/badge.svg?branch=main&label=build)](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml)
+[![](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml/badge.svg?branch=main)](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml)
+[![](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml/badge.svg?branch=main)](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml)
 [![release](https://img.shields.io/github/release/mchmarny/disco.svg?label=release)](https://github.com/mchmarny/disco/releases/latest)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/mchmarny/disco.svg?label=go)](https://github.com/mchmarny/disco)
 [![Go Report](https://goreportcard.com/badge/github.com/mchmarny/disco)](https://goreportcard.com/report/github.com/mchmarny/disco)
