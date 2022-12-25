@@ -1,21 +1,16 @@
 # disco 
 
-Utility for containerize workload discovery.
-
-Features:
-
-* Discover currently deployed container images across multiple projects and regions
-* Resolve deployed images to their actual digests
-* Report on operating system and package-level vulnerabilities or licenses in these images
+Utility for containerize workload discovery on GCP.
 
 > Note: this is a personal project not an official Google product.
 
-* [Why disco](#why-disco)
-* [Install](#install)
-* [Supported Runtimes](#supported-runtimes)
-  * [Cloud Run](#cloud-run)
-  * [GKE](#gke)
+Features:
 
+* Discover currently deployed container images
+  * multiple project and region report with filters
+  * deployed image to digest resolution
+* Report on vulnerabilities or licenses in these images
+  * supports operating system and package-level scans
 
 ## Why disco
 
@@ -23,9 +18,9 @@ It's easy to end up with a large number of services across many GCP projects and
 
 `disco` provides an easy way of `disco`vering which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
 
-## Install 
+## Installation 
 
-If you have Go 1.17+, you can install `disco` directly using this command:
+If you have Go 1.17 or newer, you can install latest `disco` using:
 
 ```shell
 go install github.com/mchmarny/disco/cmd/disco@latest
@@ -37,19 +32,19 @@ You can also download the [latest release](https://github.com/mchmarny/disco/rel
 
 ### Prerequisites 
 
-Since you are interested in `disco`, you probably already have GCP account and project. Here are some of the other prerequisites:
+Since you are interested in `disco`, you probably already have GCP account and project. If not, you learn about creating and managing projects [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects). The other prerequisites include:
 
 #### gcloud
 
-To invoke GCP APIs, `disco` uses `gcloud`. You can find instructions on how to install it [here](https://cloud.google.com/sdk/docs/install). Once installed, you will need to provisioned Application Default Credentials (ADC):
+`disco` only uses `gcloud` to provision Application Default Credentials (ADC). You can find instructions on how to install `gcloud` [here](https://cloud.google.com/sdk/docs/install). To provision ADC run and follow the prompts:
   
 ```shell
 gcloud auth application-default login
 ```
 
-#### Service APIs
+#### APIs
 
-`disco` also depends on a few GCP service APIs to be enabled on each project you want to access:
+`disco` also depends on a few GCP service APIs. To enable these, run:
 
 ```shell
 gcloud services enable \
@@ -62,43 +57,51 @@ gcloud services enable \
 
 #### Roles
 
-Finally, make sure you have the required Identity and Access Management (IAM) roles: 
+Finally, `disco` is implicitly scoped to only the resources the authenticated user can see. To ensure you can discover resources across multiple projects, make sure you have the following Identity and Access Management (IAM) roles in each project: 
+
+> Learn how to grant multiple IAM roles to a user [here](https://cloud.google.com/iam/docs/granting-changing-revoking-access#multiple-roles)
 
 ```shell
 roles/artifactregistry.reader
-roles/containeranalysis.occurrences.viewer
-roles/containeranalysis.notes.viewer
 roles/run.viewer
 ```
 
-You can check if you already have these roles for a given project like this:
+Additionally, if you plan to use the Container Analysis option, ensure you also have these roles: 
+
+```shell
+roles/containeranalysis.occurrences.viewer
+roles/containeranalysis.notes.viewer
+```
+
+If you experience any issues, you can see the project level policy using following command:
 
 ```shell
 gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 ```
 
-> Learn how to grant multiple IAM roles to a user [here](https://cloud.google.com/iam/docs/granting-changing-revoking-access#multiple-roles)
-
-
-
 ## Supported Runtimes
 
-The general usage looks like this:
+The general `disco` usage follows this format:
 
 ```shell
 disco <runtime> <command>
 ```
 
-Options:
+> You can use the `--help` flag on any level to get more information about the runtime, commands, of `disco` itself.
+
+The command options available for all the runtimes include:
 
 * `--project` - runs only on specific project (project ID)
-* `--output`  - saves report to file at this path (stdout by default) 
 * `--format`  - specifies report format: `json`, `yaml`, `raw` (`json` by default)
-* `--help`    - shows help 
-
-> Currently, `disco` implements only Cloud Run as target runtime.
+* `--output`  - saves report to file at this path (stdout by default) 
 
 ### Cloud Run 
+
+To see all of the commands available for `run`:
+
+```shell
+disco run --help
+```
 
 #### Discover container images currently deployed in Cloud Run
 
@@ -106,11 +109,11 @@ Options:
 disco run images
 ```
 
-All the generic options listed above, plus: 
+The `images` command supports all of the generic options listed above, plus: 
 
-* `--digest`  - outputs only image digests (default: false). Helpful when you want to pipe the resulting list to another program.
+* `--digest` - outputs only image digests (default: false). This is helpful when you want to pipe the resulting image digests to another program.
 
-The resulting JSON formatted report looks something like this (abbreviated):
+The resulting report in JSON format will look something like this (abbreviated):
 
 ```json
 [
@@ -130,7 +133,7 @@ The resulting JSON formatted report looks something like this (abbreviated):
 disco run licenses
 ```
 
-The resulting JSON formatted report looks something like this (abbreviated):
+The resulting report in JSON format will look something like this (abbreviated):
 
 ```json
 [
@@ -163,12 +166,12 @@ The resulting JSON formatted report looks something like this (abbreviated):
 disco run licenses
 ```
 
-All the generic options listed above, plus: 
+The `licenses` command supports all of the generic options listed above, plus: 
 
-* `--cve` - filters report only to a specific CVE
-* `--ca`  - invokes Container Analysis API in stead of the local scanner (default: false). Quick way to finding out if anything currently running is exposed to new CVE.                       
+* `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to new CVE.
+* `--ca`  - invokes Container Analysis API instead of the local scanner (default: false).     
 
-The resulting JSON formatted report looks something like this (abbreviated):
+The resulting report in JSON format will look something like this (abbreviated):
 
 ```json
 [
