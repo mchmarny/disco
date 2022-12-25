@@ -60,3 +60,4 @@ changelog:
     - "^test:"
     - readme
     - typo
+    - "version bump"
