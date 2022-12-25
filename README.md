@@ -1,6 +1,6 @@
 # disco 
 
-Helper utility for containerize workload discovery.
+Utility for containerize workload discovery.
 
 Features:
 
@@ -10,25 +10,36 @@ Features:
 
 > Note: this is a personal project not an official Google product.
 
+* [Why disco](#why-disco)
+* [Install](#install)
 * [Supported Runtimes](#supported-runtimes)
   * [Cloud Run](#cloud-run)
   * [GKE](#gke)
-* [Install](#install)
-* [Usage](#usage)
 
-## Supported Runtimes
 
-### Cloud Run 
+## Why disco
 
-Google Cloud Run is a great runtime for many use-cases. It's easy to end up with a large number of services across many GCP projects and regions. Google Container Analysis service can scan your Artifact Registry images for vulnerabilities, but currently it only covers base OS, and it's not always easy to know which of these images are actually currently deployed. Cloud Run also supports multiple revisions, each potentially using different version of an image, or even different image all together.
+It's easy to end up with a large number of services across many GCP projects and regions. Google Container Analysis service can scan your Artifact Registry images for vulnerabilities, but currently it only covers base OS, and it's not always easy to know which of these images are actually running in Cloud Run. Cloud Run also supports multiple revisions, each potentially using different version of an image, or even different image all together.
 
-`disco` provides an easy way of `disco`vere which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
+`disco` provides an easy way of `disco`vering which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
 
-#### Prerequisites 
+## Install 
+
+If you have Go 1.17+, you can install `disco` directly using this command:
+
+```shell
+go install github.com/mchmarny/disco/cmd/disco@latest
+```
+
+You can also download the [latest release](https://github.com/mchmarny/disco/releases/latest) version of `disco` for your operating system/architecture from [here](https://github.com/mchmarny/disco/releases/latest). Put the binary somewhere in your $PATH, and make sure it has that executable bit.
+
+> The official `disco` releases include SBOMs
+
+### Prerequisites 
 
 Since you are interested in `disco`, you probably already have GCP account and project. Here are some of the other prerequisites:
 
-###### gcloud
+#### gcloud
 
 To invoke GCP APIs, `disco` uses `gcloud`. You can find instructions on how to install it [here](https://cloud.google.com/sdk/docs/install). Once installed, you will need to provisioned Application Default Credentials (ADC):
   
@@ -36,7 +47,7 @@ To invoke GCP APIs, `disco` uses `gcloud`. You can find instructions on how to i
 gcloud auth application-default login
 ```
 
-##### Service APIs
+#### Service APIs
 
 `disco` also depends on a few GCP service APIs to be enabled on each project you want to access:
 
@@ -49,7 +60,7 @@ gcloud services enable \
   run.googleapis.com 
 ```
 
-##### Roles
+#### Roles
 
 Finally, make sure you have the required Identity and Access Management (IAM) roles: 
 
@@ -68,23 +79,9 @@ gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 
 > Learn how to grant multiple IAM roles to a user [here](https://cloud.google.com/iam/docs/granting-changing-revoking-access#multiple-roles)
 
-### GKE
 
-> Not yet implemented.
 
-## Install 
-
-If you have Go 1.17+, you can install `disco` directly using this command:
-
-```shell
-go install github.com/mchmarny/disco/cmd/disco@latest
-```
-
-You can also download the [latest release](https://github.com/mchmarny/disco/releases/latest) version of `disco` for your operating system/architecture from [here](https://github.com/mchmarny/disco/releases/latest). Put the binary somewhere in your $PATH, and make sure it has that executable bit.
-
-> The official `disco` releases include SBOMs
-
-## Usage
+## Supported Runtimes
 
 The general usage looks like this:
 
@@ -198,6 +195,11 @@ The resulting JSON formatted report looks something like this (abbreviated):
   ...
 ]
 ```
+
+### GKE
+
+> Not yet implemented.
+
 
 ## Disclaimer
 
