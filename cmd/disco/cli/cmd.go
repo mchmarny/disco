@@ -9,12 +9,16 @@ import (
 	c "github.com/urfave/cli/v2"
 )
 
-func Execute(name, version string) error {
+const (
+	name = "disco"
+)
+
+func Execute(version, commit string) error {
 	app := &c.App{
 		EnableBashCompletion: true,
 		Suggest:              true,
 		Name:                 name,
-		Version:              fmt.Sprintf("%s (%s)", name, version),
+		Version:              fmt.Sprintf("%s (commit: %s)", version, commit),
 		Usage:                `Discover container images, vulnerabilities, and licenses in currently deployed across your runtimes`,
 		Compiled:             time.Now(),
 		Commands: []*c.Command{

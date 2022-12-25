@@ -72,9 +72,13 @@ gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 
 ## Install 
 
-Download the [latest release](https://github.com/mchmarny/disco/releases/latest) version of `disco` for your operating system/architecture from [here](https://github.com/mchmarny/disco/releases/latest). Put the binary somewhere in your $PATH. Make sure it has executable bit.
+If you have Go 1.17+, you can install `disco` directly using this command:
 
-> Homebrew and install script for other platforms are coming. 
+```shell
+go install github.com/mchmarny/disco/cmd/disco@latest
+```
+
+You can also download the [latest release](https://github.com/mchmarny/disco/releases/latest) version of `disco` for your operating system/architecture from [here](https://github.com/mchmarny/disco/releases/latest). Put the binary somewhere in your $PATH, and make sure it has that executable bit.
 
 ## Usage
 

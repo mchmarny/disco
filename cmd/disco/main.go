@@ -9,12 +9,12 @@ import (
 )
 
 const (
-	name           = "disco"
 	logLevelEnvVar = "debug"
 )
 
 var (
 	version = "v0.0.1-default"
+	commit  = "none"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 		logLevel = zerolog.DebugLevel
 	}
 	initLogging(logLevel)
-	err := cli.Execute(name, version)
+	err := cli.Execute(version, commit)
 	if err != nil {
 		log.Error().Msg(err.Error())
 	}
