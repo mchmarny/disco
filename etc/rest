@@ -39,6 +39,13 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
     "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator" | \
     jq -r '.spec.template.spec.containers[0].image'
 
+
+# get the digest from manifest
+curl -i -H HEAD -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3"
+
+    
 # artifact registry get digest
 curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
@@ -57,82 +64,33 @@ curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
      jq -r '.config.digest'
 
 
-# resourceUrl="https://us-docker.pkg.dev/cloudy-demos/workstations/temurin-codeoss@sha256:6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29" AND kind="VULNERABILITY"
+# kind="PACKAGE" AND noteProjectId="cloudy-demos"
 
-# `noteProjectId="%s" AND noteId="%s"`
-
-# resourceUrl="https://us-docker.pkg.dev/cloudy-demos/workstations/temurin-codeoss@sha256:6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29" AND kind="PACKAGE"
-
-kind="PACKAGE" AND noteProjectId="cloudy-demos"
-
-export FILTER="resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3A0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6%22%20AND%20kind%3D%22VULNERABILITY%22"
+# export FILTER="resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3A0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6%22%20AND%20kind%3D%22VULNERABILITY%22"
 
 export FILTER="noteId%3D%22CVE-2017-11164%22"
 
-		kind="PACKAGE"
-		noteProjectId="cloudy-demos"
-		resourceUrl="projects/PROJECT_ID/locations/LOCATION/repositories/REPOSITORY/mavenArtifacts/PACKAGE_NAME:VERSION"
+# kind="PACKAGE"
+# noteProjectId="cloudy-demos"
+# resourceUrl="projects/PROJECT_ID/locations/LOCATION/repositories/REPOSITORY/mavenArtifacts/PACKAGE_NAME:VERSION"
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=noteProjectId%3D%22cloudy-demos%22" 
 
-
-
-
-# for size 
-# jq -r '.occurrences | length'
-
-# resourceUrl="https://gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6" AND kind="VULNERABILITY"
-
-# noteProjectId="cloudy-demos" AND noteId="CVE-2017-11164"
-# noteId="CVE-2017-11164"
-
-
-https://gcr.io/cloudy-demos/hello-broken@sha256:e64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689
-
-gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6
-
-
-# resourceUrl="https://us-docker.pkg.dev/cloudy-demos/workstations/temurin-codeoss@sha256:6bb0db14e9001fb9ef0bfe113d946ea6701432d2a7895a6676eb444f8ca88e29" AND kind="VULNERABILITY"
-
-
 # query 
-resourceUrl="https://gcr.io/cloudy-demos/hello-broken@sha256:e64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689" kind="VULNERABILITY"
-
-# encoded in UI 
-resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3Ae64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689%22%20AND%20kind%3D%22VULNERABILITY%22
-resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3Ae64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689%22+AND+kind%3D%22VULNERABILITY%22
-# encoded in code
-
-
+# resourceUrl="https://gcr.io/cloudy-demos/hello-broken@sha256:e64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689" kind="VULNERABILITY"
 
 curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/tags/list"
 
 
-us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d
-
-
 # debug double query for digest 
-
 curl -Ss -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3" | jq -r '.config.digest'
 
-
-
 curl -s -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/blobs/sha256:d7c0d989fcda512c38cf95c6cb674e5da5f6c08f80589be2938a53c51c230565"
-
-     
-     
-     
-Accept: application/vnd.docker.distribution.manifest.v2+json
-
-
-curl -i -H HEAD -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
-    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3"
