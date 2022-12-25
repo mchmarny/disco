@@ -22,9 +22,9 @@ Features:
 
 ### Cloud Run 
 
-Google Cloud Run is a great runtime for many use-cases. It's also easy to use, so its easy to end up with a large number of services across many GCP projects and regions. Google Container Analysis service can also scan your Artifact Registry images for vulnerabilities, but it's not always easy to know which of these images are actually deployed. Cloud Run also supports multiple revisions, each potentially using different version of an image, or even different image all together. 
+Google Cloud Run is a great runtime for many use-cases. It's easy to end up with a large number of services across many GCP projects and regions. Google Container Analysis service can scan your Artifact Registry images for vulnerabilities, but currently it only covers base OS, and it's not always easy to know which of these images are actually currently deployed. Cloud Run also supports multiple revisions, each potentially using different version of an image, or even different image all together.
 
-`disco` provides an easy way of `disco`vere which of these container images are currently used in Cloud Run, and extract their digest (even if they Cloud Run revision is using a tag (e.g. `v1.2.3`), or misunderstood `latest`.
+`disco` provides an easy way of `disco`vere which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
 
 #### Prerequisites 
 
@@ -53,7 +53,7 @@ gcloud services enable \
 
 ##### Roles
 
-Finally, in order to access the required GCP APIs, `disco` will need  
+Finally, make sure you have the required Identity and Access Management (IAM) roles: 
 
 ```shell
 roles/artifactregistry.reader
@@ -61,6 +61,14 @@ roles/containeranalysis.occurrences.viewer
 roles/containeranalysis.notes.viewer
 roles/run.viewer
 ```
+
+You can check if you already have these roles for a given project like this:
+
+```shell
+gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
+```
+
+> Learn how to grant multiple IAM roles to a user [here](https://cloud.google.com/iam/docs/granting-changing-revoking-access#multiple-roles)
 
 ## Install 
 
