@@ -39,17 +39,29 @@ release: tidy ## Builds CLI binary
 	mv dist/disco-arm64-darwin ./bin/disco
 .PHONY: release
 
-run-img: ## Runs run image discovery command on the compiled version of CLI
-	debug=true bin/disco run img
-.PHONY: run-img
+img-run: ## Runs run image discovery command on the compiled version of CLI
+	debug=true bin/disco run img -o test.json
+.PHONY: img-run
 
-run-vul: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul
-.PHONY: run-vul
+vul-run: ## Runs image vulnerability discovery command on the compiled version of CLI
+	debug=true bin/disco run vul -o test.json
+.PHONY: vul-run
 
-run-cve: ## Runs image vulnerability discovery command on the compiled version of CLI
+vul-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
+	debug=true bin/disco run vul --local -o test.json
+.PHONY: vul-run
+
+cve-run: ## Runs image vulnerability discovery command on the compiled version of CLI
 	debug=true bin/disco run vul --cve CVE-2017-11164
-.PHONY: run-vul
+.PHONY: cve-run
+
+cve-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
+	debug=true bin/disco run vul --local --cve CVE-2017-11164
+.PHONY: cve-run
+
+lic-run: ## Runs run license discovery command on the compiled version of CLI
+	debug=true bin/disco run lic -o test.json
+.PHONY: lic-run
 
 tag: ## Creates release tag 
 	git tag -s -m "release $(RELEASE_VERSION)" $(RELEASE_VERSION)

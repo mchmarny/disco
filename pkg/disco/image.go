@@ -34,7 +34,7 @@ type ImagesQuery struct {
 }
 
 func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, Digest:%t",
+	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, OnlyDigest:%t",
 		q.ProjectID, q.OutputPath, q.OutputFmt, q.OnlyDigest)
 }
 

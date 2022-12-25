@@ -6,24 +6,31 @@ import (
 
 	"github.com/mchmarny/disco/pkg/analysis"
 	"github.com/mchmarny/disco/pkg/project"
+	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
 type VulnsQuery struct {
 	SimpleQuery
-	CVE string
+	CVE   string
+	CAAPI bool
 }
 
 func (q *VulnsQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, CVE:%s, Output:%s, Format:%s",
-		q.ProjectID, q.CVE, q.OutputPath, q.OutputFmt)
+	return fmt.Sprintf("ProjectID:%s, CVE:%s, Output:%s, Format:%s, CA-API:%t",
+		q.ProjectID, q.CVE, q.OutputPath, q.OutputFmt, q.CAAPI)
 }
 
 func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
+
+	if !in.CAAPI {
+		return DiscoverVulnsLocally(ctx, in)
+	}
+
 	log.Debug().Msgf("Discovering vulnerabilities with: %s", in)
 	printProjectScope(in.ProjectID)
 
@@ -134,4 +141,19 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occu
 	}
 
 	return list, nil
+}
+
+func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
+	vulnFilter := func(v string) bool {
+		if in.CVE == "" {
+			return true
+		}
+		return v == in.CVE
+	}
+
+	if err := scan(ctx, scanner.VulnerabilityScanner, &in.SimpleQuery, vulnFilter); err != nil {
+		return errors.Wrap(err, "error scanning for vulnerabilities")
+	}
+
+	return nil
 }
