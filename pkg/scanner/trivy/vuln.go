@@ -7,6 +7,7 @@ import (
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type vulnerabilityReport struct {
@@ -24,10 +25,12 @@ type vulnerabilityReport struct {
 	} `json:"Results"` //nolint:tagliatelle
 }
 
-func ParseVulnerabilities(image, path string, filters ...types.ItemFilter) (*types.VulnerabilityReport, error) {
+func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.VulnerabilityReport, error) {
 	if path == "" {
 		return nil, fmt.Errorf("path is empty")
 	}
+
+	log.Debug().Msgf("Parsing vulnerabilities from %s using filter: %v", path, filter)
 
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -48,15 +51,13 @@ func ParseVulnerabilities(image, path string, filters ...types.ItemFilter) (*typ
 				continue
 			}
 			// filter
-			if filters == nil {
-				for _, f := range filters {
-					if f(v.ID) {
-						continue
-					}
-				}
+			if filter(v.ID) {
+				continue
 			}
-			// add only unique licenses
-			if _, ok := m[types.ToHash(v.ID, v.Package, v.PackageVersion)]; ok {
+
+			// add only unique CVEs
+			vHash := types.ToHash(v.ID, v.Package, v.PackageVersion)
+			if _, ok := m[vHash]; ok {
 				continue
 			}
 			list = append(list, &types.Vulnerability{
@@ -69,6 +70,7 @@ func ParseVulnerabilities(image, path string, filters ...types.ItemFilter) (*typ
 				Severity:       v.Severity,
 				Updated:        v.Updated,
 			})
+			m[vHash] = true
 		}
 	}
 

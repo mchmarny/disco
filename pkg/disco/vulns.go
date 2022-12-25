@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/mchmarny/disco/pkg/analysis"
 	"github.com/mchmarny/disco/pkg/project"
@@ -26,13 +27,12 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
+	log.Debug().Msgf("Discovering vulnerabilities with: %s", in)
+	printProjectScope(in.ProjectID)
 
 	if !in.CAAPI {
 		return DiscoverVulnsLocally(ctx, in)
 	}
-
-	log.Debug().Msgf("Discovering vulnerabilities with: %s", in)
-	printProjectScope(in.ProjectID)
 
 	var list []*analysis.Occurrence
 	var err error
@@ -146,9 +146,11 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occu
 func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
 	vulnFilter := func(v string) bool {
 		if in.CVE == "" {
-			return true
+			return false
 		}
-		return v == in.CVE
+		match := strings.EqualFold(in.CVE, v)
+		log.Debug().Msgf("CVE filter (want: %s, got: %s, filter our: %t", in.CVE, v, !match)
+		return !match
 	}
 
 	if err := scan(ctx, scanner.VulnerabilityScanner, &in.SimpleQuery, vulnFilter); err != nil {

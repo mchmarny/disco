@@ -7,6 +7,7 @@ import (
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type licenseReport struct {
@@ -18,10 +19,12 @@ type licenseReport struct {
 	} `json:"results"`
 }
 
-func ParseLicenses(image, path string, filters ...types.ItemFilter) (*types.LicenseReport, error) {
+func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseReport, error) {
 	if path == "" {
 		return nil, fmt.Errorf("path is empty")
 	}
+
+	log.Debug().Msgf("Parsing licenses from %s using filter %v", path, filter)
 
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -42,21 +45,20 @@ func ParseLicenses(image, path string, filters ...types.ItemFilter) (*types.Lice
 				continue
 			}
 			// filter
-			if filters == nil {
-				for _, f := range filters {
-					if f(l.Name) {
-						continue
-					}
-				}
+			if filter(l.Name) {
+				continue
 			}
+
 			// add only unique licenses
-			if _, ok := m[types.HashStr(l)]; ok {
+			lHash := types.HashStr(l)
+			if _, ok := m[lHash]; ok {
 				continue
 			}
 			list = append(list, &types.License{
 				Name:   l.Name,
 				Source: l.PkgName,
 			})
+			m[lHash] = true
 		}
 	}
 

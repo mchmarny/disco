@@ -32,10 +32,13 @@ func main() {
 
 func initLogging(level zerolog.Level) {
 	zerolog.SetGlobalLevel(level)
-	log.Logger = log.Output(zerolog.ConsoleWriter{
+
+	out := zerolog.ConsoleWriter{
 		Out: os.Stderr,
 		PartsExclude: []string{
 			zerolog.TimestampFieldName,
 		},
-	})
+	}
+
+	log.Logger = zerolog.New(out)
 }

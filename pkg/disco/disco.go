@@ -119,12 +119,10 @@ func printProjectScope(projectID string) {
 	}
 }
 
-func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filters ...types.ItemFilter) error {
+func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter types.ItemFilter) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
-	log.Debug().Msgf("Discovering images with: %s", in)
-	printProjectScope(in.ProjectID)
 
 	images, err := getDeployedImages(ctx, in.ProjectID)
 	if err != nil {
@@ -148,19 +146,23 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 
 		switch scan {
 		case scanner.LicenseScanner:
-			report, err := scanner.GetLicenses(img.Image.URI(), p, filters...)
+			report, err := scanner.GetLicenses(img.Image.URI(), p, filter)
 			if err != nil {
 				return errors.Wrapf(err, "error getting licenses for %s", img.Image.Name)
 			}
 			log.Info().Msgf("found %d licenses in %s", len(report.Licenses), img.Image.Name)
-			list = append(list, report)
+			if len(report.Licenses) > 0 {
+				list = append(list, report)
+			}
 		case scanner.VulnerabilityScanner:
-			report, err := scanner.GetVulnerabilities(img.Image.URI(), p, filters...)
+			report, err := scanner.GetVulnerabilities(img.Image.URI(), p, filter)
 			if err != nil {
-				return errors.Wrapf(err, "error getting licenses for %s", img.Image.Name)
+				return errors.Wrapf(err, "error getting vulnerabilities for %s", img.Image.Name)
 			}
 			log.Info().Msgf("found %d vulnerabilities in %s", len(report.Vulnerabilities), img.Image.Name)
-			list = append(list, report)
+			if len(report.Vulnerabilities) > 0 {
+				list = append(list, report)
+			}
 		default:
 			return errors.Errorf("unsupported scanner: %s", scan)
 		}
