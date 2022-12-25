@@ -3,7 +3,7 @@
 [![Release](https://img.shields.io/github/release/mchmarny/disco.svg)](https://github.com/mchmarny/disco/releases/latest)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/mchmarny/disco.svg)](https://github.com/mchmarny/disco)
 [![Go Report](https://goreportcard.com/badge/github.com/mchmarny/disco)](https://goreportcard.com/report/github.com/mchmarny/disco)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/mchmarny/disco/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg?label=license)](https://github.com/mchmarny/disco/blob/main/LICENSE)
 
 # disco 
 
