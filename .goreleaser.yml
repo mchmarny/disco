@@ -47,7 +47,7 @@ archives:
 - format: binary
   name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
   replacements:
-    darwin: macOS
+    darwin: mac
     386: x86
     amd64: x86_64
 
@@ -72,10 +72,6 @@ brews:
   description: "Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP."
   folder: Formula
   license: "Apache-2.0"
-  test: |
-    system "#{bin}/disco", "version"
-  install: |
-    bin.install "disco" => "disco"
 
 universal_binaries:
 - replace: true
