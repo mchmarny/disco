@@ -25,7 +25,7 @@ It's easy to end up with a large number of services across many GCP projects and
 
 `disco` provides an easy way of `disco`vering which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
 
-## Get `disco`
+## Install
 
 `disco` CLI is available via the most common distribution methods. The full list of installation options is available on the [installation](INSTALL.md) page.
 
@@ -51,7 +51,13 @@ To see all of the commands available for `run`:
 disco run --help
 ```
 
-#### Discover container images currently deployed in Cloud Run
+* [Images](#images)
+* [Licenses](#licenses)
+* [Vulnerabilities](#vulnerabilities)
+
+#### Images
+
+To discover container images currently deployed in Cloud Run:
 
 ```shell
 disco run images
@@ -75,7 +81,9 @@ The resulting report in JSON format will look something like this (abbreviated):
 ]
 ```
 
-#### Discover licenses used in container images currently deployed in Cloud Run
+#### Licenses
+
+To discover licenses used in container images currently deployed in Cloud Run.
 
 ```shell
 disco run licenses
@@ -107,7 +115,9 @@ The resulting report in JSON format will look something like this (abbreviated):
 ]
 ```
 
-#### Discover potential vulnerabilities in container images currently deployed in Cloud Run
+#### Vulnerabilities
+
+To discover potential vulnerabilities in container images currently deployed in Cloud Run.
 
 ```shell
 disco run licenses
