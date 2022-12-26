@@ -10,7 +10,7 @@ You can install `disco` using one of the following ways:
 * [Go](#go)
 * [Binary](#binary)
 
-> See the [release section](https://github.com/mchmarny/disco/releases/latest) for `disco` checksums and SBOMs.
+See the [release section](https://github.com/mchmarny/disco/releases/latest) for `disco` checksums and SBOMs.
 
 ## Homebrew
 
@@ -98,6 +98,14 @@ If you experience any issues, you can see the project level policy using followi
 ```shell
 gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 ```
+
+### Vulnerability Scanners 
+
+`disco` shells out the vulnerability scans to one of the supported OSS scanners: 
+
+* [trivy (disco default)](https://aquasecurity.github.io/trivy/v0.35/getting-started/installation/)
+* [grype](https://github.com/anchore/grype#installation)
+
 
 ## Disclaimer
 
