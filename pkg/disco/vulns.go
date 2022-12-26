@@ -53,7 +53,7 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	}
 
 	// for all projects
-	projects, err := gcp.GetProjects(ctx)
+	projects, err := getProjectsFunc(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error getting projects")
 	}
@@ -83,7 +83,7 @@ func discoverProjectCVEs(ctx context.Context, projectID, cveID string) ([]*gcp.O
 		return nil, errors.New("projectID and cveID required")
 	}
 
-	list, err := gcp.GetCVEVulnerabilities(ctx, projectID, cveID)
+	list, err := getCVEVulnsFunc(ctx, projectID, cveID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting vulnerabilities for: %s in: %s", cveID, projectID)
 	}
@@ -123,7 +123,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 	list := make([]*gcp.Occurrence, 0)
 
 	for k, img := range m {
-		oc, err := gcp.GetImageVulnerabilities(ctx, img.Project.ID, k)
+		oc, err := getImageVulnsFunc(ctx, img.Project.ID, k)
 		if err != nil {
 			log.Error().Err(err).Msgf("error getting vulnerabilities for: %s", k)
 			continue

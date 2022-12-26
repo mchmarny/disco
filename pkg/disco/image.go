@@ -79,7 +79,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 		log.Debug().Msgf("discovering images for project: %s", projectID)
 	}
 
-	projects, err := gcp.GetProjects(ctx)
+	projects, err := getProjectsFunc(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting projects")
 	}
@@ -91,7 +91,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 			continue
 		}
 
-		reg, err := gcp.GetLocations(ctx, p.Number)
+		reg, err := getLocationsFunc(ctx, p.Number)
 		if err != nil {
 			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
 			continue
@@ -99,7 +99,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 		log.Info().Msgf("found %d regions where Cloud Run is supported", len(reg))
 
 		for _, r := range reg {
-			svcs, err := gcp.GetServices(ctx, p.Number, r.ID)
+			svcs, err := getServicesFunc(ctx, p.Number, r.ID)
 			if err != nil {
 				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
 				continue
@@ -110,7 +110,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 				log.Info().Msgf("processing service: %s (Project: %s, Region: %s)", s.Metadata.Name, p.ID, r.ID)
 
 				for _, c := range s.Spec.Template.Spec.Containers {
-					f, err := gcp.GetImageInfo(ctx, c.Image)
+					f, err := getImageInfoFunc(ctx, c.Image)
 					if err != nil {
 						log.Error().Err(err).Msgf("error getting manifest for: %s", c.Image)
 						continue
@@ -146,7 +146,7 @@ func isQualifiedProject(ctx context.Context, p *gcp.Project, filterID string) bo
 		return false
 	}
 
-	on, err := gcp.IsAPIEnabled(ctx, p.Number, gcp.CloudRunAPI)
+	on, err := isAPIEnabledFunc(ctx, p.Number, gcp.CloudRunAPI)
 	if err != nil {
 		log.Error().Err(err).Msgf("error checking Cloud Run API: %s", p.ID)
 		return false
