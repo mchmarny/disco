@@ -1,16 +1,11 @@
-package registry
+package gcp
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-)
-
-const (
-	digestHeaderKey = "docker-content-digest"
 )
 
 func GetImageInfo(ctx context.Context, image string) (*ImageInfo, error) {
@@ -39,7 +34,7 @@ func GetImageInfo(ctx context.Context, image string) (*ImageInfo, error) {
 
 	log.Debug().Msgf("getting image digest from %s", u)
 
-	val, err := client.RequestHead(ctx, req, digestHeaderKey)
+	val, err := api.Head(ctx, req, digestHeaderKey)
 	if err != nil {
 		return nil, errors.Wrap(err, "error decoding registry response")
 	}

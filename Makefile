@@ -39,6 +39,10 @@ release: tidy ## Builds CLI binary
 	mv dist/disco-arm64-darwin ./bin/disco
 .PHONY: release
 
+run-all: img-run vul-run vul-local-run cve-run cve-local-run lic-run  ## Runs all command on the compiled version of CLI
+	@echo done
+.PHONY: run-all
+
 img-run: ## Runs run image discovery command on the compiled version of CLI
 	debug=true bin/disco run img -o test.json
 .PHONY: img-run
@@ -48,7 +52,7 @@ vul-run: ## Runs image vulnerability discovery command on the compiled version o
 .PHONY: vul-run
 
 vul-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul --local -o test.json
+	debug=true bin/disco run vul --digest -o test.json
 .PHONY: vul-run
 
 cve-run: ## Runs image vulnerability discovery command on the compiled version of CLI
@@ -56,7 +60,7 @@ cve-run: ## Runs image vulnerability discovery command on the compiled version o
 .PHONY: cve-run
 
 cve-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul --local --cve CVE-2017-11164
+	debug=true bin/disco run vul --digest --cve CVE-2017-11164
 .PHONY: cve-run
 
 lic-run: ## Runs run license discovery command on the compiled version of CLI

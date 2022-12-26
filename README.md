@@ -1,5 +1,5 @@
 [![](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml/badge.svg?branch=main)](https://github.com/mchmarny/disco/actions/workflows/on-push.yaml)
-[![coverage](https://codecov.io/gh/mchmarny/disco/branch/main/graph/badge.svg?token=9HLYDZZADN)](https://codecov.io/gh/mchmarny/disco)
+[![](https://codecov.io/gh/mchmarny/disco/branch/main/graph/badge.svg?token=9HLYDZZADN)](https://codecov.io/gh/mchmarny/disco)
 [![](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml/badge.svg)](https://github.com/mchmarny/disco/actions/workflows/on-tag.yaml)
 [![](https://img.shields.io/github/release/mchmarny/disco.svg?label=release)](https://github.com/mchmarny/disco/releases/latest)
 [![](https://img.shields.io/github/go-mod/go-version/mchmarny/disco.svg?label=go)](https://github.com/mchmarny/disco)
@@ -126,7 +126,7 @@ The resulting report in JSON format will look something like this (abbreviated):
 ```json
 [
   {
-    "region": "us-central1",
+    "location": "us-central1",
     "project": "cloudy-demos",
     "service": "hello",
     "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c"

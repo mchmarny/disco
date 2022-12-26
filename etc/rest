@@ -76,7 +76,7 @@ export FILTER="noteId%3D%22CVE-2017-11164%22"
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=noteProjectId%3D%22cloudy-demos%22" 
+    "https://containeranalysis.googleapis.com/v1/projects/cloudy-demos/occurrences?pageSize=500&filter=resourceUrl%3D%22https%3A%2F%2Fgcr.io%2Fcloudy-demos%2Fhello-broken%40sha256%3A0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6%22%20AND%20kind%3D%22VULNERABILITY%22" 
 
 # query 
 # resourceUrl="https://gcr.io/cloudy-demos/hello-broken@sha256:e64ed4de03b5f4ee1a8cfb52f5c1aa126ae6a6004657bb7aa490dbf740bd1689" kind="VULNERABILITY"

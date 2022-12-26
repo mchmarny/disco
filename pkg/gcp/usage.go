@@ -1,4 +1,4 @@
-package usage
+package gcp
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 	CloudRunAPI = "run.googleapis.com"
 )
 
-type serviceList struct {
+type usageServiceList struct {
 	Services []struct {
 		Config struct {
 			Name string `json:"name"`
@@ -27,7 +27,7 @@ type serviceList struct {
 	} `json:"services"`
 }
 
-func IsAPIEnabled(ctx context.Context, projectNumber, api string) (bool, error) {
+func IsAPIEnabled(ctx context.Context, projectNumber, uri string) (bool, error) {
 	if projectNumber == "" {
 		return false, errors.New("project number is empty")
 	}
@@ -37,17 +37,19 @@ func IsAPIEnabled(ctx context.Context, projectNumber, api string) (bool, error) 
 		return false, errors.Wrap(err, "error client creating request")
 	}
 
-	var list serviceList
-	if err := client.Request(ctx, req, &list); err != nil {
+	var list usageServiceList
+	if err := api.Get(ctx, req, &list); err != nil {
 		return false, errors.Wrap(err, "error decoding response")
 	}
+
+	log.Debug().Msgf("found %d services", len(list.Services))
 
 	if len(list.Services) == 0 {
 		return false, nil
 	}
 
 	for _, s := range list.Services {
-		if strings.EqualFold(s.Config.Name, api) {
+		if strings.EqualFold(s.Config.Name, uri) {
 			return true, nil
 		}
 	}

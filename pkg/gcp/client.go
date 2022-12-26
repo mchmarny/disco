@@ -1,4 +1,4 @@
-package client
+package gcp
 
 import (
 	"context"
@@ -12,27 +12,23 @@ import (
 )
 
 const (
-	// ScopeDefault is the default scope for the client.
-	ScopeDefault = "https://www.googleapis.com/auth/cloud-platform"
+	scopeDefault    = "https://www.googleapis.com/auth/cloud-platform"
+	digestHeaderKey = "docker-content-digest"
 )
 
-// NewClient creates a new http client using the default credentials.
-func NewClient(ctx context.Context) (*http.Client, error) {
-	creds, err := getCredentials(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create credentials")
-	}
+var (
+	api Client = &GCPClient{}
+)
 
-	client, _, err := htransport.NewClient(ctx, option.WithCredentials(creds))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create http client")
-	}
-
-	return client, nil
+type Client interface {
+	Get(ctx context.Context, req *http.Request, v any) error
+	Head(ctx context.Context, req *http.Request, key string) (string, error)
 }
 
-func Request(ctx context.Context, req *http.Request, v any) error {
-	c, err := NewClient(ctx)
+type GCPClient struct{}
+
+func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
+	c, err := newClient(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")
 	}
@@ -53,8 +49,8 @@ func Request(ctx context.Context, req *http.Request, v any) error {
 	return nil
 }
 
-func RequestHead(ctx context.Context, req *http.Request, key string) (string, error) {
-	c, err := NewClient(ctx)
+func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
+	c, err := newClient(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "error creating client")
 	}
@@ -74,8 +70,22 @@ func RequestHead(ctx context.Context, req *http.Request, key string) (string, er
 	return v, nil
 }
 
+func newClient(ctx context.Context) (*http.Client, error) {
+	creds, err := getCredentials(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create credentials")
+	}
+
+	client, _, err := htransport.NewClient(ctx, option.WithCredentials(creds))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create http client")
+	}
+
+	return client, nil
+}
+
 func getCredentials(ctx context.Context) (*google.Credentials, error) {
-	credentials, err := google.FindDefaultCredentials(ctx, ScopeDefault)
+	credentials, err := google.FindDefaultCredentials(ctx, scopeDefault)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create default credentials")
 	}

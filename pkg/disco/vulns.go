@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mchmarny/disco/pkg/analysis"
-	"github.com/mchmarny/disco/pkg/project"
+	"github.com/mchmarny/disco/pkg/gcp"
 	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -34,7 +33,7 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 		return DiscoverVulnsLocally(ctx, in)
 	}
 
-	var list []*analysis.Occurrence
+	var list []*gcp.Occurrence
 	var err error
 
 	// for single project
@@ -54,12 +53,12 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	}
 
 	// for all projects
-	projects, err := project.GetProjects(ctx)
+	projects, err := gcp.GetProjects(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error getting projects")
 	}
 
-	var subList []*analysis.Occurrence
+	var subList []*gcp.Occurrence
 
 	for _, p := range projects {
 		if in.CVE == "" {
@@ -79,12 +78,12 @@ func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	return nil
 }
 
-func discoverProjectCVEs(ctx context.Context, projectID, cveID string) ([]*analysis.Occurrence, error) {
+func discoverProjectCVEs(ctx context.Context, projectID, cveID string) ([]*gcp.Occurrence, error) {
 	if cveID == "" || projectID == "" {
 		return nil, errors.New("projectID and cveID required")
 	}
 
-	list, err := analysis.GetCVEVulnerabilities(ctx, projectID, cveID)
+	list, err := gcp.GetCVEVulnerabilities(ctx, projectID, cveID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error getting vulnerabilities for: %s in: %s", cveID, projectID)
 	}
@@ -96,7 +95,7 @@ func discoverProjectCVEs(ctx context.Context, projectID, cveID string) ([]*analy
 	return list, nil
 }
 
-func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occurrence, error) {
+func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrence, error) {
 	if projectID == "" {
 		return nil, errors.New("projectID required")
 	}
@@ -107,7 +106,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occu
 	}
 
 	if len(images) == 0 {
-		return make([]*analysis.Occurrence, 0), nil
+		return make([]*gcp.Occurrence, 0), nil
 	}
 
 	// get unique list of iamges
@@ -121,10 +120,10 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occu
 
 	log.Info().Msgf("found %d unique images", len(m))
 
-	list := make([]*analysis.Occurrence, 0)
+	list := make([]*gcp.Occurrence, 0)
 
 	for k, img := range m {
-		oc, err := analysis.GetImageVulnerabilities(ctx, img.Project.ID, k)
+		oc, err := gcp.GetImageVulnerabilities(ctx, img.Project.ID, k)
 		if err != nil {
 			log.Error().Err(err).Msgf("error getting vulnerabilities for: %s", k)
 			continue
@@ -134,7 +133,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*analysis.Occu
 			continue
 		}
 		for _, o := range oc {
-			log.Info().Msgf("%-14s - %s in %s (Project: %s, Region: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Metadata.Name, img.Project.ID, img.Region.ID)
+			log.Info().Msgf("%-14s - %s in %s (Project: %s, Location: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Metadata.Name, img.Project.ID, img.Location.ID)
 
 			list = append(list, o)
 		}

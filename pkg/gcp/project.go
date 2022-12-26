@@ -1,10 +1,9 @@
-package project
+package gcp
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 )
 
@@ -34,7 +33,7 @@ func GetProjects(ctx context.Context) ([]*Project, error) {
 	}
 
 	var list projectList
-	if err := client.Request(ctx, req, &list); err != nil {
+	if err := api.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

@@ -1,11 +1,10 @@
-package service
+package gcp
 
 import (
 	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 )
 
@@ -60,7 +59,7 @@ func GetServices(ctx context.Context, projectNumber, region string) ([]*Service,
 	}
 
 	var list serviceList
-	if err := client.Request(ctx, req, &list); err != nil {
+	if err := api.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

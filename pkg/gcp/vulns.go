@@ -1,4 +1,4 @@
-package analysis
+package gcp
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mchmarny/disco/pkg/client"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -29,7 +28,8 @@ const (
 
 )
 
-type occurrenceList struct {
+// Vulnerability represents a single vulnerability.
+type OccurrenceList struct {
 	Occurrences []*Occurrence `json:"occurrences,omitempty"`
 }
 
@@ -114,8 +114,8 @@ func getVulnerabilities(ctx context.Context, projectID, imageURL, cveID string) 
 		return nil, errors.Wrapf(err, "error creating image vulnerability request: %s", u)
 	}
 
-	var list occurrenceList
-	if err := client.Request(ctx, req, &list); err != nil {
+	var list OccurrenceList
+	if err := api.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 
