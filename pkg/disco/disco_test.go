@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/mchmarny/disco/pkg/gcp"
+	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -89,6 +90,7 @@ func TestVuln(t *testing.T) {
 		CAAPI: true,
 		SimpleQuery: SimpleQuery{
 			ProjectID: "test-project",
+			OutputFmt: ParseOutputFormatOrDefault("raw"),
 		},
 	})
 	assert.NoError(t, err, "error discovering vulns with CAAPI and project ID")
@@ -158,4 +160,36 @@ func loadTestData(path string, v any) error {
 		return errors.Wrap(err, "error decoding test data")
 	}
 	return nil
+}
+
+func TestFormatParse(t *testing.T) {
+	f := ParseOutputFormatOrDefault("")
+	assert.Equal(t, f, DefaultOutputFormat)
+	f = ParseOutputFormatOrDefault("json")
+	assert.Equal(t, f, JSONFormat)
+	f = ParseOutputFormatOrDefault("yaml")
+	assert.Equal(t, f, YAMLFormat)
+	f = ParseOutputFormatOrDefault("raw")
+	assert.Equal(t, f, RawFormat)
+}
+
+func TestWriteOutput(t *testing.T) {
+	err := writeOutput("", JSONFormat, nil)
+	assert.Error(t, err, "error writing output with nil data")
+	f := struct {
+		Name string
+	}{
+		Name: "test",
+	}
+	err = writeOutput("", JSONFormat, f)
+	assert.Nil(t, err, "error writing output with JSON format")
+
+	err = writeOutput("", RawFormat, f)
+	assert.Nil(t, err, "error writing output with RAW format")
+}
+
+func TestScan(t *testing.T) {
+	ctx := context.Background()
+	err := scan(ctx, scanner.LicenseScanner, nil, nil)
+	assert.Error(t, err, "error scanning with nil query")
 }

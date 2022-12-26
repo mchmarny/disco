@@ -93,6 +93,10 @@ func ParseOutputFormatOrDefault(format string) OutputFormat {
 const yamlIndent = 2
 
 func writeOutput(path string, format OutputFormat, data any) error {
+	if data == nil {
+		return errors.New("nil data")
+	}
+
 	var w io.Writer
 	w = os.Stdout
 
