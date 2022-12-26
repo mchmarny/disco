@@ -1,4 +1,4 @@
-# disco installation
+# Installation
 
 You can install `disco` using one of the following ways:
 
