@@ -1,4 +1,5 @@
 RELEASE_VERSION ?=$(shell cat ./.version)
+YAML_FILES      :=$(shell find . -type f -regex ".*y[a]ml" -print)
 
 all: help
 
@@ -29,9 +30,18 @@ cover: test ## Runs unit tests and putputs coverage
 	go tool cover -func=cover.out
 .PHONY: cover
 
-lint: ## Lints the entire project 
+lint: lint-go lint-yaml ## Lints the entire project 
+	@echo done
+.PHONY: lint
+
+lint-go: ## Lints the entire project using go 
 	golangci-lint -c .golangci.yaml run
 .PHONY: lint
+
+# brew install yamllint
+lint-yaml: ## Runs yamllint on all yaml files
+	yamllint -c .yamllint $(YAML_FILES)
+.PHONY: lint-yaml
 
 release: tidy ## Builds CLI binary
 	goreleaser release --snapshot --rm-dist --timeout 10m0s

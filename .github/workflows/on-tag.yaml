@@ -1,30 +1,23 @@
 name: tag
-
-on:  
+on:
   push:
     tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+' # Only build tag with semantic versioning format
-
+    - 'v[0-9]+.[0-9]+.[0-9]+'  # Only build tag with semantic versioning format
 jobs:
-
   test:
     uses: ./.github/workflows/test.yaml
-
   release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-
     - name: Setup Go
-      uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+      uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568  # v3.5.0
       with:
         go-version: ^1.19.4
-
     - run: go version
-
     - name: Cache Go Modules
-      uses: actions/cache@c1a5de879eb890d062a85ee0252d6036480b1fe2 # v3.2.1
+      uses: actions/cache@c1a5de879eb890d062a85ee0252d6036480b1fe2  # v3.2.1
       with:
         path: |
           ~/.cache/go-build
@@ -32,19 +25,16 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-
     - name: Checkout Code
-      uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+      uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b  # v3.2.0
       with:
         fetch-depth: 2
-
     - name: Install Syft
-      uses: anchore/sbom-action/download-syft@06e109483e6aa305a2b2395eabae554e51530e1d # v0.13.1
+      uses: anchore/sbom-action/download-syft@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
       with:
         version: v0.13.1
-
     - name: Build CLI
-      uses: goreleaser/goreleaser-action@8f67e590f2d095516493f017008adc464e63adb1 # v4.1.0
+      uses: goreleaser/goreleaser-action@8f67e590f2d095516493f017008adc464e63adb1  # v4.1.0
       with:
         distribution: goreleaser
         version: latest
@@ -52,4 +42,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
-
