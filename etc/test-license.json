@@ -1,0 +1,327 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.17.0"
+    },
+    "ImageID": "sha256:d7c0d989fcda512c38cf95c6cb674e5da5f6c08f80589be2938a53c51c230565",
+    "DiffIDs": [
+      "sha256:ba85ec17f04d460522706dd0c4d336ecb5f6521cc78c80a36b5aa4193c0dfe83",
+      "sha256:d0de7599377a433e513c97a4bcb0f60bf2634c4b6ec475a9aa72badfdd277be7",
+      "sha256:44898f9545cf3c84ad13423e40720a7e2b7b47391291664ffebb479c5e9ffed3",
+      "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+      "sha256:de226546d24fbbcb6812d14b20bd647ac68da5ae96bb287355306bc35cd76ae0",
+      "sha256:c57be9db76c12af59567dde280b85889e63280e88e4e02c1d9c8bd87f5769919",
+      "sha256:9d8cf8af5accd7d55a5e9dbb5ca35a1cc598254a9aa03dc9242a534495e3be77",
+      "sha256:f1e39d1c4621587399ceb7d6ecefe98353e5db7038d3c7beffd7b6ff038a4965",
+      "sha256:9f03aff74b17ce1e857affec1f5a3800c7c9c0d83634935354ac586dcaaef0c2",
+      "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+      "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+    ],
+    "RepoDigests": [
+      "us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "github.com/chainguard-dev/apko",
+      "created": "2022-12-23T01:31:37.191635001Z",
+      "history": [
+        {
+          "author": "apko",
+          "created": "2022-12-22T00:08:13Z",
+          "created_by": "apko",
+          "comment": "This is an apko single-layer image"
+        },
+        {
+          "created": "2022-12-23T01:30:31.890473301Z",
+          "created_by": "ARG VERSION",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-12-23T01:30:31.890473301Z",
+          "created_by": "LABEL artomator.version=v0.0.1-default",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-12-23T01:30:31.890473301Z",
+          "created_by": "COPY /src/server /app/ # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:30:31.8998067Z",
+          "created_by": "COPY /src/bin/ /app/bin/ # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:30:31.906540699Z",
+          "created_by": "WORKDIR /app",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:30:32.11168217Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c echo -e \"\\nhttp://dl-cdn.alpinelinux.org/alpine/v3.17/community\" \u003e\u003e /etc/apk/repositories # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:30:35.157030093Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c apk add --update bash curl jq cosign ca-certificates python3 # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:30:35.157030093Z",
+          "created_by": "ENV CLOUDSDK_INSTALL_DIR=/gcloud/",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-12-23T01:31:27.508897483Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c curl -sSL https://sdk.cloud.google.com | bash # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:31:27.508897483Z",
+          "created_by": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/gcloud/google-cloud-sdk/bin/:/app/bin/",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-12-23T01:31:31.391859656Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh     | sh -s -- -b /usr/local/bin # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:31:36.712384418Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh     | sh -s -- -b /usr/local/bin # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:31:36.932603064Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c echo $PATH # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:31:37.191635001Z",
+          "created_by": "RUN |1 VERSION=v0.0.1-default /bin/sh -c ls -al # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2022-12-23T01:31:37.191635001Z",
+          "created_by": "ENTRYPOINT [\"./server\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:ba85ec17f04d460522706dd0c4d336ecb5f6521cc78c80a36b5aa4193c0dfe83",
+          "sha256:d0de7599377a433e513c97a4bcb0f60bf2634c4b6ec475a9aa72badfdd277be7",
+          "sha256:44898f9545cf3c84ad13423e40720a7e2b7b47391291664ffebb479c5e9ffed3",
+          "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "sha256:de226546d24fbbcb6812d14b20bd647ac68da5ae96bb287355306bc35cd76ae0",
+          "sha256:c57be9db76c12af59567dde280b85889e63280e88e4e02c1d9c8bd87f5769919",
+          "sha256:9d8cf8af5accd7d55a5e9dbb5ca35a1cc598254a9aa03dc9242a534495e3be77",
+          "sha256:f1e39d1c4621587399ceb7d6ecefe98353e5db7038d3c7beffd7b6ff038a4965",
+          "sha256:9f03aff74b17ce1e857affec1f5a3800c7c9c0d83634935354ac586dcaaef0c2",
+          "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        ]
+      },
+      "config": {
+        "Entrypoint": [
+          "./server"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/gcloud/google-cloud-sdk/bin/:/app/bin/",
+          "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+          "CLOUDSDK_INSTALL_DIR=/gcloud/"
+        ],
+        "Labels": {
+          "artomator.version": "v0.0.1-default",
+          "org.opencontainers.image.created": "2022-12-23T01:29:28.666Z",
+          "org.opencontainers.image.description": "Creates signed SBOM and vulnerability reports for new GCP Artifact Registry images",
+          "org.opencontainers.image.licenses": "Apache-2.0",
+          "org.opencontainers.image.revision": "f96fa1e63b1caca1abcbcb8de8a5ed423b46e79d",
+          "org.opencontainers.image.source": "https://github.com/mchmarny/artomator",
+          "org.opencontainers.image.title": "artomator",
+          "org.opencontainers.image.url": "https://github.com/mchmarny/artomator",
+          "org.opencontainers.image.version": "v0.8.3"
+        },
+        "WorkingDir": "/app"
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "OS Packages",
+      "Class": "license",
+      "Licenses": [
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "alpine-baselayout-data",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "apk-tools",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "bash",
+          "FilePath": "",
+          "Name": "GPL-3.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "busybox",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "busybox-binsh",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "MEDIUM",
+          "Category": "reciprocal",
+          "PkgName": "ca-certificates",
+          "FilePath": "",
+          "Name": "MPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "MEDIUM",
+          "Category": "reciprocal",
+          "PkgName": "ca-certificates-bundle",
+          "FilePath": "",
+          "Name": "MPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "gdbm",
+          "FilePath": "",
+          "Name": "GPL-3.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "libgcc",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "libstdc++",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "musl-utils",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "readline",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "scanelf",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "ssl_client",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
+          "Severity": "HIGH",
+          "Category": "restricted",
+          "PkgName": "xz-libs",
+          "FilePath": "",
+          "Name": "GPL-2.0",
+          "Confidence": 1,
+          "Link": ""
+        }
+      ]
+    },
+    {
+      "Target": "app/server",
+      "Class": "license"
+    },
+    {
+      "Target": "gcloud/google-cloud-sdk/bin/anthoscli",
+      "Class": "license"
+    },
+    {
+      "Target": "usr/local/bin/syft",
+      "Class": "license"
+    },
+    {
+      "Target": "usr/local/bin/trivy",
+      "Class": "license"
+    },
+    {
+      "Target": "Python",
+      "Class": "license"
+    },
+    {
+      "Target": "Loose File License(s)",
+      "Class": "license-file"
+    }
+  ]
+}

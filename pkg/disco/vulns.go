@@ -143,6 +143,10 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 }
 
 func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
+
 	vulnFilter := func(v string) bool {
 		if in.CVE == "" {
 			return false

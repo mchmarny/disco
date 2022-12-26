@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/mchmarny/disco/pkg/gcp"
@@ -21,6 +22,14 @@ func setTestImplementations() {
 	getCVEVulnsFunc = getTestCVEVulns
 	getImageVulnsFunc = getTestImageVulns
 	isAPIEnabledFunc = isTestAPIEnabled
+
+	scanner.ScanVulnerability = func(digest, path string) *exec.Cmd {
+		return exec.Command("cp", "../../etc/test-license.json", path) //nolint
+	}
+
+	scanner.ScanLicense = func(digest, path string) *exec.Cmd {
+		return exec.Command("cp", "../../etc/test-vuln.json", path) //nolint
+	}
 }
 
 func TestImage(t *testing.T) {
