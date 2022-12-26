@@ -52,6 +52,19 @@ You can also download the [latest release](https://github.com/mchmarny/disco/rel
 
 > The official `disco` releases include SBOMs
 
+### RHEL/CentOS
+
+```shell
+rpm -ivh https://github.com/mchmarny/disco/releases/download/v$VERSION/disco-$VERSION_Linux-64bit.rpm
+```
+
+### Debian/Ubuntu
+
+```shell
+wget https://github.com/aquasecurity/disco/releases/download/v$VERSION/disco-$VERSION_Linux-64bit.deb
+sudo dpkg -i disco-$VERSION_Linux-64bit.deb
+```
+
 ### Prerequisites 
 
 Since you are interested in `disco`, you probably already have GCP account and project. If not, you learn about creating and managing projects [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects). The other prerequisites include:
