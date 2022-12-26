@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
@@ -62,10 +63,20 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 	defer r.Body.Close()
 
 	if r.StatusCode != http.StatusOK {
+		log.Error().Msgf("error getting head: %s", r.Status)
 		return "", errors.Wrapf(err, "error getting projects: %s", r.Status)
 	}
 
 	v := r.Header.Get(key)
+	log.Debug().Msgf("key: %s", key)
+
+	if v == "" {
+		list := r.Header.Values(key)
+		log.Debug().Msgf("values: %v", list)
+		if len(list) > 0 {
+			v = list[0]
+		}
+	}
 
 	return v, nil
 }

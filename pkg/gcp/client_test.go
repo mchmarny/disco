@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"testing"
 
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -52,4 +54,28 @@ func (t *testClient) Get(ctx context.Context, req *http.Request, v any) error {
 
 func (t *testClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
 	return "", nil
+}
+
+func TestClientGet(t *testing.T) {
+	ctx := context.Background()
+	c := &GCPClient{}
+
+	r, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/mchmarny", nil)
+	assert.NoError(t, err)
+
+	var d map[string]string
+	err = c.Get(ctx, r, &d)
+	assert.NoError(t, err)
+}
+
+func TestClientHead(t *testing.T) {
+	ctx := context.Background()
+	c := &GCPClient{}
+
+	r, err := http.NewRequest(http.MethodHead, "https://www.githubstatus.com/api/v2/status.json", nil)
+	assert.NoError(t, err, "error creating request")
+
+	v, err := c.Head(ctx, r, "x-cache")
+	assert.NoError(t, err, "error executing request")
+	assert.NotEmpty(t, v)
 }
