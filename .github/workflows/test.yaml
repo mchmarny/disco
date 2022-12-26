@@ -8,8 +8,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
