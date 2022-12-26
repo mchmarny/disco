@@ -8,7 +8,7 @@ import (
 )
 
 func TestProject(t *testing.T) {
-	api = &testClient{}
+	APIClient = &TestAPIClient{}
 	expectedProjects := 4
 	list, err := GetProjects(context.Background())
 	assert.NoError(t, err)

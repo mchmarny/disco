@@ -59,7 +59,7 @@ func GetServices(ctx context.Context, projectNumber, region string) ([]*Service,
 	}
 
 	var list serviceList
-	if err := api.Get(ctx, req, &list); err != nil {
+	if err := APIClient.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

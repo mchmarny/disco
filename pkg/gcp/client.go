@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	api Client = &GCPClient{}
+	APIClient Client = &GCPClient{}
 )
 
 type Client interface {
@@ -27,7 +27,7 @@ type Client interface {
 }
 
 type GCPClient struct {
-	skipCredentials bool
+	Anon bool
 }
 
 func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
@@ -86,7 +86,7 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
 	var ops []option.ClientOption
 
-	if !g.skipCredentials {
+	if g.Anon {
 		creds, err := getCredentials(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to create credentials")
