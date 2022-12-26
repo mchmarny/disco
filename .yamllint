@@ -1,5 +1,6 @@
 ignore: |
   /vendor
+  /etc
   .git
 
 rules:
