@@ -61,3 +61,17 @@ changelog:
     - readme
     - typo
     - "version bump"
+
+brews:
+- goarm: 7
+  goamd64: v3
+  tap:
+    owner: mchmarny
+    name: homebrew-disco
+    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+  url_template: "https://github.com/mchmarny/disco/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+  folder: Formula
+  homepage: "https://github.com/mchmarny/disco"
+  description: "Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP."
+  license: "Apache-2.0"

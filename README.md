@@ -37,6 +37,10 @@ You can also download the [latest release](https://github.com/mchmarny/disco/rel
 
 > The official `disco` releases include SBOMs
 
+```shell
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.35.0
+```
+
 ### Prerequisites 
 
 Since you are interested in `disco`, you probably already have GCP account and project. If not, you learn about creating and managing projects [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects). The other prerequisites include:
