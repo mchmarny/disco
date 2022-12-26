@@ -73,12 +73,20 @@ func TestVuln(t *testing.T) {
 		CAAPI: true,
 	})
 	assert.NoError(t, err, "error discovering vulns with CAAPI")
+
+	err = DiscoverVulns(ctx, &VulnsQuery{
+		CAAPI: true,
+		SimpleQuery: SimpleQuery{
+			ProjectID: "test-project",
+		},
+	})
+	assert.NoError(t, err, "error discovering vulns with CAAPI and project ID")
 }
 
 func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
 	list := []*gcp.Project{
 		{
-			Number: "123456789",
+			Number: "799736955886",
 			ID:     "test-project",
 			State:  "ACTIVE",
 		},
@@ -90,12 +98,8 @@ func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
 func getTestLocations(ctx context.Context, projectNumber string) ([]*gcp.Location, error) {
 	list := []*gcp.Location{
 		{
-			ID:   "us-central1",
-			Name: "us-central1",
-		},
-		{
-			ID:   "us-east1",
-			Name: "us-east1",
+			ID:   "us-west1",
+			Name: "us-west1",
 		},
 	}
 	return list, nil
