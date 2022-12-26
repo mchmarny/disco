@@ -26,12 +26,16 @@ func TestImage(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverImages(ctx, &ImagesQuery{})
+	err := DiscoverImages(ctx, nil)
+	assert.Error(t, err, "error discovering images with nil query")
+
+	err = DiscoverImages(ctx, &ImagesQuery{})
 	assert.NoError(t, err, "error discovering images")
 
 	err = DiscoverImages(ctx, &ImagesQuery{
 		SimpleQuery: SimpleQuery{
 			ProjectID: "test-project",
+			OutputFmt: ParseOutputFormatOrDefault("yaml"),
 		},
 	})
 	assert.NoError(t, err, "error discovering images with project")
@@ -46,11 +50,15 @@ func TestLicense(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverLicense(ctx, &SimpleQuery{})
+	err := DiscoverLicense(ctx, nil)
+	assert.Error(t, err, "error licenses images with nil query")
+
+	err = DiscoverLicense(ctx, &SimpleQuery{})
 	assert.NoError(t, err, "error discovering license")
 
 	err = DiscoverLicense(ctx, &SimpleQuery{
-		ProjectID: "test-project",
+		ProjectID:  "test-project",
+		OutputPath: "../../tmp/test-license.txt",
 	})
 	assert.NoError(t, err, "error discovering license")
 }
@@ -59,7 +67,10 @@ func TestVuln(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverVulns(ctx, &VulnsQuery{})
+	err := DiscoverVulns(ctx, nil)
+	assert.Error(t, err, "error vulns images with nil query")
+
+	err = DiscoverVulns(ctx, &VulnsQuery{})
 	assert.NoError(t, err, "error discovering vulns")
 
 	err = DiscoverVulns(ctx, &VulnsQuery{
@@ -84,14 +95,10 @@ func TestVuln(t *testing.T) {
 }
 
 func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
-	list := []*gcp.Project{
-		{
-			Number: "799736955886",
-			ID:     "test-project",
-			State:  "ACTIVE",
-		},
+	var list []*gcp.Project
+	if err := loadTestData("../../etc/test-project.json", &list); err != nil {
+		return nil, err
 	}
-
 	return list, nil
 }
 

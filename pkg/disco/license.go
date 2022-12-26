@@ -9,6 +9,10 @@ import (
 )
 
 func DiscoverLicense(ctx context.Context, in *SimpleQuery) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
+
 	licenseFilter := func(v string) bool {
 		return false
 	}
