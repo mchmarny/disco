@@ -58,7 +58,9 @@ func (t *testClient) Head(ctx context.Context, req *http.Request, key string) (s
 
 func TestClientGet(t *testing.T) {
 	ctx := context.Background()
-	c := &GCPClient{}
+	c := &GCPClient{
+		skipCredentials: true,
+	}
 
 	r, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/mchmarny", nil)
 	assert.NoError(t, err)
@@ -70,7 +72,9 @@ func TestClientGet(t *testing.T) {
 
 func TestClientHead(t *testing.T) {
 	ctx := context.Background()
-	c := &GCPClient{}
+	c := &GCPClient{
+		skipCredentials: true,
+	}
 
 	r, err := http.NewRequest(http.MethodHead, "https://www.githubstatus.com/api/v2/status.json", nil)
 	assert.NoError(t, err, "error creating request")

@@ -26,10 +26,12 @@ type Client interface {
 	Head(ctx context.Context, req *http.Request, key string) (string, error)
 }
 
-type GCPClient struct{}
+type GCPClient struct {
+	skipCredentials bool
+}
 
 func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
-	c, err := newClient(ctx)
+	c, err := g.newClient(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")
 	}
@@ -51,7 +53,7 @@ func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
 }
 
 func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
-	c, err := newClient(ctx)
+	c, err := g.newClient(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "error creating client")
 	}
@@ -81,13 +83,18 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 	return v, nil
 }
 
-func newClient(ctx context.Context) (*http.Client, error) {
-	creds, err := getCredentials(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create credentials")
+func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
+	var ops []option.ClientOption
+
+	if !g.skipCredentials {
+		creds, err := getCredentials(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create credentials")
+		}
+		ops = append(ops, option.WithCredentials(creds))
 	}
 
-	client, _, err := htransport.NewClient(ctx, option.WithCredentials(creds))
+	client, _, err := htransport.NewClient(ctx, ops...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create http client")
 	}

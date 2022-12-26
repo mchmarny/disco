@@ -110,6 +110,8 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "v0.8.3", img.Tag)
 	assert.Equal(t, "", img.Digest)
+	assert.NotEmpty(t, img.URL)
+	assert.NotEmpty(t, img.URI)
 }
 
 func TestParseName(t *testing.T) {
