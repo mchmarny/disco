@@ -47,9 +47,15 @@ archives:
 - format: binary
   name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
   replacements:
-    darwin: mac
-    386: x86
+    darwin: MacOS
+    linux: Linux
+    windows: Windows
+    386: i386
     amd64: x86_64
+    arm64: aarch64
+  format_overrides:
+  - goos: windows
+    format: zip
 
 changelog:
   sort: asc
@@ -62,9 +68,7 @@ changelog:
     - "version bump"
 
 brews:
-- goarm: 7
-  goamd64: v3
-  tap:
+- tap:
     owner: mchmarny
     name: homebrew-disco
     token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
@@ -72,6 +76,28 @@ brews:
   description: "Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP."
   folder: Formula
   license: "Apache-2.0"
+  test: |
+    system "#{bin}/disco --version"
+
+nfpms:
+- file_name_template: "disco-{{.Version}}_{{.Os}}-{{.Arch}}"
+  homepage: https://github.com/mchmarny/disco/
+  description: "Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP."
+  maintainer: disco developers <disco@chmarny.com>
+  license: Apache 2.0
+  vendor: disco developers
+  formats:
+  - deb
+  - rpm
+  bindir: /usr/bin
+  replacements:
+    amd64: 64bit
+    386: 32bit
+    arm: ARM
+    arm64: ARM64
+    darwin: macOS
+    linux: Linux
+    windows: Windows
 
 universal_binaries:
 - replace: true

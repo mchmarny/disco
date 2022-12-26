@@ -36,7 +36,7 @@ lint: ## Lints the entire project
 release: tidy ## Builds CLI binary
 	goreleaser release --snapshot --rm-dist --timeout 10m0s
 	mkdir -p ./bin
-	mv dist/disco-arm64-darwin ./bin/disco
+	mv dist/disco_darwin_all/disco ./bin/disco
 .PHONY: release
 
 run-all: img-run vul-run vul-local-run cve-run cve-local-run lic-run  ## Runs all command on the compiled version of CLI
