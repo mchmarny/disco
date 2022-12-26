@@ -1,5 +1,5 @@
 RELEASE_VERSION ?=$(shell cat ./.version)
-YAML_FILES      :=$(shell find . -type f -regex ".*y[a]ml" -print)
+YAML_FILES      :=$(shell find . -type f -regex ".*yaml" -print)
 
 all: help
 
