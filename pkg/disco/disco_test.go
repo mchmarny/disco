@@ -58,7 +58,7 @@ func TestLicense(t *testing.T) {
 
 	err = DiscoverLicense(ctx, &SimpleQuery{
 		ProjectID:  "test-project",
-		OutputPath: "../../tmp/test-license.txt",
+		OutputPath: "../../license.tmp",
 	})
 	assert.NoError(t, err, "error discovering license")
 }

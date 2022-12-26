@@ -5,6 +5,7 @@
 *.test
 tmp
 /*.json
+*.tmp
 
 # Coverage
 *.out
