@@ -78,3 +78,7 @@ brews:
   homepage: "https://github.com/mchmarny/disco"
   description: "Utility for bulk image, license, and vulnerability discovery in containerize workloads on GCP."
   license: "Apache-2.0"
+  install: |
+    bin.install "disco" => "disco"
+  test: |
+    system "#{bin}/disco", "-v"
