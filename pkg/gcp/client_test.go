@@ -19,6 +19,8 @@ var (
 	urlExpServices    = regexp.MustCompile(`/locations/us-central1/services$`)
 	urlExpUsage       = regexp.MustCompile(`/projects/799736955886/services$`)
 	urlEpxOccurrences = regexp.MustCompile(`/occurrences$`)
+	urlExpTestGet     = regexp.MustCompile(`/users/mchmarny$`)
+	urlExpTestHead    = regexp.MustCompile(`api/v2/status.json$`)
 )
 
 type TestAPIClient struct{}
@@ -37,6 +39,10 @@ func (t *TestAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 		testFile = "../../etc/test-usage.json"
 	case urlEpxOccurrences.MatchString(u):
 		testFile = "../../etc/test-occurrences.json"
+	case urlExpTestGet.MatchString(u):
+		testFile = "../../etc/test-map.json"
+	case urlExpTestHead.MatchString(u):
+		testFile = "../../etc/test-locations.json"
 	default:
 		return errors.Errorf("unknown request path: %s", u)
 	}
@@ -58,9 +64,7 @@ func (t *TestAPIClient) Head(ctx context.Context, req *http.Request, key string)
 
 func TestClientGet(t *testing.T) {
 	ctx := context.Background()
-	c := &GCPClient{
-		Anon: true,
-	}
+	c := &TestAPIClient{}
 
 	r, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/mchmarny", nil)
 	assert.NoError(t, err)
@@ -72,9 +76,7 @@ func TestClientGet(t *testing.T) {
 
 func TestClientHead(t *testing.T) {
 	ctx := context.Background()
-	c := &GCPClient{
-		Anon: true,
-	}
+	c := &TestAPIClient{}
 
 	r, err := http.NewRequest(http.MethodHead, "https://www.githubstatus.com/api/v2/status.json", nil)
 	assert.NoError(t, err, "error creating request")

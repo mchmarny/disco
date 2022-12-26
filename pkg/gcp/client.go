@@ -26,9 +26,7 @@ type Client interface {
 	Head(ctx context.Context, req *http.Request, key string) (string, error)
 }
 
-type GCPClient struct {
-	Anon bool
-}
+type GCPClient struct{}
 
 func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
 	c, err := g.newClient(ctx)
@@ -86,13 +84,11 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
 	var ops []option.ClientOption
 
-	if !g.Anon {
-		creds, err := g.getCredentials(ctx)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to create credentials")
-		}
-		ops = append(ops, option.WithCredentials(creds))
+	creds, err := g.getCredentials(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create credentials")
 	}
+	ops = append(ops, option.WithCredentials(creds))
 
 	client, _, err := htransport.NewClient(ctx, ops...)
 	if err != nil {

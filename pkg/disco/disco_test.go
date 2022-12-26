@@ -30,10 +30,6 @@ func setTestImplementations() {
 	scanner.ScanLicense = func(digest, path string) *exec.Cmd {
 		return exec.Command("cp", "../../etc/test-vuln.json", path) //nolint
 	}
-
-	gcp.APIClient = &gcp.GCPClient{
-		Anon: true,
-	}
 }
 
 func TestImage(t *testing.T) {
