@@ -147,7 +147,7 @@ func getTestImageVulns(ctx context.Context, projectID string, imageURL string) (
 }
 
 func isTestAPIEnabled(ctx context.Context, projectNumber string, uri string) (bool, error) {
-	return false, nil
+	return true, nil
 }
 
 func loadTestData(path string, v any) error {

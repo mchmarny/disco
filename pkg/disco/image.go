@@ -83,6 +83,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting projects")
 	}
+	log.Debug().Msgf("found %d projects", len(projects))
 
 	list := make([]*RunningImage, 0)
 
