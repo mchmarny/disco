@@ -70,6 +70,9 @@ brews:
     name: homebrew-disco
     token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
   url_template: "https://github.com/mchmarny/disco/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  commit_author:
+    name: github-actions
+    email: github-actions@github.com
   commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
   folder: Formula
   homepage: "https://github.com/mchmarny/disco"
