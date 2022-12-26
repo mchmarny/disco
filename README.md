@@ -27,19 +27,30 @@ It's easy to end up with a large number of services across many GCP projects and
 
 ## Installation 
 
+### Homebrew
+
+On Mac or Linux, you can install `disco` with [Homebrew](https://brew.sh/):
+
+```shell
+brew tap mchmarny/disco
+brew install disco
+```
+
+New release will be automatically picked up when you run `brew upgrade`
+
+### Go
+
 If you have Go 1.17 or newer, you can install latest `disco` using:
 
 ```shell
 go install github.com/mchmarny/disco/cmd/disco@latest
 ```
 
+### Binary 
+
 You can also download the [latest release](https://github.com/mchmarny/disco/releases/latest) version of `disco` for your operating system/architecture from [here](https://github.com/mchmarny/disco/releases/latest). Put the binary somewhere in your $PATH, and make sure it has that executable bit.
 
 > The official `disco` releases include SBOMs
-
-```shell
-curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.35.0
-```
 
 ### Prerequisites 
 
