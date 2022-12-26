@@ -23,7 +23,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568  # v3.5.0
       with:
-        go-version: ${{ inputs.go-version }}}
+        go-version: ${{ inputs.go-version }}
     - run: go version
     - name: Cache Go Modules
       uses: actions/cache@c1a5de879eb890d062a85ee0252d6036480b1fe2  # v3.2.1
