@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDisco(t *testing.T) {
+func setTestImplementations() {
 	getProjectsFunc = getTestProjects
 	getLocationsFunc = getTestLocations
 	getServicesFunc = getTestServices
@@ -20,17 +20,59 @@ func TestDisco(t *testing.T) {
 	getCVEVulnsFunc = getTestCVEVulns
 	getImageVulnsFunc = getTestImageVulns
 	isAPIEnabledFunc = isTestAPIEnabled
+}
 
+func TestImage(t *testing.T) {
+	setTestImplementations()
 	ctx := context.Background()
 
 	err := DiscoverImages(ctx, &ImagesQuery{})
 	assert.NoError(t, err, "error discovering images")
 
-	err = DiscoverLicense(ctx, &SimpleQuery{})
+	err = DiscoverImages(ctx, &ImagesQuery{
+		SimpleQuery: SimpleQuery{
+			ProjectID: "test-project",
+		},
+	})
+	assert.NoError(t, err, "error discovering images with project")
+
+	err = DiscoverImages(ctx, &ImagesQuery{
+		OnlyDigest: true,
+	})
+	assert.NoError(t, err, "error discovering images with digests only")
+}
+
+func TestLicense(t *testing.T) {
+	setTestImplementations()
+	ctx := context.Background()
+
+	err := DiscoverLicense(ctx, &SimpleQuery{})
 	assert.NoError(t, err, "error discovering license")
 
-	err = DiscoverVulns(ctx, &VulnsQuery{})
+	err = DiscoverLicense(ctx, &SimpleQuery{
+		ProjectID: "test-project",
+	})
+	assert.NoError(t, err, "error discovering license")
+}
+
+func TestVuln(t *testing.T) {
+	setTestImplementations()
+	ctx := context.Background()
+
+	err := DiscoverVulns(ctx, &VulnsQuery{})
 	assert.NoError(t, err, "error discovering vulns")
+
+	err = DiscoverVulns(ctx, &VulnsQuery{
+		SimpleQuery: SimpleQuery{
+			ProjectID: "test-project",
+		},
+	})
+	assert.NoError(t, err, "error discovering vulns with project")
+
+	err = DiscoverVulns(ctx, &VulnsQuery{
+		CAAPI: true,
+	})
+	assert.NoError(t, err, "error discovering vulns with CAAPI")
 }
 
 func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
