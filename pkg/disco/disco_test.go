@@ -1,11 +1,14 @@
 package disco
 
 import (
+	"bytes"
 	"context"
-	"errors"
+	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/mchmarny/disco/pkg/gcp"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,6 +25,12 @@ func TestDisco(t *testing.T) {
 
 	err := DiscoverImages(ctx, &ImagesQuery{})
 	assert.NoError(t, err, "error discovering images")
+
+	err = DiscoverLicense(ctx, &SimpleQuery{})
+	assert.NoError(t, err, "error discovering license")
+
+	err = DiscoverVulns(ctx, &VulnsQuery{})
+	assert.NoError(t, err, "error discovering vulns")
 }
 
 func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
@@ -51,21 +60,49 @@ func getTestLocations(ctx context.Context, projectNumber string) ([]*gcp.Locatio
 }
 
 func getTestServices(ctx context.Context, projectNumber string, region string) ([]*gcp.Service, error) {
-	return nil, errors.New("not implemented")
+	var list []*gcp.Service
+	if err := loadTestData("../../etc/test-service.json", &list); err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 func getTestImageInfo(ctx context.Context, image string) (*gcp.ImageInfo, error) {
-	return nil, errors.New("not implemented")
+	img, err := gcp.ParseImageInfo("us-docker.pkg.dev/cloudy-demos/art/artomator@sha256:1234567890")
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing image info")
+	}
+	return img, nil
 }
 
 func getTestCVEVulns(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error) {
-	return nil, errors.New("not implemented")
+	var list []*gcp.Occurrence
+	if err := loadTestData("../../etc/test-occurrence.json", &list); err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 func getTestImageVulns(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error) {
-	return nil, errors.New("not implemented")
+	var list []*gcp.Occurrence
+	if err := loadTestData("../../etc/test-occurrence.json", &list); err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 func isTestAPIEnabled(ctx context.Context, projectNumber string, uri string) (bool, error) {
-	return false, errors.New("not implemented")
+	return false, nil
+}
+
+func loadTestData(path string, v any) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return errors.Wrap(err, "error reading test data")
+	}
+
+	if err := json.NewDecoder(bytes.NewReader(b)).Decode(v); err != nil {
+		return errors.Wrap(err, "error decoding test data")
+	}
+	return nil
 }

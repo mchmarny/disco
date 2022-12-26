@@ -31,7 +31,7 @@ cover: test ## Runs unit tests and putputs coverage
 .PHONY: cover
 
 lint: lint-go lint-yaml ## Lints the entire project 
-	@echo done
+	@echo "Completed Go and YAML lints"
 .PHONY: lint
 
 lint-go: ## Lints the entire project using go 

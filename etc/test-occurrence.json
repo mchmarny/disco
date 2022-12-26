@@ -1,0 +1,39 @@
+[
+  {
+    "name": "projects/cloudy-demos/occurrences/0798d6d9-705a-45ad-9820-bcc40528008b",
+    "resourceUri": "https://gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6",
+    "noteName": "projects/goog-vulnz/notes/CVE-2022-3715",
+    "kind": "VULNERABILITY",
+    "createTime": "2022-12-20T12:08:58.146540Z",
+    "updateTime": "2022-12-20T12:08:58.146540Z",
+    "vulnerability": {
+      "packageIssue": [
+        {
+          "affectedCpeUri": "cpe:/o:canonical:ubuntu_linux:22.04",
+          "affectedPackage": "bash",
+          "affectedVersion": {
+            "name": "5.1",
+            "revision": "6ubuntu1",
+            "kind": "NORMAL",
+            "fullName": "5.1-6ubuntu1"
+          },
+          "fixedCpeUri": "cpe:/o:canonical:ubuntu_linux:22.04",
+          "fixedPackage": "bash",
+          "fixedVersion": {
+            "kind": "MAXIMUM"
+          },
+          "packageType": "OS",
+          "effectiveSeverity": "LOW"
+        }
+      ],
+      "shortDescription": "CVE-2022-3715",
+      "relatedUrls": [
+        {
+          "url": "http://people.ubuntu.com/~ubuntu-security/cve/CVE-2022-3715",
+          "label": "More Info"
+        }
+      ],
+      "effectiveSeverity": "LOW"
+    }
+  }
+]
