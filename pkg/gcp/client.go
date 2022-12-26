@@ -86,8 +86,8 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
 	var ops []option.ClientOption
 
-	if g.Anon {
-		creds, err := getCredentials(ctx)
+	if !g.Anon {
+		creds, err := g.getCredentials(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to create credentials")
 		}
@@ -102,7 +102,7 @@ func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
 	return client, nil
 }
 
-func getCredentials(ctx context.Context) (*google.Credentials, error) {
+func (g *GCPClient) getCredentials(ctx context.Context) (*google.Credentials, error) {
 	credentials, err := google.FindDefaultCredentials(ctx, scopeDefault)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create default credentials")

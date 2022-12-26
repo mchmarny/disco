@@ -53,7 +53,7 @@ func (t *TestAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 }
 
 func (t *TestAPIClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
-	return "", nil
+	return "test", nil
 }
 
 func TestClientGet(t *testing.T) {
