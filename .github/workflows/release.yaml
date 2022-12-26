@@ -35,12 +35,12 @@ jobs:
         fetch-depth: 2
 
     - name: Install Syft
-      uses: anchore/sbom-action/download-syft@main
+      uses: anchore/sbom-action/download-syft@06e109483e6aa305a2b2395eabae554e51530e1d # v0.13.1
       with:
         version: v0.13.1
 
     - name: Build CLI
-      uses: goreleaser/goreleaser-action@v4
+      uses: goreleaser/goreleaser-action@8f67e590f2d095516493f017008adc464e63adb1 # v4.1.0
       with:
         distribution: goreleaser
         version: latest

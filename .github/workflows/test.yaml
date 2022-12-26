@@ -38,7 +38,7 @@ jobs:
 
     - name: Config Lint
       id: golangci_config
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2.0
       with:
         files: .golangci.yaml
 
@@ -57,7 +57,7 @@ jobs:
         flags: unittests # optional
 
     - name: Scan Repo
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5 v0.8.0
       with:
         scan-type: 'fs'
         ignore-unfixed: true
