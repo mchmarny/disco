@@ -1,20 +1,18 @@
 codecov:
-  require_ci_to_pass: no
-
+  require_ci_to_pass: false
+comment: false
 coverage:
   precision: 2
-  round: down
-  range: '50...100'
-
+  range:
+  - 50.0
+  - 100.0
+  round: up
+ignore:
+- ^vendor.*
 parsers:
   gcov:
     branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
-
-comment: false
-
-ignore:
-  - 'vendor'
+      conditional: true
+      loop: true
+      macro: false
+      method: false
