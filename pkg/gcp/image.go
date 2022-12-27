@@ -61,16 +61,21 @@ func (i *ImageInfo) URL() string {
 
 // ManifestURL returns manifest URL for the image.
 func (i *ImageInfo) ManifestURL() string {
+	tag := i.Tag
+	if tag == "" {
+		tag = "latest"
+	}
+
 	// https://gcr.io/v2/cloudy-demos/hello-broken/manifests/latest
 	if i.IsGCR {
 		return fmt.Sprintf("https://%s/v2/%s/%s/manifests/%s",
-			i.Registry, i.Project, i.Name, i.Tag)
+			i.Registry, i.Project, i.Name, tag)
 	}
 
 	// https://us-west1-docker.pkg.dev/v2/cloudy-demos/artomator/artomator/manifests/v0.8.3
 	if i.IsAR {
 		return fmt.Sprintf("https://%s/v2/%s/%s/%s/manifests/%s",
-			i.Registry, i.Project, i.Folder, i.Name, i.Tag)
+			i.Registry, i.Project, i.Folder, i.Name, tag)
 	}
 	return ""
 }
@@ -146,7 +151,6 @@ func ParseImageInfo(uri string) (*ImageInfo, error) {
 func parseName(name string, info *ImageInfo) bool {
 	if !strings.Contains(name, "@") && !strings.Contains(name, ":") {
 		info.Name = name
-		info.Tag = "latest"
 		return true
 	}
 
@@ -158,10 +162,13 @@ func parseName(name string, info *ImageInfo) bool {
 	}
 
 	parts := strings.Split(name, ":")
-	if len(parts) == partNameTag {
+	if len(parts) >= partNameTag {
 		info.Name = parts[0]
-		info.Tag = parts[1]
-		info.IsLatest = info.Tag == "latest"
+		if parts[1] == "latest" {
+			info.IsLatest = true
+		} else {
+			info.Tag = parts[1]
+		}
 		return true
 	}
 
