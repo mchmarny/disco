@@ -18,8 +18,11 @@ const (
 )
 
 var (
-	client Client = &apiClient{}
+	client         Client             = &apiClient{}
+	clientProvider httpClientProvider = newHTTPClientWithCredentials
 )
+
+type httpClientProvider func(ctx context.Context) (*http.Client, error)
 
 type Client interface {
 	Get(ctx context.Context, req *http.Request, v any) error
@@ -29,7 +32,7 @@ type Client interface {
 type apiClient struct{}
 
 func (g *apiClient) Get(ctx context.Context, req *http.Request, v any) error {
-	c, err := newHTTPClientWithCredentials(ctx)
+	c, err := clientProvider(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")
 	}
@@ -51,7 +54,7 @@ func (g *apiClient) Get(ctx context.Context, req *http.Request, v any) error {
 }
 
 func (g *apiClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
-	c, err := newHTTPClientWithCredentials(ctx)
+	c, err := clientProvider(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "error creating client")
 	}
