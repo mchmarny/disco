@@ -18,19 +18,20 @@ var (
 )
 
 func main() {
-	logLevel := zerolog.InfoLevel
-	levStr := os.Getenv(logLevelEnvVar)
-	if levStr == "true" {
-		logLevel = zerolog.DebugLevel
-	}
-	initLogging(logLevel)
+	initLogging()
 	err := cli.Execute(version, commit)
 	if err != nil {
 		log.Error().Msg(err.Error())
 	}
 }
 
-func initLogging(level zerolog.Level) {
+func initLogging() {
+	level := zerolog.InfoLevel
+	levStr := os.Getenv(logLevelEnvVar)
+	if levStr == "true" {
+		level = zerolog.DebugLevel
+	}
+
 	zerolog.SetGlobalLevel(level)
 
 	out := zerolog.ConsoleWriter{

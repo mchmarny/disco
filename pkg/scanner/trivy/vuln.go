@@ -56,7 +56,15 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 			}
 
 			// add only unique CVEs
-			vHash := types.ToHash(v.ID, v.Package, v.PackageVersion)
+			vHash := types.Hash(struct {
+				ID             string
+				Package        string
+				PackageVersion string
+			}{
+				ID:             v.ID,
+				Package:        v.Package,
+				PackageVersion: v.PackageVersion,
+			})
 			if _, ok := m[vHash]; ok {
 				continue
 			}

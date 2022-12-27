@@ -50,7 +50,7 @@ func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseR
 			}
 
 			// add only unique licenses
-			lHash := types.HashStr(l)
+			lHash := types.Hash(l)
 			if _, ok := m[lHash]; ok {
 				continue
 			}

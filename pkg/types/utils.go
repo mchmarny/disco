@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/gob"
 	"fmt"
 
@@ -11,32 +12,19 @@ import (
 // Filter is a filter function.
 type ItemFilter func(v string) bool
 
-// HashStr returns hash of the given value as string.
-// If it can't, it returns string representation of the value.
-func HashStr(v any) string {
-	b := Hash(v)
-	if b == nil {
-		return fmt.Sprintf("%v", v)
-	}
-	return string(b)
-}
-
 // Hash returns hash of the given value.
 // If it can't, it logs error and returns nil.
-func Hash(v any) []byte {
-	var b bytes.Buffer
-	if err := gob.NewEncoder(&b).Encode(v); err != nil {
+func Hash(v interface{}) string {
+	var buf bytes.Buffer
+	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+	defer func() {
+		if err := encoder.Close(); err != nil {
+			log.Error().Err(err).Msgf("error encoding: %v", v)
+		}
+	}()
+	if err := gob.NewEncoder(encoder).Encode(v); err != nil {
 		log.Error().Err(err).Msg("error encoding")
-		return nil
+		return fmt.Sprintf("%v", v)
 	}
-	return b.Bytes()
-}
-
-func ToHash(v ...any) string {
-	s := fmt.Sprintf("%v", v)
-	b := Hash(v)
-	if b == nil {
-		return s
-	}
-	return string(b)
+	return buf.String()
 }
