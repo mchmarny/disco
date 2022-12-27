@@ -22,9 +22,9 @@ Features:
 
 ## Why
 
-It's easy to end up with a large number of services across many GCP projects and regions. Google Container Analysis service can scan your Artifact Registry images for vulnerabilities, but currently it only covers base OS, and it's not always easy to know which of these images are actually running in Cloud Run. Cloud Run also supports multiple revisions, each potentially using different version of an image, or even different image all together.
+It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using Google Container Analysis service, but currently it only covers base OS. It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support multiple revisions, each potentially using a different version of an image, or even different image all together.
 
-`disco` provides an easy way of `disco`vering which of these container images are currently deployed and are being used in Cloud Run. It extracts the digests (even if the revision is using only a tag (e.g. `v1.2.3`), or that misunderstood `latest`.
+`disco` provides an easy way to `disco`ver which of these container images are currently deployed, and resolves their digests (even if the deployment/revision is using only a tag (e.g. `v1.2.3`, or that misunderstood `latest`). And, if you have one of the supported open source scanners installed, `disco` can also automatically process these images to discover any vulnerabilities or the type of licenses used by the OS and packages in those images. 
 
 ## Install
 
