@@ -83,7 +83,7 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "", img.Folder)
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "latest", img.Tag)
-	assert.Equal(t, "", img.Digest)
+	assert.Empty(t, img.Digest)
 
 	img, err = ParseImageInfo("gcr.io/cloudy-demos/hello-broken:latest")
 	assert.NoError(t, err)
@@ -92,7 +92,6 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "", img.Region)
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "latest", img.Tag)
-	assert.Equal(t, "", img.Digest)
 
 	img, err = ParseImageInfo("gcr.io/cloudy-demos/hello-broken@sha256:1234567890")
 	assert.NoError(t, err)
@@ -109,7 +108,7 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "us.gcr.io", img.Registry)
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "v0.8.3", img.Tag)
-	assert.Equal(t, "", img.Digest)
+	assert.Empty(t, img.Digest)
 	assert.NotEmpty(t, img.URL)
 	assert.NotEmpty(t, img.URI)
 }
