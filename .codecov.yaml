@@ -1,7 +1,7 @@
 coverage:
   precision: 2
   range:
-  - 50.0
+  - 10.0
   - 70.0
   round: up
   target: 70.0
