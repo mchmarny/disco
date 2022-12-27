@@ -49,9 +49,16 @@ var (
 	}
 
 	imageListPathFlag = &c.StringFlag{
-		Name:     "images",
-		Aliases:  []string{"i"},
-		Usage:    "image list input file (instead of discovery)",
+		Name:     "source",
+		Aliases:  []string{"s", "src"},
+		Usage:    "image list input file to serve as source (instead of discovery)",
+		Required: false,
+	}
+
+	imageURIFlag = &c.StringFlag{
+		Name:     "image",
+		Aliases:  []string{"i", "img"},
+		Usage:    "specific image URI to scan",
 		Required: false,
 	}
 
@@ -83,6 +90,7 @@ var (
 					cveFlag,
 					caAPIExecFlag,
 					imageListPathFlag,
+					imageURIFlag,
 				},
 			},
 			{
@@ -95,6 +103,7 @@ var (
 					outputPathFlag,
 					outputFormatFlag,
 					imageListPathFlag,
+					imageURIFlag,
 				},
 			},
 		},
@@ -128,8 +137,13 @@ func runVulnsCmd(c *c.Context) error {
 	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.CAAPI = c.Bool(caAPIExecFlag.Name)
 	in.ImageFile = c.String(imageListPathFlag.Name)
+	in.ImageURI = c.String(imageURIFlag.Name)
 
 	printVersion(c)
+
+	if err := in.Validate(); err != nil {
+		return errors.Wrap(err, "invalid input")
+	}
 
 	if in.CAAPI {
 		log.Info().Msg("Note: Container Analysis scans currently are limited to base OS only")
@@ -148,8 +162,14 @@ func runLicenseCmd(c *c.Context) error {
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.ImageFile = c.String(imageListPathFlag.Name)
+	in.ImageURI = c.String(imageURIFlag.Name)
 
 	printVersion(c)
+
+	if err := in.Validate(); err != nil {
+		return errors.Wrap(err, "invalid input")
+	}
+
 	if err := disco.DiscoverLicense(c.Context, in); err != nil {
 		return errors.Wrap(err, "error discovering licenses")
 	}

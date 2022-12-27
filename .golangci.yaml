@@ -55,6 +55,8 @@ linters-settings:
   funlen:
     lines: -1
     statements: 45
+  nestif:
+    min-complexity: 10
 
 # issues:
 #   # exclude:

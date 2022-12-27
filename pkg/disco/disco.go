@@ -63,6 +63,14 @@ type SimpleQuery struct {
 	OutputPath string
 	OutputFmt  OutputFormat
 	ImageFile  string
+	ImageURI   string
+}
+
+func (q *SimpleQuery) Validate() error {
+	if q.ImageFile != "" && q.ImageURI != "" {
+		return errors.New("only one of image file or image URI can be specified")
+	}
+	return nil
 }
 
 func (q *SimpleQuery) String() string {
@@ -145,16 +153,20 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 	var imageURIs []string
 	var err error
 
-	if in.ImageFile != "" {
-		log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
-		imageURIs, err = readImageList(in.ImageFile)
-		if err != nil {
-			return errors.Wrapf(err, "error reading image list: %s", in.ImageFile)
-		}
+	if in.ImageURI != "" {
+		imageURIs = []string{in.ImageURI}
 	} else {
-		imageURIs, err = getDeployedImageURIs(ctx, in.ProjectID)
-		if err != nil {
-			return errors.Wrap(err, "error getting images")
+		if in.ImageFile != "" {
+			log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
+			imageURIs, err = readImageList(in.ImageFile)
+			if err != nil {
+				return errors.Wrapf(err, "error reading image list: %s", in.ImageFile)
+			}
+		} else {
+			imageURIs, err = getDeployedImageURIs(ctx, in.ProjectID)
+			if err != nil {
+				return errors.Wrap(err, "error getting images")
+			}
 		}
 	}
 
