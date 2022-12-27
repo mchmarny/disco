@@ -4,4 +4,4 @@ coverage:
   - 10.0
   - 70.0
   round: up
-  target: 70.0
+  
