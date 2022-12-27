@@ -30,7 +30,7 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 		return nil, fmt.Errorf("path is empty")
 	}
 
-	log.Debug().Msgf("Parsing vulnerabilities from %s using filter: %v", path, filter)
+	log.Debug().Msgf("parsing vulnerabilities from %s using filter: %v", path, filter)
 
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -50,25 +50,14 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 			if v.ID == "" {
 				continue
 			}
-			// filter
-			if filter(v.ID) {
+
+			// add only unique CVEs
+			vk := types.ToKey(v.ID, v.Package, v.PackageVersion)
+			if _, ok := m[vk]; ok {
 				continue
 			}
 
-			// add only unique CVEs
-			vHash := types.Hash(struct {
-				ID             string
-				Package        string
-				PackageVersion string
-			}{
-				ID:             v.ID,
-				Package:        v.Package,
-				PackageVersion: v.PackageVersion,
-			})
-			if _, ok := m[vHash]; ok {
-				continue
-			}
-			list = append(list, &types.Vulnerability{
+			vul := &types.Vulnerability{
 				ID:             v.ID,
 				URL:            v.URL,
 				Package:        v.Package,
@@ -77,8 +66,15 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 				Description:    v.Description,
 				Severity:       v.Severity,
 				Updated:        v.Updated,
-			})
-			m[vHash] = true
+			}
+
+			// filter
+			if filter(vul) {
+				continue
+			}
+
+			list = append(list, vul)
+			m[vk] = true
 		}
 	}
 

@@ -10,7 +10,17 @@ import (
 )
 
 // Filter is a filter function.
-type ItemFilter func(v string) bool
+type ItemFilter func(v interface{}) bool
+
+// ToKey returns base64 encoded string from the given parts.
+func ToKey(parts ...string) string {
+	b := bytes.Buffer{}
+	for _, p := range parts {
+		b.WriteString(p)
+	}
+
+	return base64.StdEncoding.EncodeToString(b.Bytes())
+}
 
 // Hash returns hash of the given value.
 // If it can't, it logs error and returns nil.

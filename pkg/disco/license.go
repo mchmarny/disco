@@ -13,11 +13,11 @@ func DiscoverLicense(ctx context.Context, in *SimpleQuery) error {
 		return errors.New("nil input")
 	}
 
-	licenseFilter := func(v string) bool {
+	licenseFilter := func(v interface{}) bool {
 		return false
 	}
 
-	log.Debug().Msgf("Discovering licenses with: %s", in)
+	log.Debug().Msgf("discovering licenses with: %s", in)
 	printProjectScope(in.ProjectID)
 
 	if err := scan(ctx, scanner.LicenseScanner, in, licenseFilter); err != nil {

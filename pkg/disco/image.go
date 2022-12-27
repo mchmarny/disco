@@ -30,7 +30,7 @@ type ImagesQuery struct {
 }
 
 func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, URIOnly:%t",
+	return fmt.Sprintf("project:%s, output:%s, format:%s, uri-only:%t",
 		q.ProjectID, q.OutputPath, q.OutputFmt, q.URIOnly)
 }
 
@@ -39,7 +39,7 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
-	log.Debug().Msgf("Discovering images with: %s", in)
+	log.Debug().Msgf("discovering images with: %s", in)
 	printProjectScope(in.ProjectID)
 
 	images, err := getDeployedImages(ctx, in.ProjectID)

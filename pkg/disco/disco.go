@@ -70,11 +70,12 @@ func (q *SimpleQuery) Validate() error {
 	if q.ImageFile != "" && q.ImageURI != "" {
 		return errors.New("only one of image file or image URI can be specified")
 	}
+
 	return nil
 }
 
 func (q *SimpleQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s",
+	return fmt.Sprintf("projectID:%s, output:%s, format:%s",
 		q.ProjectID, q.OutputPath, q.OutputFmt)
 }
 

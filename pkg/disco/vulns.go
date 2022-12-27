@@ -7,26 +7,82 @@ import (
 
 	"github.com/mchmarny/disco/pkg/gcp"
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
+const (
+	VulnSevUndefined VulnSev = iota
+	VulnSevLow
+	VulnSevMedium
+	VulnSevHigh
+	VulnSevCritical
+)
+
+type VulnSev int64 // Vulnerability severity
+
+// String returns string representation of vulnerability severity.
+func (s VulnSev) String() string {
+	switch s {
+	case VulnSevLow:
+		return "low"
+	case VulnSevMedium:
+		return "medium"
+	case VulnSevHigh:
+		return "high"
+	case VulnSevCritical:
+		return "critical"
+	default:
+		return "undefined"
+	}
+}
+
+// ParseMinVulnSeverityOrDefault parses vulnerability severity string.
+func ParseMinVulnSeverityOrDefault(s string) VulnSev {
+	switch strings.ToLower(s) {
+	case "low":
+		return VulnSevLow
+	case "medium":
+		return VulnSevMedium
+	case "high":
+		return VulnSevHigh
+	case "critical":
+		return VulnSevCritical
+	default:
+		return VulnSevUndefined
+	}
+}
+
 type VulnsQuery struct {
 	SimpleQuery
-	CVE   string
-	CAAPI bool
+	CVE        string
+	CAAPI      bool
+	MinVulnSev VulnSev // Vulnerability severity
+}
+
+func (q *VulnsQuery) Validate() error {
+	if q.SimpleQuery.Validate() != nil {
+		return errors.New("invalid simple query")
+	}
+
+	if q.MinVulnSev != VulnSevUndefined && q.CVE != "" {
+		return errors.New("min severity and CVE are mutually exclusive")
+	}
+
+	return nil
 }
 
 func (q *VulnsQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, CVE:%s, Output:%s, Format:%s, CA-API:%t",
-		q.ProjectID, q.CVE, q.OutputPath, q.OutputFmt, q.CAAPI)
+	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, ca-api: %t, min-vuln-sev: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.CAAPI, q.MinVulnSev)
 }
 
 func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
-	log.Debug().Msgf("Discovering vulnerabilities with: %s", in)
+	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
 	printProjectScope(in.ProjectID)
 
 	if !in.CAAPI {
@@ -133,7 +189,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 			continue
 		}
 		for _, o := range oc {
-			log.Info().Msgf("%-14s - %s in %s (Project: %s, Location: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Metadata.Name, img.Project.ID, img.Location.ID)
+			log.Info().Msgf("%-14s - %s in %s (project: %s, location: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Metadata.Name, img.Project.ID, img.Location.ID)
 
 			list = append(list, o)
 		}
@@ -147,13 +203,24 @@ func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
 		return errors.New("nil input")
 	}
 
-	vulnFilter := func(v string) bool {
-		if in.CVE == "" {
-			return false
+	vulnFilter := func(v interface{}) bool {
+		vul := v.(*types.Vulnerability)
+
+		if in.CVE != "" {
+			exclude := !strings.EqualFold(in.CVE, vul.ID)
+			log.Debug().Msgf("filter on cve (want: %s, got: %s, filter out: %t",
+				in.CVE, vul.ID, exclude)
+			return exclude
 		}
-		match := strings.EqualFold(in.CVE, v)
-		log.Debug().Msgf("CVE filter (want: %s, got: %s, filter our: %t", in.CVE, v, !match)
-		return !match
+
+		if in.MinVulnSev != VulnSevUndefined {
+			vs := ParseMinVulnSeverityOrDefault(vul.Severity)
+			exclude := !(vs >= in.MinVulnSev)
+			log.Debug().Msgf("filter on severity (want: %s, got: %s, filter out: %t",
+				in.MinVulnSev, vul.Severity, exclude)
+			return exclude
+		}
+		return false
 	}
 
 	if err := scan(ctx, scanner.VulnerabilityScanner, &in.SimpleQuery, vulnFilter); err != nil {

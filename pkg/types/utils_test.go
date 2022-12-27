@@ -7,6 +7,10 @@ import (
 )
 
 func TestHashes(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("BgwAA2Zv", Hash("foo"))
+	assert.Equal(t, "BgwAA2Zv", Hash("foo"))
+}
+
+func TestToKey(t *testing.T) {
+	k := ToKey("t1", "t2", "t3")
+	assert.Equal(t, "dDF0MnQz", k)
 }

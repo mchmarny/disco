@@ -24,7 +24,7 @@ func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseR
 		return nil, fmt.Errorf("path is empty")
 	}
 
-	log.Debug().Msgf("Parsing licenses from %s using filter %v", path, filter)
+	log.Debug().Msgf("parsing licenses from %s using filter %t", path, filter != nil)
 
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -44,20 +44,24 @@ func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseR
 			if l.Name == "" {
 				continue
 			}
-			// filter
-			if filter(l.Name) {
-				continue
-			}
 
 			// add only unique licenses
 			lHash := types.Hash(l)
 			if _, ok := m[lHash]; ok {
 				continue
 			}
-			list = append(list, &types.License{
+
+			lic := &types.License{
 				Name:   l.Name,
 				Source: l.PkgName,
-			})
+			}
+
+			// filter
+			if filter(lic) {
+				continue
+			}
+
+			list = append(list, lic)
 			m[lHash] = true
 		}
 	}

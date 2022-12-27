@@ -48,6 +48,13 @@ var (
 		Required: false,
 	}
 
+	minSeverityFlag = &c.StringFlag{
+		Name:     "min-severity",
+		Aliases:  []string{"min-sev", "ms"},
+		Usage:    "minimum severity to report (low, medium, high, critical)",
+		Required: false,
+	}
+
 	imageListPathFlag = &c.StringFlag{
 		Name:     "source",
 		Aliases:  []string{"s", "src"},
@@ -91,6 +98,7 @@ var (
 					caAPIExecFlag,
 					imageListPathFlag,
 					imageURIFlag,
+					minSeverityFlag,
 				},
 			},
 			{
@@ -138,6 +146,7 @@ func runVulnsCmd(c *c.Context) error {
 	in.CAAPI = c.Bool(caAPIExecFlag.Name)
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
+	in.MinVulnSev = disco.ParseMinVulnSeverityOrDefault(c.String(minSeverityFlag.Name))
 
 	printVersion(c)
 
