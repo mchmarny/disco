@@ -38,7 +38,7 @@ func IsAPIEnabled(ctx context.Context, projectNumber, uri string) (bool, error) 
 	}
 
 	var list usageServiceList
-	if err := APIClient.Get(ctx, req, &list); err != nil {
+	if err := client.Get(ctx, req, &list); err != nil {
 		return false, errors.Wrap(err, "error decoding response")
 	}
 

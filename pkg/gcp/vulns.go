@@ -115,7 +115,7 @@ func getVulnerabilities(ctx context.Context, projectID, imageURL, cveID string) 
 	}
 
 	var list OccurrenceList
-	if err := APIClient.Get(ctx, req, &list); err != nil {
+	if err := client.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

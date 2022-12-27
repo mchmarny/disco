@@ -8,7 +8,7 @@ import (
 )
 
 func TestLocations(t *testing.T) {
-	APIClient = &TestAPIClient{}
+	client = &testAPIClient{}
 	expectedRegions := 36
 	list, err := GetLocations(context.Background(), "test")
 	assert.NoError(t, err)

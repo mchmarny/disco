@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	APIClient Client = &GCPClient{}
+	client Client = &apiClient{}
 )
 
 type Client interface {
@@ -26,10 +26,10 @@ type Client interface {
 	Head(ctx context.Context, req *http.Request, key string) (string, error)
 }
 
-type GCPClient struct{}
+type apiClient struct{}
 
-func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
-	c, err := g.newClient(ctx)
+func (g *apiClient) Get(ctx context.Context, req *http.Request, v any) error {
+	c, err := newHTTPClientWithCredentials(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")
 	}
@@ -50,8 +50,8 @@ func (g *GCPClient) Get(ctx context.Context, req *http.Request, v any) error {
 	return nil
 }
 
-func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
-	c, err := g.newClient(ctx)
+func (g *apiClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
+	c, err := newHTTPClientWithCredentials(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "error creating client")
 	}
@@ -81,10 +81,10 @@ func (g *GCPClient) Head(ctx context.Context, req *http.Request, key string) (st
 	return v, nil
 }
 
-func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
+func newHTTPClientWithCredentials(ctx context.Context) (*http.Client, error) {
 	var ops []option.ClientOption
 
-	creds, err := g.getCredentials(ctx)
+	creds, err := getCredentials(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create credentials")
 	}
@@ -98,7 +98,7 @@ func (g *GCPClient) newClient(ctx context.Context) (*http.Client, error) {
 	return client, nil
 }
 
-func (g *GCPClient) getCredentials(ctx context.Context) (*google.Credentials, error) {
+func getCredentials(ctx context.Context) (*google.Credentials, error) {
 	credentials, err := google.FindDefaultCredentials(ctx, scopeDefault)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create default credentials")

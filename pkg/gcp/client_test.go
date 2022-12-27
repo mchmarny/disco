@@ -23,9 +23,9 @@ var (
 	urlExpTestHead    = regexp.MustCompile(`api/v2/status.json$`)
 )
 
-type TestAPIClient struct{}
+type testAPIClient struct{}
 
-func (t *TestAPIClient) Get(ctx context.Context, req *http.Request, v any) error {
+func (t *testAPIClient) Get(ctx context.Context, req *http.Request, v any) error {
 	var testFile string
 
 	switch u := req.URL.Path; {
@@ -58,13 +58,13 @@ func (t *TestAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 	return nil
 }
 
-func (t *TestAPIClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
+func (t *testAPIClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
 	return "test", nil
 }
 
 func TestClientGet(t *testing.T) {
 	ctx := context.Background()
-	c := &TestAPIClient{}
+	c := &testAPIClient{}
 
 	r, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/mchmarny", nil)
 	assert.NoError(t, err)
@@ -76,7 +76,7 @@ func TestClientGet(t *testing.T) {
 
 func TestClientHead(t *testing.T) {
 	ctx := context.Background()
-	c := &TestAPIClient{}
+	c := &testAPIClient{}
 
 	r, err := http.NewRequest(http.MethodHead, "https://www.githubstatus.com/api/v2/status.json", nil)
 	assert.NoError(t, err, "error creating request")
