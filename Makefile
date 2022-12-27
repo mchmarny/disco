@@ -49,34 +49,6 @@ release: tidy ## Builds CLI binary
 	mv dist/disco_darwin_all/disco ./bin/disco
 .PHONY: release
 
-run-all: img-run vul-run vul-local-run cve-run cve-local-run lic-run  ## Runs all command on the compiled version of CLI
-	@echo done
-.PHONY: run-all
-
-img-run: ## Runs run image discovery command on the compiled version of CLI
-	debug=true bin/disco run img -o test.json
-.PHONY: img-run
-
-vul-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul -o test.json
-.PHONY: vul-run
-
-vul-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul --digest -o test.json
-.PHONY: vul-run
-
-cve-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul --cve CVE-2017-11164
-.PHONY: cve-run
-
-cve-local-run: ## Runs image vulnerability discovery command on the compiled version of CLI
-	debug=true bin/disco run vul --digest --cve CVE-2017-11164
-.PHONY: cve-run
-
-lic-run: ## Runs run license discovery command on the compiled version of CLI
-	debug=true bin/disco run lic -o test.json
-.PHONY: lic-run
-
 tag: ## Creates release tag 
 	git tag -s -m "release $(RELEASE_VERSION)" $(RELEASE_VERSION)
 	git push origin $(RELEASE_VERSION)

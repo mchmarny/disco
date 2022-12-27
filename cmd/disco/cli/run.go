@@ -166,7 +166,7 @@ func runVulnsCmd(c *c.Context) error {
 	}
 
 	if in.CAAPI {
-		log.Info().Msg("Note: Container Analysis scans currently are limited to base OS only")
+		log.Info().Msg("note: Container Analysis scans currently are limited to base OS only")
 	}
 
 	if err := vulCmd(c.Context, in); err != nil {

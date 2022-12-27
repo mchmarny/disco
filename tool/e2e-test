@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -o errexit
+
+msg () {
+   echo "====== running $1 tests ======"
+}
+
+msg "root"
+time bin/disco -v > /dev/null
+time bin/disco -h > /dev/null
+
+msg "run"
+time bin/disco run > /dev/null
+
+msg "run img"
+time bin/disco run img > /dev/null
+time bin/disco run img -p cloudy-demos > /dev/null
+time bin/disco run img -p cloudy-demos --uri -o images.tmp
+imgID=$(head -n 1 images.tmp)
+echo $imgID
+
+msg "run vul"
+time bin/disco run vul > /dev/null
+time bin/disco run vul -p cloudy-demos > /dev/null
+time bin/disco run vul --source images.tmp > /dev/null
+time bin/disco run vul --image $imgID > /dev/null
+time bin/disco run vul --source images.tmp --min-severity high > /dev/null
+time bin/disco run vul --source images.tmp --cve CVE-2020-8911 > /dev/null
+time bin/disco run vul --use-ca > /dev/null
+
+msg "run lic"
+time bin/disco run lic > /dev/null
+time bin/disco run lic -p cloudy-demos > /dev/null
+time bin/disco run lic --source images.tmp > /dev/null
+time bin/disco run lic --image $imgID > /dev/null

@@ -157,7 +157,7 @@ func DiscoverVulnsLocally(ctx context.Context, in *types.VulnsQuery) error {
 	}
 
 	if err := scan(ctx, scanner.VulnerabilityScanner, &in.SimpleQuery, vulnFilter); err != nil {
-		return errors.Wrap(err, "error scanning for vulnerabilities")
+		return errors.Wrap(err, "error scanning")
 	}
 
 	return nil

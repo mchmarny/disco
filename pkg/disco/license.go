@@ -22,7 +22,7 @@ func DiscoverLicenses(ctx context.Context, in *types.SimpleQuery) error {
 	printProjectScope(in.ProjectID)
 
 	if err := scan(ctx, scanner.LicenseScanner, in, licenseFilter); err != nil {
-		return errors.Wrap(err, "error scanning for vulnerabilities")
+		return errors.Wrap(err, "error scanning")
 	}
 
 	return nil
