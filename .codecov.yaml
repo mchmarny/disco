@@ -7,6 +7,17 @@ coverage:
   - 50.0
   - 100.0
   round: up
+  status:
+    project:
+      default:
+        # basic
+        target: auto
+        threshold: 50%
+        base: auto 
+        flags: 
+          - unit
+        paths: 
+          - "src"
 ignore:
 - ^vendor.*
 parsers:
