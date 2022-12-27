@@ -8,5 +8,5 @@ import (
 
 func TestHashes(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal("BgwAA2Zv", string(Hash("foo")))
+	assert.Equal("BgwAA2Zv", Hash("foo"))
 }

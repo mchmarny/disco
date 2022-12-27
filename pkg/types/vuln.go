@@ -23,5 +23,5 @@ func (v *Vulnerability) String() string {
 }
 
 func (v *Vulnerability) Hash() string {
-	return string(Hash(v))
+	return Hash(v)
 }

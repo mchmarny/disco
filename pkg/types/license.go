@@ -8,7 +8,7 @@ type LicenseReport struct {
 }
 
 func (l *LicenseReport) Hash() string {
-	return string(Hash(l))
+	return Hash(l)
 }
 
 type License struct {
@@ -21,5 +21,5 @@ func (l *License) String() string {
 }
 
 func (l *License) Hash() string {
-	return string(Hash(l))
+	return Hash(l)
 }
