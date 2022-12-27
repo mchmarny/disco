@@ -4,11 +4,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFilter(t *testing.T) {
-	in := &VulnsQuery{
+	in := &types.VulnsQuery{
 		CVE: "CVE-2019-0001",
 	}
 

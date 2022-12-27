@@ -18,15 +18,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const (
-	// JSONFormat is JSON output format.
-	JSONFormat OutputFormat = iota
-	// YAMLFormat is YAML output format.
-	YAMLFormat OutputFormat = iota
-	// DefaultOutputFormat is default output format.
-	DefaultOutputFormat = JSONFormat
-)
-
 var (
 	getProjectsFunc   getProjects   = gcp.GetProjects
 	getLocationsFunc  getLocations  = gcp.GetLocations
@@ -45,60 +36,9 @@ type isAPIEnabled func(ctx context.Context, projectNumber string, uri string) (b
 type getCVEVulns func(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error)
 type getImageVulns func(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error)
 
-type OutputFormat int64
-
-func (o OutputFormat) String() string {
-	switch o {
-	case JSONFormat:
-		return "json"
-	case YAMLFormat:
-		return "yaml"
-	default:
-		return "unknown"
-	}
-}
-
-type SimpleQuery struct {
-	ProjectID  string
-	OutputPath string
-	OutputFmt  OutputFormat
-	ImageFile  string
-	ImageURI   string
-}
-
-func (q *SimpleQuery) Validate() error {
-	if q.ImageFile != "" && q.ImageURI != "" {
-		return errors.New("only one of image file or image URI can be specified")
-	}
-
-	return nil
-}
-
-func (q *SimpleQuery) String() string {
-	return fmt.Sprintf("projectID:%s, output:%s, format:%s",
-		q.ProjectID, q.OutputPath, q.OutputFmt)
-}
-
-// ParseOutputFormat parses output format.
-func ParseOutputFormatOrDefault(format string) OutputFormat {
-	if format == "" {
-		return DefaultOutputFormat
-	}
-
-	switch format {
-	case "json":
-		return JSONFormat
-	case "yaml":
-		return YAMLFormat
-	default:
-		log.Error().Msgf("unsupported output format: %s", format)
-		return DefaultOutputFormat
-	}
-}
-
 const yamlIndent = 2
 
-func writeOutput(path string, format OutputFormat, data any) error {
+func writeOutput(path string, format types.OutputFormat, data any) error {
 	if data == nil {
 		return errors.New("nil data")
 	}
@@ -119,13 +59,13 @@ func writeOutput(path string, format OutputFormat, data any) error {
 	fmt.Println() // add a new line before
 
 	switch format {
-	case JSONFormat:
+	case types.JSONFormat:
 		je := json.NewEncoder(w)
 		je.SetIndent("", "  ")
 		if err := je.Encode(data); err != nil {
 			return errors.Wrap(err, "error encoding")
 		}
-	case YAMLFormat:
+	case types.YAMLFormat:
 		ye := yaml.NewEncoder(w)
 		ye.SetIndent(yamlIndent)
 		if err := ye.Encode(data); err != nil {
@@ -146,7 +86,7 @@ func printProjectScope(projectID string) {
 	}
 }
 
-func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter types.ItemFilter) error {
+func scan(ctx context.Context, scan scanner.ScannerType, in *types.SimpleQuery, filter types.ItemFilter) error {
 	if in == nil {
 		return errors.New("nil input")
 	}

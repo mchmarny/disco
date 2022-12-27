@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverLicense(ctx context.Context, in *SimpleQuery) error {
+func DiscoverLicenses(ctx context.Context, in *types.SimpleQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}

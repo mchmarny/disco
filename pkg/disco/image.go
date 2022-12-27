@@ -2,10 +2,10 @@ package disco
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/mchmarny/disco/pkg/gcp"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -17,25 +17,8 @@ type RunningImage struct {
 	Location *gcp.Location
 }
 
-type ImageReport struct {
-	Image    string `json:"image"`
-	Service  string `json:"service"`
-	Project  string `json:"project"`
-	Location string `json:"location"`
-}
-
-type ImagesQuery struct {
-	SimpleQuery
-	URIOnly bool
-}
-
-func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("project:%s, output:%s, format:%s, uri-only:%t",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.URIOnly)
-}
-
 // DiscoverImages discovers all deployed images in the project.
-func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
+func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -56,9 +39,9 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 		return nil
 	}
 
-	list := make([]*ImageReport, 0)
+	list := make([]*types.ImageReport, 0)
 	for _, img := range images {
-		list = append(list, &ImageReport{
+		list = append(list, &types.ImageReport{
 			Location: img.Location.ID,
 			Project:  img.Project.ID,
 			Service:  img.Service.Metadata.Name,

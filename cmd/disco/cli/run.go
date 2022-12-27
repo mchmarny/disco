@@ -1,7 +1,10 @@
 package cli
 
 import (
+	"context"
+
 	"github.com/mchmarny/disco/pkg/disco"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
@@ -36,8 +39,8 @@ var (
 	}
 
 	caAPIExecFlag = &c.BoolFlag{
-		Name:  "ca",
-		Usage: "invokes Container Analysis API in stead of local scanner",
+		Name:  "use-ca",
+		Usage: "invokes Container Analysis API instead of the local scanner",
 		Value: false,
 	}
 
@@ -51,7 +54,7 @@ var (
 	minSeverityFlag = &c.StringFlag{
 		Name:     "min-severity",
 		Aliases:  []string{"min-sev", "ms"},
-		Usage:    "minimum severity to report (low, medium, high, critical)",
+		Usage:    "minimum severity to report (e.g. low, medium, high, critical)",
 		Required: false,
 	}
 
@@ -94,11 +97,11 @@ var (
 					projectIDFlag,
 					outputPathFlag,
 					outputFormatFlag,
-					cveFlag,
-					caAPIExecFlag,
 					imageListPathFlag,
 					imageURIFlag,
 					minSeverityFlag,
+					cveFlag,
+					caAPIExecFlag,
 				},
 			},
 			{
@@ -116,21 +119,29 @@ var (
 			},
 		},
 	}
+
+	imgCmd imgCmdFunc = disco.DiscoverImages
+	vulCmd vulCmdFunc = disco.DiscoverVulns
+	licCmd licCmdFunc = disco.DiscoverLicenses
 )
+
+type imgCmdFunc func(ctx context.Context, in *types.ImagesQuery) error
+type vulCmdFunc func(ctx context.Context, in *types.VulnsQuery) error
+type licCmdFunc func(ctx context.Context, in *types.SimpleQuery) error
 
 func printVersion(c *c.Context) {
 	log.Info().Msgf(c.App.Version)
 }
 
 func runImagesCmd(c *c.Context) error {
-	in := &disco.ImagesQuery{}
+	in := &types.ImagesQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
-	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
+	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.URIOnly = c.Bool(outputURIOnlyFlag.Name)
 
 	printVersion(c)
-	if err := disco.DiscoverImages(c.Context, in); err != nil {
+	if err := imgCmd(c.Context, in); err != nil {
 		return errors.Wrap(err, "error discovering images")
 	}
 
@@ -138,15 +149,15 @@ func runImagesCmd(c *c.Context) error {
 }
 
 func runVulnsCmd(c *c.Context) error {
-	in := &disco.VulnsQuery{}
+	in := &types.VulnsQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
-	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
+	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.CAAPI = c.Bool(caAPIExecFlag.Name)
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
-	in.MinVulnSev = disco.ParseMinVulnSeverityOrDefault(c.String(minSeverityFlag.Name))
+	in.MinVulnSev = types.ParseMinVulnSeverityOrDefault(c.String(minSeverityFlag.Name))
 
 	printVersion(c)
 
@@ -158,7 +169,7 @@ func runVulnsCmd(c *c.Context) error {
 		log.Info().Msg("Note: Container Analysis scans currently are limited to base OS only")
 	}
 
-	if err := disco.DiscoverVulns(c.Context, in); err != nil {
+	if err := vulCmd(c.Context, in); err != nil {
 		return errors.Wrap(err, "error excuting command")
 	}
 
@@ -166,10 +177,10 @@ func runVulnsCmd(c *c.Context) error {
 }
 
 func runLicenseCmd(c *c.Context) error {
-	in := &disco.SimpleQuery{}
+	in := &types.SimpleQuery{}
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
-	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
+	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
 
@@ -179,7 +190,7 @@ func runLicenseCmd(c *c.Context) error {
 		return errors.Wrap(err, "invalid input")
 	}
 
-	if err := disco.DiscoverLicense(c.Context, in); err != nil {
+	if err := licCmd(c.Context, in); err != nil {
 		return errors.Wrap(err, "error discovering licenses")
 	}
 

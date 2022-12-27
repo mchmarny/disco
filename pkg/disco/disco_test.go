@@ -10,6 +10,7 @@ import (
 
 	"github.com/mchmarny/disco/pkg/gcp"
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,18 +40,18 @@ func TestImage(t *testing.T) {
 	err := DiscoverImages(ctx, nil)
 	assert.Error(t, err, "error discovering images with nil query")
 
-	err = DiscoverImages(ctx, &ImagesQuery{})
+	err = DiscoverImages(ctx, &types.ImagesQuery{})
 	assert.NoError(t, err, "error discovering images")
 
-	err = DiscoverImages(ctx, &ImagesQuery{
-		SimpleQuery: SimpleQuery{
+	err = DiscoverImages(ctx, &types.ImagesQuery{
+		SimpleQuery: types.SimpleQuery{
 			ProjectID: "test-project",
-			OutputFmt: ParseOutputFormatOrDefault("yaml"),
+			OutputFmt: types.ParseOutputFormatOrDefault("yaml"),
 		},
 	})
 	assert.NoError(t, err, "error discovering images with project")
 
-	err = DiscoverImages(ctx, &ImagesQuery{
+	err = DiscoverImages(ctx, &types.ImagesQuery{
 		URIOnly: true,
 	})
 	assert.NoError(t, err, "error discovering images with digests only")
@@ -60,13 +61,13 @@ func TestLicense(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverLicense(ctx, nil)
+	err := DiscoverLicenses(ctx, nil)
 	assert.Error(t, err, "error licenses images with nil query")
 
-	err = DiscoverLicense(ctx, &SimpleQuery{})
+	err = DiscoverLicenses(ctx, &types.SimpleQuery{})
 	assert.NoError(t, err, "error discovering license")
 
-	err = DiscoverLicense(ctx, &SimpleQuery{
+	err = DiscoverLicenses(ctx, &types.SimpleQuery{
 		ProjectID:  "test-project",
 		OutputPath: "../../license.tmp",
 	})
@@ -80,26 +81,26 @@ func TestVuln(t *testing.T) {
 	err := DiscoverVulns(ctx, nil)
 	assert.Error(t, err, "error vulns images with nil query")
 
-	err = DiscoverVulns(ctx, &VulnsQuery{})
+	err = DiscoverVulns(ctx, &types.VulnsQuery{})
 	assert.NoError(t, err, "error discovering vulns")
 
-	err = DiscoverVulns(ctx, &VulnsQuery{
-		SimpleQuery: SimpleQuery{
+	err = DiscoverVulns(ctx, &types.VulnsQuery{
+		SimpleQuery: types.SimpleQuery{
 			ProjectID: "test-project",
 		},
 	})
 	assert.NoError(t, err, "error discovering vulns with project")
 
-	err = DiscoverVulns(ctx, &VulnsQuery{
+	err = DiscoverVulns(ctx, &types.VulnsQuery{
 		CAAPI: true,
 	})
 	assert.NoError(t, err, "error discovering vulns with CAAPI")
 
-	err = DiscoverVulns(ctx, &VulnsQuery{
+	err = DiscoverVulns(ctx, &types.VulnsQuery{
 		CAAPI: true,
-		SimpleQuery: SimpleQuery{
+		SimpleQuery: types.SimpleQuery{
 			ProjectID: "test-project",
-			OutputFmt: ParseOutputFormatOrDefault("raw"),
+			OutputFmt: types.ParseOutputFormatOrDefault("raw"),
 		},
 	})
 	assert.NoError(t, err, "error discovering vulns with CAAPI and project ID")
@@ -172,23 +173,23 @@ func loadTestData(path string, v any) error {
 }
 
 func TestFormatParse(t *testing.T) {
-	f := ParseOutputFormatOrDefault("")
-	assert.Equal(t, f, DefaultOutputFormat)
-	f = ParseOutputFormatOrDefault("json")
-	assert.Equal(t, f, JSONFormat)
-	f = ParseOutputFormatOrDefault("yaml")
-	assert.Equal(t, f, YAMLFormat)
+	f := types.ParseOutputFormatOrDefault("")
+	assert.Equal(t, f, types.DefaultOutputFormat)
+	f = types.ParseOutputFormatOrDefault("json")
+	assert.Equal(t, f, types.JSONFormat)
+	f = types.ParseOutputFormatOrDefault("yaml")
+	assert.Equal(t, f, types.YAMLFormat)
 }
 
 func TestWriteOutput(t *testing.T) {
-	err := writeOutput("", JSONFormat, nil)
+	err := writeOutput("", types.JSONFormat, nil)
 	assert.Error(t, err, "error writing output with nil data")
 	f := struct {
 		Name string
 	}{
 		Name: "test",
 	}
-	err = writeOutput("", JSONFormat, f)
+	err = writeOutput("", types.JSONFormat, f)
 	assert.Nil(t, err, "error writing output with JSON format")
 }
 

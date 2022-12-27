@@ -1,6 +1,76 @@
 package types
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+const (
+	VulnSevUndefined VulnSev = iota
+	VulnSevLow
+	VulnSevMedium
+	VulnSevHigh
+	VulnSevCritical
+)
+
+type VulnSev int64 // Vulnerability severity
+
+// String returns string representation of vulnerability severity.
+func (s VulnSev) String() string {
+	switch s {
+	case VulnSevLow:
+		return "low"
+	case VulnSevMedium:
+		return "medium"
+	case VulnSevHigh:
+		return "high"
+	case VulnSevCritical:
+		return "critical"
+	default:
+		return "undefined"
+	}
+}
+
+// ParseMinVulnSeverityOrDefault parses vulnerability severity string.
+func ParseMinVulnSeverityOrDefault(s string) VulnSev {
+	switch strings.ToLower(s) {
+	case "low":
+		return VulnSevLow
+	case "medium":
+		return VulnSevMedium
+	case "high":
+		return VulnSevHigh
+	case "critical":
+		return VulnSevCritical
+	default:
+		return VulnSevUndefined
+	}
+}
+
+type VulnsQuery struct {
+	SimpleQuery
+	CVE        string
+	CAAPI      bool
+	MinVulnSev VulnSev // Vulnerability severity
+}
+
+func (q *VulnsQuery) Validate() error {
+	if q.SimpleQuery.Validate() != nil {
+		return errors.New("invalid simple query")
+	}
+
+	if q.MinVulnSev != VulnSevUndefined && q.CVE != "" {
+		return errors.New("min severity and CVE are mutually exclusive")
+	}
+
+	return nil
+}
+
+func (q *VulnsQuery) String() string {
+	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, ca-api: %t, min-vuln-sev: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.CAAPI, q.MinVulnSev)
+}
 
 type VulnerabilityReport struct {
 	Image           string           `json:"image"`

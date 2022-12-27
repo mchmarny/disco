@@ -2,7 +2,6 @@ package disco
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/mchmarny/disco/pkg/gcp"
@@ -12,73 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const (
-	VulnSevUndefined VulnSev = iota
-	VulnSevLow
-	VulnSevMedium
-	VulnSevHigh
-	VulnSevCritical
-)
-
-type VulnSev int64 // Vulnerability severity
-
-// String returns string representation of vulnerability severity.
-func (s VulnSev) String() string {
-	switch s {
-	case VulnSevLow:
-		return "low"
-	case VulnSevMedium:
-		return "medium"
-	case VulnSevHigh:
-		return "high"
-	case VulnSevCritical:
-		return "critical"
-	default:
-		return "undefined"
-	}
-}
-
-// ParseMinVulnSeverityOrDefault parses vulnerability severity string.
-func ParseMinVulnSeverityOrDefault(s string) VulnSev {
-	switch strings.ToLower(s) {
-	case "low":
-		return VulnSevLow
-	case "medium":
-		return VulnSevMedium
-	case "high":
-		return VulnSevHigh
-	case "critical":
-		return VulnSevCritical
-	default:
-		return VulnSevUndefined
-	}
-}
-
-type VulnsQuery struct {
-	SimpleQuery
-	CVE        string
-	CAAPI      bool
-	MinVulnSev VulnSev // Vulnerability severity
-}
-
-func (q *VulnsQuery) Validate() error {
-	if q.SimpleQuery.Validate() != nil {
-		return errors.New("invalid simple query")
-	}
-
-	if q.MinVulnSev != VulnSevUndefined && q.CVE != "" {
-		return errors.New("min severity and CVE are mutually exclusive")
-	}
-
-	return nil
-}
-
-func (q *VulnsQuery) String() string {
-	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, ca-api: %t, min-vuln-sev: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.CAAPI, q.MinVulnSev)
-}
-
-func DiscoverVulns(ctx context.Context, in *VulnsQuery) error {
+func DiscoverVulns(ctx context.Context, in *types.VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -198,7 +131,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 	return list, nil
 }
 
-func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
+func DiscoverVulnsLocally(ctx context.Context, in *types.VulnsQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -213,8 +146,8 @@ func DiscoverVulnsLocally(ctx context.Context, in *VulnsQuery) error {
 			return exclude
 		}
 
-		if in.MinVulnSev != VulnSevUndefined {
-			vs := ParseMinVulnSeverityOrDefault(vul.Severity)
+		if in.MinVulnSev != types.VulnSevUndefined {
+			vs := types.ParseMinVulnSeverityOrDefault(vul.Severity)
 			exclude := !(vs >= in.MinVulnSev)
 			log.Debug().Msgf("filter on severity (want: %s, got: %s, filter out: %t",
 				in.MinVulnSev, vul.Severity, exclude)
