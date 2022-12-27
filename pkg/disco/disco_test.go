@@ -51,7 +51,7 @@ func TestImage(t *testing.T) {
 	assert.NoError(t, err, "error discovering images with project")
 
 	err = DiscoverImages(ctx, &ImagesQuery{
-		OnlyDigest: true,
+		URIOnly: true,
 	})
 	assert.NoError(t, err, "error discovering images with digests only")
 }
@@ -178,8 +178,6 @@ func TestFormatParse(t *testing.T) {
 	assert.Equal(t, f, JSONFormat)
 	f = ParseOutputFormatOrDefault("yaml")
 	assert.Equal(t, f, YAMLFormat)
-	f = ParseOutputFormatOrDefault("raw")
-	assert.Equal(t, f, RawFormat)
 }
 
 func TestWriteOutput(t *testing.T) {
@@ -192,9 +190,6 @@ func TestWriteOutput(t *testing.T) {
 	}
 	err = writeOutput("", JSONFormat, f)
 	assert.Nil(t, err, "error writing output with JSON format")
-
-	err = writeOutput("", RawFormat, f)
-	assert.Nil(t, err, "error writing output with RAW format")
 }
 
 func TestScan(t *testing.T) {

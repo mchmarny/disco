@@ -1,6 +1,7 @@
 package disco
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/gcp"
 	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/types"
@@ -21,8 +23,6 @@ const (
 	JSONFormat OutputFormat = iota
 	// YAMLFormat is YAML output format.
 	YAMLFormat OutputFormat = iota
-	// RawFormat is list output format.
-	RawFormat OutputFormat = iota
 	// DefaultOutputFormat is default output format.
 	DefaultOutputFormat = JSONFormat
 )
@@ -53,8 +53,6 @@ func (o OutputFormat) String() string {
 		return "json"
 	case YAMLFormat:
 		return "yaml"
-	case RawFormat:
-		return "raw"
 	default:
 		return "unknown"
 	}
@@ -64,6 +62,7 @@ type SimpleQuery struct {
 	ProjectID  string
 	OutputPath string
 	OutputFmt  OutputFormat
+	ImageFile  string
 }
 
 func (q *SimpleQuery) String() string {
@@ -82,8 +81,6 @@ func ParseOutputFormatOrDefault(format string) OutputFormat {
 		return JSONFormat
 	case "yaml":
 		return YAMLFormat
-	case "raw":
-		return RawFormat
 	default:
 		log.Error().Msgf("unsupported output format: %s", format)
 		return DefaultOutputFormat
@@ -125,8 +122,6 @@ func writeOutput(path string, format OutputFormat, data any) error {
 		if err := ye.Encode(data); err != nil {
 			return errors.Wrap(err, "error encoding")
 		}
-	case RawFormat:
-		os.Stdout.Write([]byte(fmt.Sprintf("%v", data)))
 	default:
 		return errors.Errorf("unsupported output format: %d", format)
 	}
@@ -147,9 +142,20 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 		return errors.New("nil input")
 	}
 
-	images, err := getDeployedImages(ctx, in.ProjectID)
-	if err != nil {
-		return errors.Wrap(err, "error getting images")
+	var imageURIs []string
+	var err error
+
+	if in.ImageFile != "" {
+		log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
+		imageURIs, err = readImageList(in.ImageFile)
+		if err != nil {
+			return errors.Wrapf(err, "error reading image list: %s", in.ImageFile)
+		}
+	} else {
+		imageURIs, err = getDeployedImageURIs(ctx, in.ProjectID)
+		if err != nil {
+			return errors.Wrap(err, "error getting images")
+		}
 	}
 
 	dir, err := os.MkdirTemp(os.TempDir(), scan.String())
@@ -163,26 +169,26 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 	}()
 
 	list := make([]any, 0)
-	for _, img := range images {
-		log.Debug().Msgf("getting %s for %s", scan.String(), img.Image.Name)
-		p := path.Join(dir, img.Image.Name)
+	for _, img := range imageURIs {
+		p := path.Join(dir, uuid.NewString())
+		log.Debug().Msgf("getting %s for %s (file: %s)", scan.String(), img, p)
 
 		switch scan {
 		case scanner.LicenseScanner:
-			report, err := scanner.GetLicenses(img.Image.URI(), p, filter)
+			report, err := scanner.GetLicenses(img, p, filter)
 			if err != nil {
-				return errors.Wrapf(err, "error getting licenses for %s", img.Image.Name)
+				return errors.Wrapf(err, "error getting licenses for %s", img)
 			}
-			log.Info().Msgf("found %d licenses in %s", len(report.Licenses), img.Image.Name)
+			log.Info().Msgf("found %d licenses in %s", len(report.Licenses), img)
 			if len(report.Licenses) > 0 {
 				list = append(list, report)
 			}
 		case scanner.VulnerabilityScanner:
-			report, err := scanner.GetVulnerabilities(img.Image.URI(), p, filter)
+			report, err := scanner.GetVulnerabilities(img, p, filter)
 			if err != nil {
-				return errors.Wrapf(err, "error getting vulnerabilities for %s", img.Image.Name)
+				return errors.Wrapf(err, "error getting vulnerabilities for %s", img)
 			}
-			log.Info().Msgf("found %d vulnerabilities in %s", len(report.Vulnerabilities), img.Image.Name)
+			log.Info().Msgf("found %d vulnerabilities in %s", len(report.Vulnerabilities), img)
 			if len(report.Vulnerabilities) > 0 {
 				list = append(list, report)
 			}
@@ -196,4 +202,27 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 	}
 
 	return nil
+}
+
+func readImageList(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error opening file: %s", path)
+	}
+	defer f.Close()
+
+	var images []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		uri := scanner.Text()
+		if uri != "" {
+			images = append(images, uri)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, errors.Wrapf(err, "error reading file: %s", path)
+	}
+
+	return images, nil
 }

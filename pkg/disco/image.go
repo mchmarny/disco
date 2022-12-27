@@ -18,20 +18,20 @@ type RunningImage struct {
 }
 
 type ImageReport struct {
-	Location string `json:"location"`
-	Project  string `json:"project"`
-	Service  string `json:"service"`
 	Image    string `json:"image"`
+	Service  string `json:"service"`
+	Project  string `json:"project"`
+	Location string `json:"location"`
 }
 
 type ImagesQuery struct {
 	SimpleQuery
-	OnlyDigest bool
+	URIOnly bool
 }
 
 func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, OnlyDigest:%t",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.OnlyDigest)
+	return fmt.Sprintf("ProjectID:%s, Output:%s, Format:%s, URIOnly:%t",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.URIOnly)
 }
 
 // DiscoverImages discovers all deployed images in the project.
@@ -47,12 +47,11 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 		return errors.Wrap(err, "error getting images")
 	}
 
-	log.Info().Msgf("Found the following %d images:", len(images))
+	log.Info().Msgf("found %d images", len(images))
 
-	if in.OnlyDigest {
-		for _, img := range images {
-			os.Stdout.WriteString(img.Image.URI())
-			os.Stdout.WriteString("\n")
+	if in.URIOnly {
+		if err := writeList(in.OutputPath, images); err != nil {
+			return errors.Wrap(err, "error writing output")
 		}
 		return nil
 	}
@@ -63,7 +62,7 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 			Location: img.Location.ID,
 			Project:  img.Project.ID,
 			Service:  img.Service.Metadata.Name,
-			Image:    img.Image.URL(),
+			Image:    img.Image.URI(),
 		})
 	}
 
@@ -72,6 +71,18 @@ func DiscoverImages(ctx context.Context, in *ImagesQuery) error {
 	}
 
 	return nil
+}
+
+func getDeployedImageURIs(ctx context.Context, projectID string) ([]string, error) {
+	images, err := getDeployedImages(ctx, projectID)
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting images")
+	}
+	imageURIs := make([]string, len(images))
+	for _, img := range images {
+		imageURIs = append(imageURIs, img.Image.URI())
+	}
+	return imageURIs, nil
 }
 
 func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, error) {
@@ -97,7 +108,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
 			continue
 		}
-		log.Info().Msgf("found %d regions where Cloud Run is supported", len(reg))
+		log.Info().Msgf("found %d regions where Cloud Run is supported, processing...", len(reg))
 
 		for _, r := range reg {
 			svcs, err := getServicesFunc(ctx, p.Number, r.ID)
@@ -108,7 +119,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Info().Msgf("processing service: %s (Project: %s, Region: %s)", s.Metadata.Name, p.ID, r.ID)
+				log.Info().Msgf("processing service: %s (project: %s, region: %s)", s.Metadata.Name, p.ID, r.ID)
 
 				for _, c := range s.Spec.Template.Spec.Containers {
 					f, err := getImageInfoFunc(ctx, c.Image)
@@ -159,4 +170,27 @@ func isQualifiedProject(ctx context.Context, p *gcp.Project, filterID string) bo
 	}
 
 	return true
+}
+
+func writeList(path string, images []*RunningImage) error {
+	if path == "" {
+		for _, img := range images {
+			os.Stdout.WriteString(img.Image.URI())
+			os.Stdout.WriteString("\n")
+		}
+		return nil
+	}
+
+	f, err := os.Create(path)
+	if err != nil {
+		return errors.Wrapf(err, "error creating file: %s", path)
+	}
+	defer f.Close()
+
+	for _, img := range images {
+		if _, err := f.WriteString(img.Image.URI() + "\n"); err != nil {
+			return errors.Wrapf(err, "error writing to file: %s", path)
+		}
+	}
+	return nil
 }

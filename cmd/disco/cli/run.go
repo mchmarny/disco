@@ -25,13 +25,13 @@ var (
 	outputFormatFlag = &c.StringFlag{
 		Name:     "format",
 		Aliases:  []string{"f"},
-		Usage:    "output format (json, yaml, raw)",
+		Usage:    "output format (json, yaml)",
 		Required: false,
 	}
 
-	outputDigestOnlyFlag = &c.BoolFlag{
-		Name:  "digest",
-		Usage: "output only image digests",
+	outputURIOnlyFlag = &c.BoolFlag{
+		Name:  "uri",
+		Usage: "output only image URI",
 		Value: false,
 	}
 
@@ -48,6 +48,13 @@ var (
 		Required: false,
 	}
 
+	imageListPathFlag = &c.StringFlag{
+		Name:     "images",
+		Aliases:  []string{"i"},
+		Usage:    "image list input file (instead of discovery)",
+		Required: false,
+	}
+
 	runCmd = &c.Command{
 		Name:  "run",
 		Usage: "Cloud Run commands",
@@ -61,7 +68,7 @@ var (
 					projectIDFlag,
 					outputPathFlag,
 					outputFormatFlag,
-					outputDigestOnlyFlag,
+					outputURIOnlyFlag,
 				},
 			},
 			{
@@ -75,6 +82,7 @@ var (
 					outputFormatFlag,
 					cveFlag,
 					caAPIExecFlag,
+					imageListPathFlag,
 				},
 			},
 			{
@@ -86,6 +94,7 @@ var (
 					projectIDFlag,
 					outputPathFlag,
 					outputFormatFlag,
+					imageListPathFlag,
 				},
 			},
 		},
@@ -101,7 +110,7 @@ func runImagesCmd(c *c.Context) error {
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
-	in.OnlyDigest = c.Bool(outputDigestOnlyFlag.Name)
+	in.URIOnly = c.Bool(outputURIOnlyFlag.Name)
 
 	printVersion(c)
 	if err := disco.DiscoverImages(c.Context, in); err != nil {
@@ -118,6 +127,7 @@ func runVulnsCmd(c *c.Context) error {
 	in.CVE = c.String(cveFlag.Name)
 	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.CAAPI = c.Bool(caAPIExecFlag.Name)
+	in.ImageFile = c.String(imageListPathFlag.Name)
 
 	printVersion(c)
 
@@ -137,6 +147,7 @@ func runLicenseCmd(c *c.Context) error {
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = disco.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
+	in.ImageFile = c.String(imageListPathFlag.Name)
 
 	printVersion(c)
 	if err := disco.DiscoverLicense(c.Context, in); err != nil {

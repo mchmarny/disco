@@ -66,17 +66,17 @@ disco run images
 
 The `images` command supports all of the generic options listed above, plus: 
 
-* `--digest` - outputs only image digests (default: false). This is helpful when you want to pipe the resulting image digests to another program.
+* `--uri` - outputs only image uri (default: false). This is helpful when you want to pipe the resulting images to another program.
 
 The resulting report in JSON format will look something like this (abbreviated):
 
 ```json
 [
   {
-    "location": "us-central1",
-    "project": "cloudy-demos",
+    "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
     "service": "hello",
-    "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c"
+    "project": "cloudy-demos",
+    "location": "us-central1"
   },
   ...
 ]
@@ -89,6 +89,10 @@ To discover licenses used in container images currently deployed in Cloud Run.
 ```shell
 disco run licenses
 ```
+
+The `licenses` command supports all of the generic options listed above, plus: 
+
+* `--images` - path to image list input file. This allows you to use the previously generated list of images (`disco run img --uri -o images.txt`), instead of running through potentially lengthy discovery. 
 
 The resulting report in JSON format will look something like this (abbreviated):
 
@@ -123,6 +127,10 @@ To discover potential vulnerabilities in container images currently deployed in 
 ```shell
 disco run licenses
 ```
+
+The `licenses` command supports all of the generic options listed above, plus: 
+
+* `--images` - path to image list input file. This allows you to use the previously generated list of images (`disco run img --uri -o images.txt`), instead of running through potentially lengthy discovery. 
 
 The `licenses` command supports all of the generic options listed above, plus: 
 
