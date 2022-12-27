@@ -35,12 +35,18 @@ type ImageInfo struct {
 func (i *ImageInfo) withPrefix(v string) string {
 	// gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7
 	if i.IsGCR {
-		return fmt.Sprintf("%s%s/%s/%s@%s", v, i.Registry, i.Project, i.Name, i.Digest)
+		if i.Digest != "" {
+			return fmt.Sprintf("%s%s/%s/%s@%s", v, i.Registry, i.Project, i.Name, i.Digest)
+		}
+		return fmt.Sprintf("%s%s/%s/%s", v, i.Registry, i.Project, i.Name)
 	}
 
 	// us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc
 	if i.IsAR {
-		return fmt.Sprintf("%s%s/%s/%s/%s@%s", v, i.Registry, i.Project, i.Folder, i.Name, i.Digest)
+		if i.Digest != "" {
+			return fmt.Sprintf("%s%s/%s/%s/%s@%s", v, i.Registry, i.Project, i.Folder, i.Name, i.Digest)
+		}
+		return fmt.Sprintf("%s%s/%s/%s/%s", v, i.Registry, i.Project, i.Folder, i.Name)
 	}
 	return ""
 }

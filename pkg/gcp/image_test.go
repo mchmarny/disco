@@ -9,6 +9,8 @@ import (
 // TODO: refactor to declarative test cases.
 
 func TestImageManifestURL(t *testing.T) {
+	_, err := ParseImageInfo("")
+	assert.Error(t, err)
 	img, err := ParseImageInfo("us-west1-docker.pkg.dev/cloudy-demos/art/artomator")
 	assert.NoError(t, err)
 	assert.NotNil(t, img)
@@ -84,6 +86,9 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "latest", img.Tag)
 	assert.Empty(t, img.Digest)
+	assert.NotEmpty(t, img.URL())
+	assert.NotEmpty(t, img.URI())
+	assert.Equal(t, "https://gcr.io/v2/cloudy-demos/hello-broken/manifests/latest", img.ManifestURL())
 
 	img, err = ParseImageInfo("gcr.io/cloudy-demos/hello-broken:latest")
 	assert.NoError(t, err)
@@ -100,6 +105,7 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "", img.Tag)
 	assert.Equal(t, "sha256:1234567890", img.Digest)
+	assert.Equal(t, "https://gcr.io/cloudy-demos/hello-broken@sha256:1234567890", img.withPrefix("https://"))
 
 	img, err = ParseImageInfo("us.gcr.io/cloudy-demos/hello-broken:v0.8.3")
 	assert.NoError(t, err)
@@ -109,8 +115,7 @@ func TestParseGCRImage(t *testing.T) {
 	assert.Equal(t, "hello-broken", img.Name)
 	assert.Equal(t, "v0.8.3", img.Tag)
 	assert.Empty(t, img.Digest)
-	assert.NotEmpty(t, img.URL)
-	assert.NotEmpty(t, img.URI)
+	assert.Equal(t, "https://us.gcr.io/cloudy-demos/hello-broken", img.withPrefix("https://"))
 }
 
 func TestParseName(t *testing.T) {
