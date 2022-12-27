@@ -154,6 +154,7 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 	var err error
 
 	if in.ImageURI != "" {
+		log.Debug().Msgf("using image URI: '%s'", in.ImageURI)
 		imageURIs = []string{in.ImageURI}
 	} else {
 		if in.ImageFile != "" {
@@ -163,11 +164,17 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *SimpleQuery, filter
 				return errors.Wrapf(err, "error reading image list: %s", in.ImageFile)
 			}
 		} else {
+			log.Debug().Msg("discovering images from API...")
 			imageURIs, err = getDeployedImageURIs(ctx, in.ProjectID)
 			if err != nil {
 				return errors.Wrap(err, "error getting images")
 			}
 		}
+	}
+
+	log.Debug().Msgf("found %d images", len(imageURIs))
+	if imageURIs == nil {
+		return errors.New("error, no images to scan")
 	}
 
 	dir, err := os.MkdirTemp(os.TempDir(), scan.String())

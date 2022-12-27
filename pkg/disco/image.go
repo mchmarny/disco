@@ -78,7 +78,7 @@ func getDeployedImageURIs(ctx context.Context, projectID string) ([]string, erro
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting images")
 	}
-	imageURIs := make([]string, len(images))
+	imageURIs := make([]string, 0)
 	for _, img := range images {
 		imageURIs = append(imageURIs, img.Image.URI())
 	}
