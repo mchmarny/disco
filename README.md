@@ -133,9 +133,6 @@ The `licenses` command supports all of the generic options listed above, plus:
 
 * `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (`disco run img --uri -o images.txt`), instead of running through potentially lengthy discovery. 
 * `--image` - specific image URI to scan.
-
-The `licenses` command supports all of the generic options listed above, plus: 
-
 * `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to new CVE.
 * `--ca`  - invokes Container Analysis API instead of the local scanner (default: false).     
 
