@@ -20,6 +20,8 @@ Features:
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
 
+![](etc/preview.png)
+
 ## Why
 
 It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using Google Container Analysis service, but currently it only covers base OS. It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support multiple revisions, each potentially using a different version of an image, or even different image all together.

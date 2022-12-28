@@ -26,6 +26,14 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
     "https://run.googleapis.com/v2/projects/cloudy-demos/locations/us-west1/services"
      
 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://cloudfunctions.googleapis.com/v2beta/projects/cloudy-demos/locations/us-west1/functions"
+
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://cloudfunctions.googleapis.com/v2beta/projects/cloudy-demos/locations/us-west1/functions/test-func"
+
 # get the service image uri
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
