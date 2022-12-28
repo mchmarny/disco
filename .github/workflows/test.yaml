@@ -77,5 +77,6 @@ jobs:
         exit-code: '1'
     - name: Upload Report
       uses: github/codeql-action/upload-sarif@896079047b4bb059ba6f150a5d87d47dde99e6e5  # v2.11.6
+      if: always()
       with:
         sarif_file: 'trivy-results.sarif'
