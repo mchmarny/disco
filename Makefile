@@ -56,6 +56,15 @@ tagless: ## Delete the current release tag
 	git push --delete origin $(RELEASE_VERSION)
 .PHONY: tagless
 
+scan: ## Scans the local repo for vulnerabilities
+	trivy fs \
+		--security-checks vuln,config,secret,license \
+		-f json \
+		-o report.json \
+		--timeout 5m \
+		.
+.PHONY: scan
+
 clean: ## Cleans bin and temp directories
 	go clean
 	rm -fr ./vendor
