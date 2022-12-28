@@ -12,6 +12,8 @@ You can install `disco` using one of the following ways:
 
 See the [release section](https://github.com/mchmarny/disco/releases/latest) for `disco` checksums and SBOMs.
 
+> See the list of supported open source [vulnerability scanner](#supported-vulnerability-scanners).
+
 ## Homebrew
 
 On Mac or Linux, you can install `disco` with [Homebrew](https://brew.sh/):
@@ -99,7 +101,7 @@ If you experience any issues, you can see the project level policy using followi
 gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 ```
 
-### Vulnerability Scanners 
+### Supported Vulnerability Scanners 
 
 `disco` shells out the vulnerability scans to one of the supported OSS scanners: 
 
