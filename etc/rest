@@ -26,9 +26,16 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
     "https://run.googleapis.com/v2/projects/cloudy-demos/locations/us-west1/services"
      
 
+# list of functions in this project region 
+
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://cloudfunctions.googleapis.com/v2beta/projects/cloudy-demos/locations/us-west1/functions"
+
+# build for this function 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://cloudbuild.googleapis.com/v1/projects/799736955886/locations/us-west1/builds/f9f6b226-2ccf-4318-a776-dbcd77e14431"
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
