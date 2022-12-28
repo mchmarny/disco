@@ -136,7 +136,7 @@ The `licenses` command supports all of the generic options listed above, plus:
 * `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (e.g. `disco run img --uri -o images.txt`). If not provided, `disco` will discover images first. 
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
 * `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all).
-* `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to new CVE.
+* `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to a new CVE.
 * `--use-ca`  - invokes Container Analysis API instead of the local scanner (default: false). 
 
 The resulting report in JSON format will look something like this (abbreviated):
