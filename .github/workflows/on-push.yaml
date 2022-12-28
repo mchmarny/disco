@@ -1,5 +1,4 @@
 name: push
-
 on:
   push:
     branches:
@@ -7,8 +6,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
-
   test:
     uses: ./.github/workflows/test.yaml
