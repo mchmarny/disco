@@ -133,8 +133,19 @@ func printVersion(c *c.Context) {
 	log.Info().Msgf(c.App.Version)
 }
 
+func getVersionFromContext(c *c.Context) string {
+	val, ok := c.App.Metadata[metaKeyVersion]
+	if !ok {
+		log.Debug().Msg("version not found in app context")
+		return "unknown"
+	}
+	return val.(string)
+}
+
 func runImagesCmd(c *c.Context) error {
 	in := &types.ImagesQuery{}
+	in.Version = getVersionFromContext(c)
+	in.Kind = types.KindImage
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
@@ -150,6 +161,8 @@ func runImagesCmd(c *c.Context) error {
 
 func runVulnsCmd(c *c.Context) error {
 	in := &types.VulnsQuery{}
+	in.Version = getVersionFromContext(c)
+	in.Kind = types.KindVulnerability
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
@@ -178,6 +191,8 @@ func runVulnsCmd(c *c.Context) error {
 
 func runLicenseCmd(c *c.Context) error {
 	in := &types.SimpleQuery{}
+	in.Version = getVersionFromContext(c)
+	in.Kind = types.KindLicense
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))

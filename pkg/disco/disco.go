@@ -126,36 +126,40 @@ func scan(ctx context.Context, scan scanner.ScannerType, in *types.SimpleQuery, 
 		}
 	}()
 
-	list := make([]any, 0)
+	report := types.NewItemReport(in)
+
 	for _, img := range imageURIs {
 		p := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting %s for %s (file: %s)", scan.String(), img, p)
 
 		switch scan {
 		case scanner.LicenseScanner:
-			report, err := scanner.GetLicenses(img, p, filter)
+			rez, err := scanner.GetLicenses(img, p, filter)
 			if err != nil {
 				return errors.Wrapf(err, "error getting licenses for %s", img)
 			}
-			log.Info().Msgf("found %d licenses in %s", len(report.Licenses), img)
-			if len(report.Licenses) > 0 {
-				list = append(list, report)
+			log.Info().Msgf("found %d licenses in %s", len(rez.Licenses), img)
+			if len(rez.Licenses) > 0 {
+				report.Items = append(report.Items, rez)
 			}
 		case scanner.VulnerabilityScanner:
-			report, err := scanner.GetVulnerabilities(img, p, filter)
+			rez, err := scanner.GetVulnerabilities(img, p, filter)
 			if err != nil {
 				return errors.Wrapf(err, "error getting vulnerabilities for %s", img)
 			}
-			log.Info().Msgf("found %d vulnerabilities in %s", len(report.Vulnerabilities), img)
-			if len(report.Vulnerabilities) > 0 {
-				list = append(list, report)
+			log.Info().Msgf("found %d vulnerabilities in %s", len(rez.Vulnerabilities), img)
+			if len(rez.Vulnerabilities) > 0 {
+				report.Items = append(report.Items, rez)
 			}
 		default:
 			return errors.Errorf("unsupported scanner: %s", scan)
 		}
 	}
 
-	if err := writeOutput(in.OutputPath, in.OutputFmt, list); err != nil {
+	itemCount := len(report.Items)
+	report.Meta.Count = &itemCount
+
+	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}
 

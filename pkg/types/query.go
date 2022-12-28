@@ -17,6 +17,8 @@ const (
 )
 
 type SimpleQuery struct {
+	Version    string
+	Kind       DiscoKind
 	ProjectID  string
 	OutputPath string
 	OutputFmt  OutputFormat

@@ -20,7 +20,7 @@ var (
 
 func main() {
 	initLogging()
-	err := cli.Execute(version, commit, date)
+	err := cli.Execute(version, commit, date, os.Args)
 	if err != nil {
 		log.Error().Msg(err.Error())
 	}
