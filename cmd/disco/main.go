@@ -15,11 +15,12 @@ const (
 var (
 	version = "v0.0.1-default"
 	commit  = "none"
+	date    = "unknown"
 )
 
 func main() {
 	initLogging()
-	err := cli.Execute(version, commit)
+	err := cli.Execute(version, commit, date)
 	if err != nil {
 		log.Error().Msg(err.Error())
 	}

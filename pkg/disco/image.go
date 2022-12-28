@@ -44,7 +44,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		list = append(list, &types.ImageReport{
 			Location: img.Location.ID,
 			Project:  img.Project.ID,
-			Service:  img.Service.Metadata.Name,
+			Service:  img.Service.Name,
 			Image:    img.Container.Image,
 		})
 	}
@@ -94,7 +94,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 		log.Info().Msgf("found %d regions where Cloud Run is supported, processing...", len(reg))
 
 		for _, r := range reg {
-			svcs, err := getServicesFunc(ctx, p.Number, r.ID)
+			svcs, err := getServicesFunc(ctx, p.ID, r.ID)
 			if err != nil {
 				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
 				continue
@@ -102,7 +102,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Info().Msgf("processing service: %s (project: %s, region: %s)", s.Metadata.Name, p.ID, r.ID)
+				log.Info().Msgf("processing service: %s", s.FullName)
 
 				for _, c := range s.Containers {
 					list = append(list, &RunningImage{

@@ -16,7 +16,7 @@ import (
 var (
 	urlExpLocations   = regexp.MustCompile(`/locations$`)
 	urlEpxProjects    = regexp.MustCompile(`/projects$`)
-	urlExpServices    = regexp.MustCompile(`/locations/us-central1/services$`)
+	urlExpServices    = regexp.MustCompile(`/locations/us-west1/services$`)
 	urlExpRevision    = regexp.MustCompile(`/revisions/`)
 	urlExpUsage       = regexp.MustCompile(`/projects/799736955886/services$`)
 	urlEpxOccurrences = regexp.MustCompile(`/occurrences$`)

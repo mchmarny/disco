@@ -10,7 +10,7 @@ import (
 func TestService(t *testing.T) {
 	client = &testAPIClient{}
 	expectedProjects := 4
-	list, err := GetServices(context.Background(), "799736955886", "us-central1")
+	list, err := GetServices(context.Background(), "cloudy-demos", "us-west1")
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.GreaterOrEqual(t, expectedProjects, len(list))

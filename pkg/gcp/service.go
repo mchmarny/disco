@@ -4,33 +4,29 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 const (
 	// serviceAPIBaseURL is the base URL for Cloud Run service.
-	// The first parameter is project NUMBER (not ID),
-	// and the second parameter is the region name.
-	serviceAPIBaseURL = "https://run.googleapis.com/v1/projects/%s/locations/%s/services"
+	serviceAPIBaseURL = "https://run.googleapis.com/v2/projects/%s/locations/%s/services"
 
 	// revisionAPIBaseURL is the base URL for Cloud Run revision.
-	revisionAPIBaseURL = "https://run.googleapis.com/v2/projects/%s/locations/%s/services/%s/revisions/%s"
+	revisionAPIBaseURL = "https://run.googleapis.com/v2/%s"
 )
 
 type serviceList struct {
-	Services []*Service `json:"items"`
+	Services []*Service `json:"services"`
 }
 
 type Service struct {
-	Metadata struct {
-		Name string `json:"name"`
-		ID   string `json:"uid"`
-	} `json:"metadata"`
+	Name       string       `json:"name"`
+	FullName   string       `json:"fullName"`
+	Revision   string       `json:"latestReadyRevision"`
 	Containers []*Container `json:"containers"`
-	Status     struct {
-		Revision string `json:"latestReadyRevisionName"`
-	}
 }
 
 type Revision struct {
@@ -42,15 +38,16 @@ type Container struct {
 	Image string `json:"image"`
 }
 
-func GetServices(ctx context.Context, projectNumber, region string) ([]*Service, error) {
-	if projectNumber == "" {
-		return nil, errors.New("project number is empty")
+func GetServices(ctx context.Context, projectID, region string) ([]*Service, error) {
+	if projectID == "" {
+		return nil, errors.New("projectID is empty")
 	}
 	if region == "" {
 		return nil, errors.New("region is empty")
 	}
 
-	u := fmt.Sprintf(serviceAPIBaseURL, projectNumber, region)
+	u := fmt.Sprintf(serviceAPIBaseURL, projectID, region)
+	log.Debug().Msgf("getting services from: %s", u)
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error client creating service request")
@@ -62,15 +59,16 @@ func GetServices(ctx context.Context, projectNumber, region string) ([]*Service,
 	}
 
 	if len(list.Services) == 0 {
+		log.Debug().Msgf("no services found in project %s", projectID)
 		return list.Services, nil
 	}
 
 	// add revision images
 	for _, s := range list.Services {
-		if s.Status.Revision == "" {
-			return nil, errors.Errorf("service %s has no revision", s.Metadata.Name)
+		if s.Revision == "" {
+			return nil, errors.Errorf("service %s has no revision", s.Name)
 		}
-		u := fmt.Sprintf(revisionAPIBaseURL, projectNumber, region, s.Metadata.Name, s.Status.Revision)
+		u := fmt.Sprintf(revisionAPIBaseURL, s.Revision)
 		req, err = http.NewRequest(http.MethodGet, u, nil)
 		if err != nil {
 			return nil, errors.Wrap(err, "error client creating revision request")
@@ -79,8 +77,14 @@ func GetServices(ctx context.Context, projectNumber, region string) ([]*Service,
 		if err := client.Get(ctx, req, &rev); err != nil {
 			return nil, errors.Wrapf(err, "error decoding revision response from: %s", u)
 		}
+		s.FullName = s.Name
+		s.Name = parseServiceName(s.Name)
 		s.Containers = rev.Conditions
 	}
 
 	return list.Services, nil
+}
+
+func parseServiceName(s string) string {
+	return s[strings.LastIndex(s, "/")+1:]
 }

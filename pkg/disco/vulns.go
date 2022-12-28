@@ -122,7 +122,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 			continue
 		}
 		for _, o := range oc {
-			log.Info().Msgf("%-14s - %s in %s (project: %s, location: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Metadata.Name, img.Project.ID, img.Location.ID)
+			log.Info().Msgf("%-14s - %s in %s (project: %s, location: %s)", o.Vulnerability.ShortDescription, o.Vulnerability.Severity, img.Service.Name, img.Project.ID, img.Location.ID)
 
 			list = append(list, o)
 		}

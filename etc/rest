@@ -23,14 +23,14 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
 # list all services in this region for this project
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services" | \
-    jq -r '.items[] | .metadata.name'
+    "https://run.googleapis.com/v2/projects/cloudy-demos/locations/us-west1/services"
+     
 
 # get the service image uri
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator"
+    "https://run.googleapis.com/v2/projects/cloudy-demos/locations/us-west1/services/artomator"
 
 
 

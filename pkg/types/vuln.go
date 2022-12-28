@@ -1,9 +1,10 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -56,8 +57,8 @@ type VulnsQuery struct {
 }
 
 func (q *VulnsQuery) Validate() error {
-	if q.SimpleQuery.Validate() != nil {
-		return errors.New("invalid simple query")
+	if err := q.SimpleQuery.Validate(); err != nil {
+		return errors.Wrap(err, "invalid simple query")
 	}
 
 	if q.MinVulnSev != VulnSevUndefined && q.CVE != "" {
