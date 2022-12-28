@@ -24,7 +24,7 @@ Features:
 
 ## Why
 
-It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using Google Container Analysis service, but currently it only covers base OS. It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support multiple revisions, each potentially using a different version of an image, or even different image all together.
+It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, or even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using [Container Analysis](https://cloud.google.com/container-analysis/docs/container-analysis) service, but currently it only [covers base OS](https://cloud.google.com/container-analysis/docs/os-overview). It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support [multiple revisions](https://cloud.google.com/run/docs/managing/revisions), each potentially using a different version of an image.
 
 `disco` provides an easy way to `disco`ver which of these container images are currently deployed, and, if one of the supported open source scanners is installed, `disco` automatically scans these images for any vulnerabilities or to list the types of licenses used in OS or packages used by those images. 
 
@@ -137,7 +137,7 @@ The `licenses` command supports all of the generic options listed above, plus:
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
 * `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all).
 * `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to a new CVE.
-* `--use-ca`  - invokes Container Analysis API instead of the local scanner (default: false). 
+* `--use-ca`  - invokes Container Analysis API instead of the local scanner (default: false).
 
 The resulting report in JSON format will look something like this (abbreviated):
 
