@@ -23,10 +23,6 @@ test: tidy ## Runs unit tests
 	go test -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
 .PHONY: test
 
-run: tidy ## Runs uncompiled version of the app
-	go run cmd/disco/main.go
-.PHONY: run
-
 cover: test ## Runs unit tests and putputs coverage
 	go tool cover -func=cover.out
 .PHONY: cover
