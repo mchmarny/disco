@@ -19,7 +19,8 @@ upgrade: ## Upgrades all dependancies
 .PHONY: upgrade
 
 test: tidy ## Runs unit tests
-		go test -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
+	mkdir -p tmp
+	go test -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
 .PHONY: test
 
 run: tidy ## Runs uncompiled version of the app
