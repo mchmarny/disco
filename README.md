@@ -72,8 +72,6 @@ The `images` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
-<details>
-  <summary>Show JSON</summary>
 ```json
 {
   "meta": {
@@ -93,7 +91,6 @@ The resulting report in JSON format will look something like this (abbreviated):
   ]
 }
 ```
-</details>
 
 #### Licenses
 
@@ -110,8 +107,6 @@ The `licenses` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
-<details>
-  <summary>Show JSON</summary>
 ```json
 {
   "meta": {
@@ -139,7 +134,6 @@ The resulting report in JSON format will look something like this (abbreviated):
   ]
 }
 ```
-</details>
 
 #### Vulnerabilities
 
@@ -159,8 +153,6 @@ The `licenses` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
-<details>
-  <summary>Show JSON</summary>
 ```json
 {
   "meta": {
@@ -190,7 +182,6 @@ The resulting report in JSON format will look something like this (abbreviated):
   ]
 }
 ```
-</details>
 
 ### Cloud Functions
 
