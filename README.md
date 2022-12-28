@@ -20,7 +20,7 @@ Features:
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
 
-![](etc/preview.png)
+![](etc/images/preview.png)
 
 ## Why
 
@@ -162,6 +162,10 @@ The resulting report in JSON format will look something like this (abbreviated):
   ...
 ]
 ```
+
+### Cloud Functions
+
+> Not yet implemented.
 
 ### GKE
 

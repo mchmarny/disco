@@ -31,21 +31,21 @@ func (t *testAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 
 	switch u := req.URL.Path; {
 	case urlExpLocations.MatchString(u):
-		testFile = "../../etc/test-locations.json"
+		testFile = "../../etc/data/test-locations.json"
 	case urlEpxProjects.MatchString(u):
-		testFile = "../../etc/test-projects.json"
+		testFile = "../../etc/data/test-projects.json"
 	case urlExpServices.MatchString(u):
-		testFile = "../../etc/test-services.json"
+		testFile = "../../etc/data/test-services.json"
 	case urlExpRevision.MatchString(u):
-		testFile = "../../etc/test-revision.json"
+		testFile = "../../etc/data/test-revision.json"
 	case urlExpUsage.MatchString(u):
-		testFile = "../../etc/test-usage.json"
+		testFile = "../../etc/data/test-usage.json"
 	case urlEpxOccurrences.MatchString(u):
-		testFile = "../../etc/test-occurrences.json"
+		testFile = "../../etc/data/test-occurrences.json"
 	case urlExpTestGet.MatchString(u):
-		testFile = "../../etc/test-map.json"
+		testFile = "../../etc/data/test-map.json"
 	case urlExpTestHead.MatchString(u):
-		testFile = "../../etc/test-locations.json"
+		testFile = "../../etc/data/test-locations.json"
 	default:
 		return errors.Errorf("unknown request path: %s", u)
 	}

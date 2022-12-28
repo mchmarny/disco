@@ -47,7 +47,7 @@ func TestVulnFilterParsing(t *testing.T) {
 }
 
 func testVulnParsing(t *testing.T, filter types.ItemFilter) (*types.VulnerabilityReport, error) {
-	src := "../../../etc/test-vuln.json"
+	src := "../../../etc/data/test-vuln.json"
 	img := "us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d"
 
 	rep, err := ParseVulnerabilities(img, src, filter)

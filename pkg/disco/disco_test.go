@@ -24,11 +24,11 @@ func setTestImplementations() {
 	isAPIEnabledFunc = isTestAPIEnabled
 
 	scanner.ScanVulnerability = func(digest, path string) *exec.Cmd {
-		return exec.Command("cp", "../../etc/test-license.json", path) //nolint
+		return exec.Command("cp", "../../etc/data/test-license.json", path) //nolint
 	}
 
 	scanner.ScanLicense = func(digest, path string) *exec.Cmd {
-		return exec.Command("cp", "../../etc/test-vuln.json", path) //nolint
+		return exec.Command("cp", "../../etc/data/test-vuln.json", path) //nolint
 	}
 }
 
@@ -68,7 +68,7 @@ func TestLicense(t *testing.T) {
 
 	err = DiscoverLicenses(ctx, &types.SimpleQuery{
 		ProjectID:  "test-project",
-		OutputPath: "../../license.tmp",
+		OutputPath: "../../tmp/license.tmp",
 	})
 	assert.NoError(t, err, "error discovering license")
 }
@@ -107,7 +107,7 @@ func TestVuln(t *testing.T) {
 
 func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
 	var list []*gcp.Project
-	if err := loadTestData("../../etc/test-project.json", &list); err != nil {
+	if err := loadTestData("../../etc/data/test-project.json", &list); err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -125,7 +125,7 @@ func getTestLocations(ctx context.Context, projectNumber string) ([]*gcp.Locatio
 
 func getTestServices(ctx context.Context, projectNumber string, region string) ([]*gcp.Service, error) {
 	var list []*gcp.Service
-	if err := loadTestData("../../etc/test-service.json", &list); err != nil {
+	if err := loadTestData("../../etc/data/test-service.json", &list); err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -133,7 +133,7 @@ func getTestServices(ctx context.Context, projectNumber string, region string) (
 
 func getTestCVEVulns(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error) {
 	var list []*gcp.Occurrence
-	if err := loadTestData("../../etc/test-occurrence.json", &list); err != nil {
+	if err := loadTestData("../../etc/data/test-occurrence.json", &list); err != nil {
 		return nil, err
 	}
 	return list, nil
@@ -141,7 +141,7 @@ func getTestCVEVulns(ctx context.Context, projectID string, cveID string) ([]*gc
 
 func getTestImageVulns(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error) {
 	var list []*gcp.Occurrence
-	if err := loadTestData("../../etc/test-occurrence.json", &list); err != nil {
+	if err := loadTestData("../../etc/data/test-occurrence.json", &list); err != nil {
 		return nil, err
 	}
 	return list, nil

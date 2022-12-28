@@ -32,6 +32,10 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
     "https://cloudfunctions.googleapis.com/v2beta/projects/cloudy-demos/locations/us-west1/functions"
 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://cloudfunctions.googleapis.com/v2beta/projects/cloudy-demos/locations/us-west1/functions/test-func"
+
 # build for this function 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
