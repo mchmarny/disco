@@ -9,12 +9,12 @@ import (
 )
 
 const (
-	// serviceAPIBaseURL is the base URL for GCP project API, and
-	// the first parameter is project NUMBER (not ID),
+	// serviceAPIBaseURL is the base URL for Cloud Run service.
+	// The first parameter is project NUMBER (not ID),
 	// and the second parameter is the region name.
 	serviceAPIBaseURL = "https://run.googleapis.com/v1/projects/%s/locations/%s/services"
 
-	// revisionAPIBaseURL
+	// revisionAPIBaseURL is the base URL for Cloud Run revision.
 	revisionAPIBaseURL = "https://run.googleapis.com/v2/projects/%s/locations/%s/services/%s/revisions/%s"
 )
 
