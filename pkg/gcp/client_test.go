@@ -17,6 +17,7 @@ var (
 	urlExpLocations   = regexp.MustCompile(`/locations$`)
 	urlEpxProjects    = regexp.MustCompile(`/projects$`)
 	urlExpServices    = regexp.MustCompile(`/locations/us-central1/services$`)
+	urlExpRevision    = regexp.MustCompile(`/revisions/`)
 	urlExpUsage       = regexp.MustCompile(`/projects/799736955886/services$`)
 	urlEpxOccurrences = regexp.MustCompile(`/occurrences$`)
 	urlExpTestGet     = regexp.MustCompile(`/users/mchmarny$`)
@@ -35,6 +36,8 @@ func (t *testAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 		testFile = "../../etc/test-projects.json"
 	case urlExpServices.MatchString(u):
 		testFile = "../../etc/test-services.json"
+	case urlExpRevision.MatchString(u):
+		testFile = "../../etc/test-revision.json"
 	case urlExpUsage.MatchString(u):
 		testFile = "../../etc/test-usage.json"
 	case urlEpxOccurrences.MatchString(u):
@@ -49,7 +52,7 @@ func (t *testAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 
 	b, err := os.ReadFile(testFile)
 	if err != nil {
-		return errors.Wrap(err, "error reading test data")
+		return errors.Wrapf(err, "error reading test data using: %s", testFile)
 	}
 
 	if err := json.NewDecoder(bytes.NewReader(b)).Decode(v); err != nil {

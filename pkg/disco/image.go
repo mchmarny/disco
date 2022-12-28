@@ -11,10 +11,10 @@ import (
 )
 
 type RunningImage struct {
-	Image    *gcp.ImageInfo
-	Service  *gcp.Service
-	Project  *gcp.Project
-	Location *gcp.Location
+	Container *gcp.Container
+	Service   *gcp.Service
+	Project   *gcp.Project
+	Location  *gcp.Location
 }
 
 // DiscoverImages discovers all deployed images in the project.
@@ -45,7 +45,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 			Location: img.Location.ID,
 			Project:  img.Project.ID,
 			Service:  img.Service.Metadata.Name,
-			Image:    img.Image.URI(),
+			Image:    img.Container.Image,
 		})
 	}
 
@@ -63,7 +63,7 @@ func getDeployedImageURIs(ctx context.Context, projectID string) ([]string, erro
 	}
 	imageURIs := make([]string, 0)
 	for _, img := range images {
-		imageURIs = append(imageURIs, img.Image.URI())
+		imageURIs = append(imageURIs, img.Container.Image)
 	}
 	return imageURIs, nil
 }
@@ -104,21 +104,12 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 			for _, s := range svcs {
 				log.Info().Msgf("processing service: %s (project: %s, region: %s)", s.Metadata.Name, p.ID, r.ID)
 
-				for _, c := range s.Spec.Template.Spec.Containers {
-					f, err := getImageInfoFunc(ctx, c.Image)
-					if err != nil {
-						log.Error().Err(err).Msgf("error getting manifest for: %s", c.Image)
-						continue
-					}
-
-					if f.Deployed != f.Digest {
-						log.Info().Msgf("resolved %s to %s", f.Deployed, f.Digest)
-					}
+				for _, c := range s.Containers {
 					list = append(list, &RunningImage{
-						Project:  p,
-						Location: r,
-						Service:  s,
-						Image:    f,
+						Project:   p,
+						Location:  r,
+						Service:   s,
+						Container: c,
 					})
 				}
 			}
@@ -158,7 +149,7 @@ func isQualifiedProject(ctx context.Context, p *gcp.Project, filterID string) bo
 func writeList(path string, images []*RunningImage) error {
 	if path == "" {
 		for _, img := range images {
-			os.Stdout.WriteString(img.Image.URI())
+			os.Stdout.WriteString(img.Container.Image)
 			os.Stdout.WriteString("\n")
 		}
 		return nil
@@ -171,7 +162,7 @@ func writeList(path string, images []*RunningImage) error {
 	defer f.Close()
 
 	for _, img := range images {
-		if _, err := f.WriteString(img.Image.URI() + "\n"); err != nil {
+		if _, err := f.WriteString(img.Container.Image + "\n"); err != nil {
 			return errors.Wrapf(err, "error writing to file: %s", path)
 		}
 	}

@@ -119,6 +119,52 @@
             "address": {
                 "url": "https://artomator-pdznqybsqa-uw.a.run.app"
             }
-        }
+        },
+        "containers": [
+            {
+              "name": "artomator-1",
+              "image": "us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d",
+              "env": [
+                {
+                  "name": "REDIS_IP",
+                  "value": "10.108.32.4"
+                },
+                {
+                  "name": "SIGN_KEY",
+                  "value": "gcpkms://projects/cloudy-demos/locations/global/keyRings/artomator-signer-ring/cryptoKeys/artomator-signer"
+                },
+                {
+                  "name": "ADDRESS",
+                  "value": ":8080"
+                },
+                {
+                  "name": "GCS_BUCKET",
+                  "value": "artomator-cloudy-demos"
+                },
+                {
+                  "name": "PROJECT_ID",
+                  "value": "cloudy-demos"
+                },
+                {
+                  "name": "REDIS_PORT",
+                  "value": "6379"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1000m",
+                  "memory": "2Gi"
+                },
+                "cpuIdle": true
+              },
+              "ports": [
+                {
+                  "name": "http1",
+                  "containerPort": 8080
+                }
+              ]
+            }
+          ],
+          "latestReadyRevision": "projects/cloudy-demos/locations/us-west1/services/artomator/revisions/artomator-qx5lj"
     }
 ]

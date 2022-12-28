@@ -30,8 +30,15 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
-    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator" | \
-    jq -r '.spec.template.spec.containers[0].image'
+    "https://run.googleapis.com/v1/projects/799736955886/locations/us-west1/services/artomator"
+
+
+
+
+# get revisions 
+curl -Ss -H "Content-Type: application/json; charset=utf-8" \
+     -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    "https://run.googleapis.com/v2/projects/cloudy-demos/locations/us-west1/services/artomator/revisions/artomator-qx5lj"
 
 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \

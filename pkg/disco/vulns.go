@@ -101,7 +101,7 @@ func discoverImageVulns(ctx context.Context, projectID string) ([]*gcp.Occurrenc
 	// get unique list of iamges
 	m := make(map[string]*RunningImage)
 	for _, img := range images {
-		u := img.Image.URL()
+		u := img.Container.Image
 		if _, ok := m[u]; !ok {
 			m[u] = img
 		}

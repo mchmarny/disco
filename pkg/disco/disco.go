@@ -22,7 +22,6 @@ var (
 	getProjectsFunc   getProjects   = gcp.GetProjects
 	getLocationsFunc  getLocations  = gcp.GetLocations
 	getServicesFunc   getServices   = gcp.GetServices
-	getImageInfoFunc  getImageInfo  = gcp.GetImageInfo
 	isAPIEnabledFunc  isAPIEnabled  = gcp.IsAPIEnabled
 	getCVEVulnsFunc   getCVEVulns   = gcp.GetCVEVulnerabilities
 	getImageVulnsFunc getImageVulns = gcp.GetImageVulnerabilities
@@ -31,7 +30,6 @@ var (
 type getProjects func(ctx context.Context) ([]*gcp.Project, error)
 type getLocations func(ctx context.Context, projectNumber string) ([]*gcp.Location, error)
 type getServices func(ctx context.Context, projectNumber string, region string) ([]*gcp.Service, error)
-type getImageInfo func(ctx context.Context, image string) (*gcp.ImageInfo, error)
 type isAPIEnabled func(ctx context.Context, projectNumber string, uri string) (bool, error)
 type getCVEVulns func(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error)
 type getImageVulns func(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error)

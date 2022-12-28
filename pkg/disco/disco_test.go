@@ -19,7 +19,6 @@ func setTestImplementations() {
 	getProjectsFunc = getTestProjects
 	getLocationsFunc = getTestLocations
 	getServicesFunc = getTestServices
-	getImageInfoFunc = getTestImageInfo
 	getCVEVulnsFunc = getTestCVEVulns
 	getImageVulnsFunc = getTestImageVulns
 	isAPIEnabledFunc = isTestAPIEnabled
@@ -130,14 +129,6 @@ func getTestServices(ctx context.Context, projectNumber string, region string) (
 		return nil, err
 	}
 	return list, nil
-}
-
-func getTestImageInfo(ctx context.Context, image string) (*gcp.ImageInfo, error) {
-	img, err := gcp.ParseImageInfo("us-docker.pkg.dev/cloudy-demos/art/artomator@sha256:1234567890")
-	if err != nil {
-		return nil, errors.Wrap(err, "error parsing image info")
-	}
-	return img, nil
 }
 
 func getTestCVEVulns(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error) {

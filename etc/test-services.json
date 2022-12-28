@@ -125,7 +125,8 @@
         "address": {
           "url": "https://artomator-pdznqybsqa-uw.a.run.app"
         }
-      }
+      },
+      "latestReadyRevision": "projects/cloudy-demos/locations/us-west1/services/artomator/revisions/artomator-qx5lj"
     }
   ]
 }
