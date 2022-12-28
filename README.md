@@ -72,17 +72,28 @@ The `images` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
+<details>
+  <summary>Show JSON</summary>
 ```json
-[
-  {
-    "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
-    "service": "hello",
-    "project": "cloudy-demos",
-    "location": "us-central1"
+{
+  "meta": {
+    "kind": "image",
+    "version": "v0.3.19-next",
+    "created": "2022-12-28T21:20:15Z",
+    "count": 7
   },
-  ...
-]
+  "items": [
+      {
+        "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+        "service": "hello",
+        "project": "cloudy-demos",
+        "location": "us-central1"
+      },
+      ...
+  ]
+}
 ```
+</details>
 
 #### Licenses
 
@@ -99,29 +110,36 @@ The `licenses` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
+<details>
+  <summary>Show JSON</summary>
 ```json
-[
-  {
-    "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
-    "licenses": [
-      {
-        "name": "GPL-2.0",
-        "source": "alpine-baselayout"
-      },
-      {
-        "name": "MPL-2.0",
-        "source": "ca-certificates"
-      },
-      {
-        "name": "MIT",
-        "source": "ca-certificates"
-      },
-      ...
-    ]
+{
+  "meta": {
+    "kind": "license",
+    "version": "v0.3.19-next",
+    "created": "2022-12-28T21:23:20Z",
+    "count": 7
   },
-  ...
-]
+  "items": [
+    {
+      "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+      "licenses": [
+        {
+          "name": "GPL-2.0",
+          "source": "alpine-baselayout-data"
+        },
+        {
+          "name": "MIT",
+          "source": "alpine-keys"
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+}
 ```
+</details>
 
 #### Vulnerabilities
 
@@ -141,27 +159,38 @@ The `licenses` command supports all of the generic options listed above, plus:
 
 The resulting report in JSON format will look something like this (abbreviated):
 
+<details>
+  <summary>Show JSON</summary>
 ```json
-[
-  {
-    "image": "gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6",
-    "vulnerabilities": [
-      {
-        "source": "CVE-2022-3715",
-        "severity": "LOW",
-        "package": "bash",
-        "version": "5.1-6ubuntu1",
-        "title": "bash: a heap-buffer-overflow in valid_parameter_transform",
-        "description": "A flaw was found in the bash package, where a heap-buffer overflow can occur in valid_parameter_transform. This issue may lead to memory problems.",
-        "url": "https://avd.aquasec.com/nvd/cve-2022-3715",
-        "updated": "2022-12-23T16:52:00Z"
-      },
-      ...
-    ]
+{
+  "meta": {
+    "kind": "vulnerability",
+    "version": "v0.3.19-next",
+    "created": "2022-12-28T21:32:34Z",
+    "count": 5
   },
-  ...
-]
+  "items": [
+    {
+      "image": "gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6",
+      "vulnerabilities": [
+        {
+          "source": "CVE-2021-28165",
+          "severity": "HIGH",
+          "package": "org.eclipse.jetty:jetty-util",
+          "version": "9.4.31.v20200723",
+          "title": "jetty: Resource exhaustion when receiving an invalid large TLS frame",
+          "description": "In Eclipse Jetty 7.2.2 to 9.4.38, 10.0.0.alpha0 to 10.0.1, and 11.0.0.alpha0 to 11.0.1, CPU usage can reach 100% upon receiving a large invalid TLS frame.",
+          "url": "https://avd.aquasec.com/nvd/cve-2021-28165",
+          "updated": "2022-07-29T17:05:00Z"
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+}
 ```
+</details>
 
 ### Cloud Functions
 

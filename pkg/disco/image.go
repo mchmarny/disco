@@ -39,9 +39,11 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		return nil
 	}
 
-	list := make([]*types.ImageReport, 0)
+	imageCount := len(images)
+	report := types.NewItemReport(&in.SimpleQuery)
+	report.Meta.Count = &imageCount
 	for _, img := range images {
-		list = append(list, &types.ImageReport{
+		report.Items = append(report.Items, &types.ImageItem{
 			Location: img.Location.ID,
 			Project:  img.Project.ID,
 			Service:  img.Service.Name,
@@ -49,7 +51,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		})
 	}
 
-	if err := writeOutput(in.OutputPath, in.OutputFmt, list); err != nil {
+	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}
 
@@ -102,7 +104,7 @@ func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, 
 
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Info().Msgf("processing service: %s", s.FullName)
+				log.Info().Msgf("processing: %s", s.FullName)
 
 				for _, c := range s.Containers {
 					list = append(list, &RunningImage{
