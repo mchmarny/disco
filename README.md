@@ -61,10 +61,10 @@ disco run --help
 To discover container images currently deployed in Cloud Run:
 
 ```shell
-disco run images
+disco run img
 ```
 
-The `images` command supports all of the generic options listed above, plus: 
+The `images` or `img` command supports all of the generic options listed above, plus: 
 
 * `--uri` - outputs only image uri (default: false). This is helpful when you want to pipe the resulting images to another program.
 
@@ -95,10 +95,10 @@ The resulting report in JSON format will look something like this (abbreviated):
 To discover licenses used in container images currently deployed in Cloud Run.
 
 ```shell
-disco run licenses
+disco run lic
 ```
 
-The `licenses` command supports all of the generic options listed above, plus: 
+The `licenses` or `lic` command supports all of the generic options listed above, plus: 
 
 * `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (`disco run img --uri -o images.txt`), instead of running through potentially lengthy discovery. 
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
@@ -138,10 +138,10 @@ The resulting report in JSON format will look something like this (abbreviated):
 To discover potential vulnerabilities in container images currently deployed in Cloud Run.
 
 ```shell
-disco run licenses
+disco run vul
 ```
 
-The `licenses` command supports all of the generic options listed above, plus: 
+The `licenses` or `vulnerabilities` command supports all of the generic options listed above, plus: 
 
 * `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (e.g. `disco run img --uri -o images.txt`). If not provided, `disco` will discover images first. 
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
