@@ -19,6 +19,7 @@ Features:
   * deployed image to digest resolution
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
+* Find out if those images are impacted by a specific CVE
 
 ## Why
 
@@ -141,7 +142,7 @@ To discover potential vulnerabilities in container images currently deployed in 
 disco run vul
 ```
 
-The `licenses` or `vulnerabilities` command supports all of the generic options listed above, plus: 
+The `vul` or `vulnerabilities` command supports all of the generic options listed above, plus: 
 
 * `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (e.g. `disco run img --uri -o images.txt`). If not provided, `disco` will discover images first. 
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
