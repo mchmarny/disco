@@ -65,26 +65,26 @@ func (t *testAPIClient) Head(ctx context.Context, req *http.Request, key string)
 	return "test", nil
 }
 
-func testHTTPClientProvider(ctx context.Context) (*http.Client, error) {
+func testHTTPClientProvider(ctx context.Context, credProvider CredentialProvider) (*http.Client, error) {
 	return &http.Client{}, nil
 }
 
 func TestClientGet(t *testing.T) {
 	ctx := context.Background()
-	clientProvider = testHTTPClientProvider
+	httpClientProvider = testHTTPClientProvider
 	r, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/mchmarny", nil)
 	assert.NoError(t, err)
 	var d map[string]interface{}
-	err = client.Get(ctx, r, &d)
+	err = apiClient.Get(ctx, r, &d)
 	assert.NoError(t, err)
 }
 
 func TestClientHead(t *testing.T) {
 	ctx := context.Background()
-	clientProvider = testHTTPClientProvider
+	httpClientProvider = testHTTPClientProvider
 	r, err := http.NewRequest(http.MethodHead, "https://www.githubstatus.com/api/v2/status.json", nil)
 	assert.NoError(t, err, "error creating request")
-	v, err := client.Head(ctx, r, "x-cache")
+	v, err := apiClient.Head(ctx, r, "x-cache")
 	assert.NoError(t, err, "error executing request")
 	assert.NotEmpty(t, v)
 }

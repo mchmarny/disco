@@ -8,7 +8,7 @@ import (
 )
 
 func TestProject(t *testing.T) {
-	client = &testAPIClient{}
+	apiClient = &testAPIClient{}
 	expectedProjects := 4
 	list, err := getProjects(context.Background())
 	assert.NoError(t, err)
@@ -17,7 +17,7 @@ func TestProject(t *testing.T) {
 }
 
 func TestProjectFilter(t *testing.T) {
-	client = &testAPIClient{}
+	apiClient = &testAPIClient{}
 
 	assert.False(t, isQualifiedProject(context.Background(), &project{
 		ID:     "test",

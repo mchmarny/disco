@@ -34,7 +34,7 @@ func getLocations(ctx context.Context, projectNumber string) ([]*location, error
 	}
 
 	var list locaitonList
-	if err := client.Get(ctx, req, &list); err != nil {
+	if err := apiClient.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

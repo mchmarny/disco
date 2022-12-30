@@ -18,21 +18,26 @@ const (
 )
 
 var (
-	client         Client             = &apiClient{}
-	clientProvider httpClientProvider = newHTTPClientWithCredentials
+	apiClient GoogleAPIClient = &googleAPIClient{
+		credProvider: getDefaultCredentials,
+	}
+	httpClientProvider ClientProvider = newHTTPClientWithCredentials
 )
 
-type httpClientProvider func(ctx context.Context) (*http.Client, error)
+type CredentialProvider func(ctx context.Context) (*google.Credentials, error)
+type ClientProvider func(ctx context.Context, credProvider CredentialProvider) (*http.Client, error)
 
-type Client interface {
+type GoogleAPIClient interface {
 	Get(ctx context.Context, req *http.Request, v any) error
 	Head(ctx context.Context, req *http.Request, key string) (string, error)
 }
 
-type apiClient struct{}
+type googleAPIClient struct {
+	credProvider CredentialProvider
+}
 
-func (g *apiClient) Get(ctx context.Context, req *http.Request, v any) error {
-	c, err := clientProvider(ctx)
+func (g *googleAPIClient) Get(ctx context.Context, req *http.Request, v any) error {
+	c, err := httpClientProvider(ctx, g.credProvider)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")
 	}
@@ -53,8 +58,8 @@ func (g *apiClient) Get(ctx context.Context, req *http.Request, v any) error {
 	return nil
 }
 
-func (g *apiClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
-	c, err := clientProvider(ctx)
+func (g *googleAPIClient) Head(ctx context.Context, req *http.Request, key string) (string, error) {
+	c, err := httpClientProvider(ctx, g.credProvider)
 	if err != nil {
 		return "", errors.Wrap(err, "error creating client")
 	}
@@ -84,14 +89,16 @@ func (g *apiClient) Head(ctx context.Context, req *http.Request, key string) (st
 	return v, nil
 }
 
-func newHTTPClientWithCredentials(ctx context.Context) (*http.Client, error) {
+func newHTTPClientWithCredentials(ctx context.Context, credProvider CredentialProvider) (*http.Client, error) {
 	var ops []option.ClientOption
 
-	creds, err := getCredentials(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create credentials")
+	if credProvider != nil {
+		creds, err := credProvider(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create credentials")
+		}
+		ops = append(ops, option.WithCredentials(creds))
 	}
-	ops = append(ops, option.WithCredentials(creds))
 
 	client, _, err := htransport.NewClient(ctx, ops...)
 	if err != nil {
@@ -101,7 +108,7 @@ func newHTTPClientWithCredentials(ctx context.Context) (*http.Client, error) {
 	return client, nil
 }
 
-func getCredentials(ctx context.Context) (*google.Credentials, error) {
+func getDefaultCredentials(ctx context.Context) (*google.Credentials, error) {
 	credentials, err := google.FindDefaultCredentials(ctx, scopeDefault)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create default credentials")

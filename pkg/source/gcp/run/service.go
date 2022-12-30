@@ -54,7 +54,7 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 	}
 
 	var list serviceList
-	if err := client.Get(ctx, req, &list); err != nil {
+	if err := apiClient.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding service response")
 	}
 
@@ -74,7 +74,7 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 			return nil, errors.Wrap(err, "error client creating revision request")
 		}
 		var rev revision
-		if err := client.Get(ctx, req, &rev); err != nil {
+		if err := apiClient.Get(ctx, req, &rev); err != nil {
 			return nil, errors.Wrapf(err, "error decoding revision response from: %s", u)
 		}
 		s.FullName = s.Name

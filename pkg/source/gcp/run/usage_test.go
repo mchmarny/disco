@@ -8,7 +8,7 @@ import (
 )
 
 func TestUsage(t *testing.T) {
-	client = &testAPIClient{}
+	apiClient = &testAPIClient{}
 	ok, err := isAPIEnabled(context.Background(), "799736955886", cloudRunAPI)
 	assert.NoError(t, err)
 	assert.True(t, ok)

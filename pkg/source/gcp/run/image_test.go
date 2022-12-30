@@ -159,7 +159,7 @@ func TestImageManifestURL(t *testing.T) {
 }
 
 func TestImages(t *testing.T) {
-	client = &testAPIClient{}
+	apiClient = &testAPIClient{}
 	expectedRegions := 36
 	list, err := GetImages(context.Background(), &types.ImagesQuery{
 		SimpleQuery: types.SimpleQuery{

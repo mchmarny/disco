@@ -33,7 +33,7 @@ func getProjects(ctx context.Context) ([]*project, error) {
 	}
 
 	var list projectList
-	if err := client.Get(ctx, req, &list); err != nil {
+	if err := apiClient.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}
 

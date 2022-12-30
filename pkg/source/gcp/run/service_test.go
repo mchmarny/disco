@@ -8,7 +8,7 @@ import (
 )
 
 func TestService(t *testing.T) {
-	client = &testAPIClient{}
+	apiClient = &testAPIClient{}
 	expectedProjects := 4
 	list, err := getServices(context.Background(), "cloudy-demos", "us-west1")
 	assert.NoError(t, err)
