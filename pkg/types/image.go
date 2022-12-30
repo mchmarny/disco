@@ -34,6 +34,6 @@ type ImagesQuery struct {
 }
 
 func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("project:%s, output:%s, format:%s, uri-only:%t",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.URIOnly)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, uri-only:%t",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.URIOnly)
 }

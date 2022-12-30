@@ -28,13 +28,13 @@ New release will be automatically picked up when you run `brew upgrade`
 ## RHEL/CentOS
 
 ```shell
-rpm -ivh https://github.com/mchmarny/disco/releases/download/v$VERSION/disco-$VERSION_Linux-64bit.rpm
+rpm -ivh https://github.com/mchmarny/disco/releases/download/v$VERSION/disco-$VERSION_Linux-amd64.rpm
 ```
 
 ## Debian/Ubuntu
 
 ```shell
-wget https://github.com/aquasecurity/disco/releases/download/v$VERSION/disco-$VERSION_Linux-64bit.deb
+wget https://github.com/aquasecurity/disco/releases/download/v$VERSION/disco-$VERSION_Linux-amd64.deb
 sudo dpkg -i disco-$VERSION_Linux-64bit.deb
 ```
 

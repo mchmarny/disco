@@ -68,8 +68,8 @@ func (q *VulnsQuery) Validate() error {
 }
 
 func (q *VulnsQuery) String() string {
-	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, min-vuln-sev: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.MinVulnSev)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, cve: %s, severity: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.CVE, q.MinVulnSev)
 }
 
 type VulnerabilityReport struct {

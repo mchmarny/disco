@@ -59,12 +59,6 @@ jobs:
       uses: karancode/yamllint-github-action@234e9eaa717ea611161a54e71cb027da9878f2ef  # master
       with:
         yamllint_config_filepath: .yamllint
-    - name: Unit Test
-      run: |
-        make test
-    - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70  # v3.1.1
-      with:
-        flags: unittests  # optional
     - name: Scan Repo
       uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5  # master
       with:
@@ -75,6 +69,12 @@ jobs:
         output: 'trivy-results.sarif'
         severity: ${{ inputs.scan-severity }}
         exit-code: '1'
+    - name: Unit Test
+      run: |
+        make test
+    - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70  # v3.1.1
+      with:
+        flags: unittests  # optional
     - name: Upload Report
       uses: github/codeql-action/upload-sarif@896079047b4bb059ba6f150a5d87d47dde99e6e5  # v2.11.6
       if: always()

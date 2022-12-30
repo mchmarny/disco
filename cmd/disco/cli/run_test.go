@@ -23,12 +23,12 @@ func TestImgCmd(t *testing.T) {
 }
 
 func TestVulCmd(t *testing.T) {
-	if !testing.Short() {
-		t.Skip("skipping integration test")
-	}
-
 	set := flag.NewFlagSet("", flag.ContinueOnError)
-	set.String("project", "test", "test")
+	set.String(
+		"image",
+		"gcr.io/cloudy-demos/system-package@sha256:92464e03ea61e922c46040359b32f55b7f38bb20eaa25b9679338fa07e5a71d7",
+		"test",
+	)
 
 	c := cli.NewContext(newTestApp(t), set, nil)
 	err := runVulnsCmd(c)
@@ -36,12 +36,12 @@ func TestVulCmd(t *testing.T) {
 }
 
 func TestLicCmd(t *testing.T) {
-	if !testing.Short() {
-		t.Skip("skipping integration test")
-	}
-
 	set := flag.NewFlagSet("", flag.ContinueOnError)
-	set.String("project", "test", "test")
+	set.String(
+		"source",
+		"../../../etc/data/images.txt",
+		"test",
+	)
 
 	c := cli.NewContext(newTestApp(t), set, nil)
 	err := runLicenseCmd(c)

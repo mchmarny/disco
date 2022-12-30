@@ -35,8 +35,8 @@ func (q *SimpleQuery) Validate() error {
 }
 
 func (q *SimpleQuery) String() string {
-	return fmt.Sprintf("projectID:%s, output:%s, format:%s",
-		q.ProjectID, q.OutputPath, q.OutputFmt)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI)
 }
 
 type OutputFormat int64
