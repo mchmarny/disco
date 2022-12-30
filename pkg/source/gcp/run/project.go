@@ -43,7 +43,7 @@ func getProjects(ctx context.Context) ([]*project, error) {
 func isQualifiedProject(ctx context.Context, p *project, filterID string) bool {
 	log.Debug().Msgf("qualifying project: %s (%s - %s)", p.ID, p.Number, p.State)
 
-	if filterID != "" && p.ID != filterID {
+	if filterID != "" && p.ID == filterID {
 		log.Debug().Msgf("skipping: %s (filter: %s)", p.ID, filterID)
 		return false
 	}
