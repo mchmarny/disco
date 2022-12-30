@@ -7,32 +7,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 
-	"github.com/google/uuid"
-	"github.com/mchmarny/disco/pkg/gcp"
-	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 )
-
-var (
-	getProjectsFunc   getProjects   = gcp.GetProjects
-	getLocationsFunc  getLocations  = gcp.GetLocations
-	getServicesFunc   getServices   = gcp.GetServices
-	isAPIEnabledFunc  isAPIEnabled  = gcp.IsAPIEnabled
-	getCVEVulnsFunc   getCVEVulns   = gcp.GetCVEVulnerabilities
-	getImageVulnsFunc getImageVulns = gcp.GetImageVulnerabilities
-)
-
-type getProjects func(ctx context.Context) ([]*gcp.Project, error)
-type getLocations func(ctx context.Context, projectNumber string) ([]*gcp.Location, error)
-type getServices func(ctx context.Context, projectNumber string, region string) ([]*gcp.Service, error)
-type isAPIEnabled func(ctx context.Context, projectNumber string, uri string) (bool, error)
-type getCVEVulns func(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error)
-type getImageVulns func(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error)
 
 const yamlIndent = 2
 
@@ -84,88 +64,6 @@ func printProjectScope(projectID string) {
 	}
 }
 
-func scan(ctx context.Context, scan scanner.ScannerType, in *types.SimpleQuery, filter types.ItemFilter) error {
-	if in == nil {
-		return errors.New("nil input")
-	}
-
-	var imageURIs []string
-	var err error
-
-	if in.ImageURI != "" {
-		log.Debug().Msgf("using image URI: '%s'", in.ImageURI)
-		imageURIs = []string{in.ImageURI}
-	} else {
-		if in.ImageFile != "" {
-			log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
-			imageURIs, err = readImageList(in.ImageFile)
-			if err != nil {
-				return errors.Wrapf(err, "error reading image list: %s", in.ImageFile)
-			}
-		} else {
-			log.Debug().Msg("discovering images from API...")
-			imageURIs, err = getDeployedImageURIs(ctx, in.ProjectID)
-			if err != nil {
-				return errors.Wrap(err, "error getting images")
-			}
-		}
-	}
-
-	log.Debug().Msgf("found %d images", len(imageURIs))
-	if imageURIs == nil {
-		return errors.New("error, no images to scan")
-	}
-
-	dir, err := os.MkdirTemp(os.TempDir(), scan.String())
-	if err != nil {
-		return errors.Wrap(err, "error creating temp dir")
-	}
-	defer func() {
-		if err = os.RemoveAll(dir); err != nil {
-			log.Error().Err(err).Msgf("error deleting context: %s", dir)
-		}
-	}()
-
-	report := types.NewItemReport(in)
-
-	for _, img := range imageURIs {
-		p := path.Join(dir, uuid.NewString())
-		log.Debug().Msgf("getting %s for %s (file: %s)", scan.String(), img, p)
-
-		switch scan {
-		case scanner.LicenseScanner:
-			rez, err := scanner.GetLicenses(img, p, filter)
-			if err != nil {
-				return errors.Wrapf(err, "error getting licenses for %s", img)
-			}
-			log.Info().Msgf("found %d licenses in %s", len(rez.Licenses), img)
-			if len(rez.Licenses) > 0 {
-				report.Items = append(report.Items, rez)
-			}
-		case scanner.VulnerabilityScanner:
-			rez, err := scanner.GetVulnerabilities(img, p, filter)
-			if err != nil {
-				return errors.Wrapf(err, "error getting vulnerabilities for %s", img)
-			}
-			log.Info().Msgf("found %d vulnerabilities in %s", len(rez.Vulnerabilities), img)
-			if len(rez.Vulnerabilities) > 0 {
-				report.Items = append(report.Items, rez)
-			}
-		default:
-			return errors.Errorf("unsupported scanner: %s", scan)
-		}
-	}
-
-	itemCount := len(report.Items)
-	report.Meta.Count = &itemCount
-
-	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
-		return errors.Wrap(err, "error writing output")
-	}
-
-	return nil
-}
-
 func readImageList(path string) ([]string, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -187,4 +85,58 @@ func readImageList(path string) ([]string, error) {
 	}
 
 	return images, nil
+}
+
+func getImagesURIs(ctx context.Context, in *types.SimpleQuery) ([]string, error) {
+	if in == nil {
+		return nil, errors.New("nil input")
+	}
+
+	if in.ImageURI != "" {
+		log.Debug().Msgf("using image URI: '%s'", in.ImageURI)
+		return []string{in.ImageURI}, nil
+	}
+
+	if in.ImageFile != "" {
+		log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
+		return readImageList(in.ImageFile)
+	}
+
+	log.Debug().Msg("discovering images from API...")
+	list, err := discoverImageURIs(ctx, &types.ImagesQuery{
+		SimpleQuery: *in,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "error discovering images")
+	}
+
+	log.Debug().Msgf("found %d images", len(list))
+	return list, nil
+}
+
+type itemHandler func(dir, uri string) error
+
+func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandler) error {
+	list, err := getImagesURIs(ctx, in)
+	if err != nil {
+		return errors.Wrap(err, "error getting images")
+	}
+
+	dir, err := os.MkdirTemp(os.TempDir(), in.Kind.String())
+	if err != nil {
+		return errors.Wrap(err, "error creating temp dir")
+	}
+	defer func() {
+		if err = os.RemoveAll(dir); err != nil {
+			log.Error().Err(err).Msgf("error deleting context: %s", dir)
+		}
+	}()
+
+	for _, img := range list {
+		if handler(dir, img) != nil {
+			return errors.Wrap(err, "error handling image")
+		}
+	}
+
+	return nil
 }

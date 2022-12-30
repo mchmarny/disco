@@ -5,27 +5,27 @@ import (
 	"time"
 )
 
-func NewItemReport(in *SimpleQuery) *ItemReport {
-	return &ItemReport{
+func NewItemReport[T any](in *SimpleQuery, items ...*T) *ItemReport[T] {
+	itemCount := len(items)
+	return &ItemReport[T]{
 		Meta: Meta{
 			Kind:    in.Kind.String(),
 			Version: in.Version,
 			Created: time.Now().UTC().Format(time.RFC3339),
+			Count:   &itemCount,
 		},
-		Items: make([]interface{}, 0),
+		Items: items,
 	}
 }
 
-type ItemReport struct {
-	Meta  Meta          `json:"meta"`
-	Items []interface{} `json:"items"`
+type ItemReport[T any] struct {
+	Meta  Meta `json:"meta"`
+	Items []*T `json:"items"`
 }
 
 type ImageItem struct {
-	Image    string `json:"image"`
-	Service  string `json:"service"`
-	Project  string `json:"project"`
-	Location string `json:"location"`
+	URI     string                 `json:"uri"`
+	Context map[string]interface{} `json:"context"`
 }
 
 type ImagesQuery struct {

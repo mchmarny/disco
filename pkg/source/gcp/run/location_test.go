@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 func TestLocations(t *testing.T) {
 	client = &testAPIClient{}
 	expectedRegions := 36
-	list, err := GetLocations(context.Background(), "test")
+	list, err := getLocations(context.Background(), "test")
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.GreaterOrEqual(t, expectedRegions, len(list))

@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProject(t *testing.T) {
+func TestService(t *testing.T) {
 	client = &testAPIClient{}
 	expectedProjects := 4
-	list, err := GetProjects(context.Background())
+	list, err := getServices(context.Background(), "cloudy-demos", "us-west1")
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.GreaterOrEqual(t, expectedProjects, len(list))

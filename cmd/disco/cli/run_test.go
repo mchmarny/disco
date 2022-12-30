@@ -1,18 +1,18 @@
 package cli
 
 import (
-	"context"
 	"flag"
 	"testing"
 	"time"
 
-	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
 )
 
 func TestImgCmd(t *testing.T) {
-	imgCmd = testImgCmdFunc
+	if !testing.Short() {
+		t.Skip("skipping integration test")
+	}
 
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String("project", "test", "test")
@@ -22,12 +22,10 @@ func TestImgCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func testImgCmdFunc(ctx context.Context, in *types.ImagesQuery) error {
-	return nil
-}
-
 func TestVulCmd(t *testing.T) {
-	vulCmd = testVulCmdFunc
+	if !testing.Short() {
+		t.Skip("skipping integration test")
+	}
 
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String("project", "test", "test")
@@ -37,12 +35,10 @@ func TestVulCmd(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func testVulCmdFunc(ctx context.Context, in *types.VulnsQuery) error {
-	return nil
-}
-
 func TestLicCmd(t *testing.T) {
-	licCmd = testLicCmdFunc
+	if !testing.Short() {
+		t.Skip("skipping integration test")
+	}
 
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String("project", "test", "test")
@@ -56,8 +52,4 @@ func newTestApp(t *testing.T) *cli.App {
 	app, err := newApp("v0.0.0-test", "test", time.Now().UTC().Format(time.RFC3339))
 	assert.NoError(t, err)
 	return app
-}
-
-func testLicCmdFunc(ctx context.Context, in *types.SimpleQuery) error {
-	return nil
 }

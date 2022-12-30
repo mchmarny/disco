@@ -52,7 +52,6 @@ func ParseMinVulnSeverityOrDefault(s string) VulnSev {
 type VulnsQuery struct {
 	SimpleQuery
 	CVE        string
-	CAAPI      bool
 	MinVulnSev VulnSev // Vulnerability severity
 }
 
@@ -69,8 +68,8 @@ func (q *VulnsQuery) Validate() error {
 }
 
 func (q *VulnsQuery) String() string {
-	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, ca-api: %t, min-vuln-sev: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.CAAPI, q.MinVulnSev)
+	return fmt.Sprintf("projectID:%s, output:%s, format:%s, cve: %s, min-vuln-sev: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.CVE, q.MinVulnSev)
 }
 
 type VulnerabilityReport struct {

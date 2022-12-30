@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -14,16 +14,16 @@ const (
 	regionAPIBaseURL = "https://run.googleapis.com/v1/projects/%s/locations"
 )
 
-type LocaitonList struct {
-	Locations []*Location `json:"locations"`
+type locaitonList struct {
+	Locations []*location `json:"locations"`
 }
 
-type Location struct {
+type location struct {
 	ID   string `json:"locationId"`
 	Name string `json:"displayName"`
 }
 
-func GetLocations(ctx context.Context, projectNumber string) ([]*Location, error) {
+func getLocations(ctx context.Context, projectNumber string) ([]*location, error) {
 	if projectNumber == "" {
 		return nil, errors.New("project number is empty")
 	}
@@ -33,7 +33,7 @@ func GetLocations(ctx context.Context, projectNumber string) ([]*Location, error
 		return nil, errors.Wrap(err, "error client creating request")
 	}
 
-	var list LocaitonList
+	var list locaitonList
 	if err := client.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}

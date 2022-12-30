@@ -57,6 +57,8 @@ linters-settings:
     statements: 45
   nestif:
     min-complexity: 10
+  dupl:
+    threshold: 200
 
 # issues:
 #   # exclude:
