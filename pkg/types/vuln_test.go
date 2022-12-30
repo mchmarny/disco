@@ -25,3 +25,12 @@ func TestVulns(t *testing.T) {
 		assert.NotEmpty(t, o.String())
 	}
 }
+
+func TestVulnsQuery(t *testing.T) {
+	q := &VulnsQuery{}
+	assert.NoError(t, q.Validate())
+	q.ImageFile = "test"
+	assert.NoError(t, q.Validate())
+	q.ImageURI = "test"
+	assert.Error(t, q.Validate())
+}
