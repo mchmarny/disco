@@ -1,28 +1,17 @@
 package disco
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"os"
 	"os/exec"
 	"testing"
 
-	"github.com/mchmarny/disco/pkg/gcp"
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/source"
 	"github.com/mchmarny/disco/pkg/types"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
 func setTestImplementations() {
-	getProjectsFunc = getTestProjects
-	getLocationsFunc = getTestLocations
-	getServicesFunc = getTestServices
-	getCVEVulnsFunc = getTestCVEVulns
-	getImageVulnsFunc = getTestImageVulns
-	isAPIEnabledFunc = isTestAPIEnabled
-
 	scanner.ScanVulnerability = func(digest, path string) *exec.Cmd {
 		return exec.Command("cp", "../../etc/data/test-license.json", path) //nolint
 	}
@@ -32,7 +21,21 @@ func setTestImplementations() {
 	}
 }
 
+func testImageProvider(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, error) {
+	return []*types.ImageItem{
+		{
+			URI: "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+			Context: map[string]interface{}{
+				"project": "cloudrun",
+				"folder":  "container",
+				"name":    "hello",
+			},
+		},
+	}, nil
+}
+
 func TestImage(t *testing.T) {
+	source.ImageProvider = testImageProvider
 	setTestImplementations()
 	ctx := context.Background()
 
@@ -57,6 +60,7 @@ func TestImage(t *testing.T) {
 }
 
 func TestLicense(t *testing.T) {
+	source.ImageProvider = testImageProvider
 	setTestImplementations()
 	ctx := context.Background()
 
@@ -74,6 +78,7 @@ func TestLicense(t *testing.T) {
 }
 
 func TestVuln(t *testing.T) {
+	source.ImageProvider = testImageProvider
 	setTestImplementations()
 	ctx := context.Background()
 
@@ -89,78 +94,6 @@ func TestVuln(t *testing.T) {
 		},
 	})
 	assert.NoError(t, err, "error discovering vulns with project")
-
-	err = DiscoverVulns(ctx, &types.VulnsQuery{
-		CAAPI: true,
-	})
-	assert.NoError(t, err, "error discovering vulns with CAAPI")
-
-	err = DiscoverVulns(ctx, &types.VulnsQuery{
-		CAAPI: true,
-		SimpleQuery: types.SimpleQuery{
-			ProjectID: "test-project",
-			OutputFmt: types.ParseOutputFormatOrDefault("raw"),
-		},
-	})
-	assert.NoError(t, err, "error discovering vulns with CAAPI and project ID")
-}
-
-func getTestProjects(ctx context.Context) ([]*gcp.Project, error) {
-	var list []*gcp.Project
-	if err := loadTestData("../../etc/data/test-project.json", &list); err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func getTestLocations(ctx context.Context, projectNumber string) ([]*gcp.Location, error) {
-	list := []*gcp.Location{
-		{
-			ID:   "us-west1",
-			Name: "us-west1",
-		},
-	}
-	return list, nil
-}
-
-func getTestServices(ctx context.Context, projectNumber string, region string) ([]*gcp.Service, error) {
-	var list []*gcp.Service
-	if err := loadTestData("../../etc/data/test-service.json", &list); err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func getTestCVEVulns(ctx context.Context, projectID string, cveID string) ([]*gcp.Occurrence, error) {
-	var list []*gcp.Occurrence
-	if err := loadTestData("../../etc/data/test-occurrence.json", &list); err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func getTestImageVulns(ctx context.Context, projectID string, imageURL string) ([]*gcp.Occurrence, error) {
-	var list []*gcp.Occurrence
-	if err := loadTestData("../../etc/data/test-occurrence.json", &list); err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
-func isTestAPIEnabled(ctx context.Context, projectNumber string, uri string) (bool, error) {
-	return true, nil
-}
-
-func loadTestData(path string, v any) error {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return errors.Wrap(err, "error reading test data")
-	}
-
-	if err := json.NewDecoder(bytes.NewReader(b)).Decode(v); err != nil {
-		return errors.Wrap(err, "error decoding test data")
-	}
-	return nil
 }
 
 func TestFormatParse(t *testing.T) {
@@ -182,10 +115,4 @@ func TestWriteOutput(t *testing.T) {
 	}
 	err = writeOutput("", types.JSONFormat, f)
 	assert.Nil(t, err, "error writing output with JSON format")
-}
-
-func TestScan(t *testing.T) {
-	ctx := context.Background()
-	err := scan(ctx, scanner.LicenseScanner, nil, nil)
-	assert.Error(t, err, "error scanning with nil query")
 }

@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -19,26 +19,26 @@ const (
 )
 
 type serviceList struct {
-	Services []*Service `json:"services"`
+	Services []*service `json:"services"`
 }
 
-type Service struct {
+type service struct {
 	Name       string       `json:"name"`
 	FullName   string       `json:"fullName"`
 	Revision   string       `json:"latestReadyRevision"`
-	Containers []*Container `json:"containers"`
+	Containers []*container `json:"containers"`
 }
 
-type Revision struct {
-	Conditions []*Container `json:"containers"`
+type revision struct {
+	Conditions []*container `json:"containers"`
 }
 
-type Container struct {
+type container struct {
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
 
-func GetServices(ctx context.Context, projectID, region string) ([]*Service, error) {
+func getServices(ctx context.Context, projectID, region string) ([]*service, error) {
 	if projectID == "" {
 		return nil, errors.New("projectID is empty")
 	}
@@ -73,7 +73,7 @@ func GetServices(ctx context.Context, projectID, region string) ([]*Service, err
 		if err != nil {
 			return nil, errors.Wrap(err, "error client creating revision request")
 		}
-		var rev Revision
+		var rev revision
 		if err := client.Get(ctx, req, &rev); err != nil {
 			return nil, errors.Wrapf(err, "error decoding revision response from: %s", u)
 		}

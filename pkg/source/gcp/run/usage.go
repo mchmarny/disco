@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -15,8 +15,7 @@ const (
 	// the parameter is project NUMBER (not ID).
 	usageAPIBaseURL = "https://serviceusage.googleapis.com/v1/projects/%s/services?filter=state:ENABLED"
 
-	// CloudRunAPI is the name of the Cloud Run API.
-	CloudRunAPI = "run.googleapis.com"
+	cloudRunAPI = "run.googleapis.com"
 )
 
 type usageServiceList struct {
@@ -27,7 +26,7 @@ type usageServiceList struct {
 	} `json:"services"`
 }
 
-func IsAPIEnabled(ctx context.Context, projectNumber, uri string) (bool, error) {
+func isAPIEnabled(ctx context.Context, projectNumber, uri string) (bool, error) {
 	if projectNumber == "" {
 		return false, errors.New("project number is empty")
 	}

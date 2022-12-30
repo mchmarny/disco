@@ -11,11 +11,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const (
-	LicenseScanner ScannerType = iota
-	VulnerabilityScanner
-)
-
 var (
 	ScanLicense  MakeLicenseCmd = trivy.MakeLicenseCmd
 	ParseLicense LicenseParser  = trivy.ParseLicenses
@@ -23,19 +18,6 @@ var (
 	ScanVulnerability  MakeVulnerabilityCmd = trivy.MakeVulnerabilityCmd
 	ParseVulnerability VulnerabilityParser  = trivy.ParseVulnerabilities
 )
-
-type ScannerType int64
-
-func (s ScannerType) String() string {
-	switch s {
-	case LicenseScanner:
-		return "license"
-	case VulnerabilityScanner:
-		return "vulnerability"
-	default:
-		return "unknown"
-	}
-}
 
 // MakeLicenseCmd is an interface for license scanners.
 type MakeLicenseCmd func(digest, path string) *exec.Cmd

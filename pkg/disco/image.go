@@ -4,18 +4,11 @@ import (
 	"context"
 	"os"
 
-	"github.com/mchmarny/disco/pkg/gcp"
+	"github.com/mchmarny/disco/pkg/source"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
-
-type RunningImage struct {
-	Container *gcp.Container
-	Service   *gcp.Service
-	Project   *gcp.Project
-	Location  *gcp.Location
-}
 
 // DiscoverImages discovers all deployed images in the project.
 func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
@@ -25,7 +18,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 	log.Debug().Msgf("discovering images with: %s", in)
 	printProjectScope(in.ProjectID)
 
-	images, err := getDeployedImages(ctx, in.ProjectID)
+	images, err := source.ImageProvider(ctx, in)
 	if err != nil {
 		return errors.Wrap(err, "error getting images")
 	}
@@ -39,17 +32,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		return nil
 	}
 
-	imageCount := len(images)
-	report := types.NewItemReport(&in.SimpleQuery)
-	report.Meta.Count = &imageCount
-	for _, img := range images {
-		report.Items = append(report.Items, &types.ImageItem{
-			Location: img.Location.ID,
-			Project:  img.Project.ID,
-			Service:  img.Service.Name,
-			Image:    img.Container.Image,
-		})
-	}
+	report := types.NewItemReport(&in.SimpleQuery, images...)
 
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
@@ -58,100 +41,28 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 	return nil
 }
 
-func getDeployedImageURIs(ctx context.Context, projectID string) ([]string, error) {
-	images, err := getDeployedImages(ctx, projectID)
+func discoverImageURIs(ctx context.Context, in *types.ImagesQuery) ([]string, error) {
+	if in == nil {
+		return nil, errors.New("nil input")
+	}
+
+	images, err := source.ImageProvider(ctx, in)
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting images")
 	}
-	imageURIs := make([]string, 0)
+
+	log.Info().Msgf("found %d images", len(images))
+	list := make([]string, 0, len(images))
 	for _, img := range images {
-		imageURIs = append(imageURIs, img.Container.Image)
+		list = append(list, img.URI)
 	}
-	return imageURIs, nil
-}
-
-func getDeployedImages(ctx context.Context, projectID string) ([]*RunningImage, error) {
-	if projectID != "" {
-		log.Debug().Msgf("discovering images for project: %s", projectID)
-	}
-
-	projects, err := getProjectsFunc(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "error getting projects")
-	}
-	log.Debug().Msgf("found %d projects", len(projects))
-
-	list := make([]*RunningImage, 0)
-
-	for _, p := range projects {
-		if !isQualifiedProject(ctx, p, projectID) {
-			continue
-		}
-
-		reg, err := getLocationsFunc(ctx, p.Number)
-		if err != nil {
-			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
-			continue
-		}
-		log.Info().Msgf("found %d regions where Cloud Run is supported, processing...", len(reg))
-
-		for _, r := range reg {
-			svcs, err := getServicesFunc(ctx, p.ID, r.ID)
-			if err != nil {
-				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
-				continue
-			}
-
-			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
-			for _, s := range svcs {
-				log.Info().Msgf("processing: %s", s.FullName)
-
-				for _, c := range s.Containers {
-					list = append(list, &RunningImage{
-						Project:   p,
-						Location:  r,
-						Service:   s,
-						Container: c,
-					})
-				}
-			}
-		}
-	}
-
 	return list, nil
 }
 
-func isQualifiedProject(ctx context.Context, p *gcp.Project, filterID string) bool {
-	log.Debug().Msgf("qualifying project: %s (%s - %s)", p.ID, p.Number, p.State)
-
-	if filterID != "" && p.ID != filterID {
-		log.Debug().Msgf("skipping: %s (filter: %s)", p.ID, filterID)
-		return false
-	}
-
-	if p.State != gcp.ProjectStateActive {
-		log.Debug().Msgf("skipping: %s (inactive)", p.ID)
-		return false
-	}
-
-	on, err := isAPIEnabledFunc(ctx, p.Number, gcp.CloudRunAPI)
-	if err != nil {
-		log.Error().Err(err).Msgf("error checking Cloud Run API: %s", p.ID)
-		return false
-	}
-
-	if !on {
-		log.Debug().Msgf("skipping: %s (API not enabled)", p.ID)
-		return false
-	}
-
-	return true
-}
-
-func writeList(path string, images []*RunningImage) error {
+func writeList(path string, images []*types.ImageItem) error {
 	if path == "" {
 		for _, img := range images {
-			os.Stdout.WriteString(img.Container.Image)
+			os.Stdout.WriteString(img.URI)
 			os.Stdout.WriteString("\n")
 		}
 		return nil
@@ -164,7 +75,7 @@ func writeList(path string, images []*RunningImage) error {
 	defer f.Close()
 
 	for _, img := range images {
-		if _, err := f.WriteString(img.Container.Image + "\n"); err != nil {
+		if _, err := f.WriteString(img.URI + "\n"); err != nil {
 			return errors.Wrapf(err, "error writing to file: %s", path)
 		}
 	}

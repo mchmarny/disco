@@ -1,10 +1,13 @@
-package gcp
+package run
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -209,4 +212,67 @@ func parseRegistryAndRegion(uri string, info *ImageInfo) bool {
 	}
 
 	return false
+}
+
+func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, error) {
+	if in == nil {
+		return nil, errors.New("invalid input, image query is nil")
+	}
+
+	if in.ProjectID != "" {
+		log.Debug().Msgf("discovering images for project: %s", in.ProjectID)
+	}
+
+	projects, err := getProjects(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting projects")
+	}
+	log.Debug().Msgf("found %d projects", len(projects))
+
+	list := make([]*types.ImageItem, 0)
+
+	for _, p := range projects {
+		if !isQualifiedProject(ctx, p, in.ProjectID) {
+			continue
+		}
+
+		reg, err := getLocations(ctx, p.Number)
+		if err != nil {
+			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
+			continue
+		}
+		log.Info().Msgf("found %d regions in project %s where Cloud Run is supported, processing...", len(reg), p.ID)
+
+		for _, r := range reg {
+			svcs, err := getServices(ctx, p.ID, r.ID)
+			if err != nil {
+				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
+				continue
+			}
+
+			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
+			for _, s := range svcs {
+				log.Info().Msgf("processing: %s", s.FullName)
+
+				for _, c := range s.Containers {
+					img := &types.ImageItem{
+						URI: c.Image,
+						Context: map[string]interface{}{
+							"project-id":       p.ID,
+							"project-number":   p.Number,
+							"location-id":      r.ID,
+							"location-name":    r.Name,
+							"service-id":       s.FullName,
+							"service-name":     s.Name,
+							"service-revision": s.Revision,
+							"container-name":   c.Name,
+						},
+					}
+					list = append(list, img)
+				}
+			}
+		}
+	}
+
+	return list, nil
 }

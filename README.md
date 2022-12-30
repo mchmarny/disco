@@ -80,12 +80,19 @@ The resulting report in JSON format will look something like this (abbreviated):
     "count": 7
   },
   "items": [
-      {
-        "image": "https://us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
-        "service": "hello",
-        "project": "cloudy-demos",
-        "location": "us-central1"
-      },
+    {
+      "uri": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+      "context": {
+        "container-name": "hello-1",
+        "location-id": "us-central1",
+        "location-name": "Iowa",
+        "project-id": "cloudy-demos",
+        "project-number": "799736955886",
+        "service-id": "projects/cloudy-demos/locations/us-central1/services/hello",
+        "service-name": "hello",
+        "service-revision": "projects/cloudy-demos/locations/us-central1/services/hello/revisions/hello-00001-taj"
+      }
+    },
       ...
   ]
 }
@@ -148,7 +155,6 @@ The `vul` or `vulnerabilities` command supports all of the generic options liste
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
 * `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all).
 * `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to a new CVE.
-* `--use-ca`  - invokes Container Analysis API instead of the local scanner (default: false).
 
 The resulting report in JSON format will look something like this (abbreviated):
 

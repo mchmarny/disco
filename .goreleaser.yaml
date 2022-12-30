@@ -48,13 +48,6 @@ release:
 archives:
 - format: binary
   name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-  replacements:
-    darwin: MacOS
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-    arm64: aarch64
   format_overrides:
   - goos: windows
     format: zip
@@ -92,14 +85,6 @@ nfpms:
   - deb
   - rpm
   bindir: /usr/bin
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
 
 universal_binaries:
 - replace: true

@@ -38,12 +38,6 @@ var (
 		Value: false,
 	}
 
-	caAPIExecFlag = &c.BoolFlag{
-		Name:  "use-ca",
-		Usage: "invokes Container Analysis API instead of the local scanner",
-		Value: false,
-	}
-
 	cveFlag = &c.StringFlag{
 		Name:     "cve",
 		Aliases:  []string{"e"},
@@ -101,7 +95,6 @@ var (
 					imageURIFlag,
 					minSeverityFlag,
 					cveFlag,
-					caAPIExecFlag,
 				},
 			},
 			{
@@ -167,7 +160,6 @@ func runVulnsCmd(c *c.Context) error {
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.CVE = c.String(cveFlag.Name)
 	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
-	in.CAAPI = c.Bool(caAPIExecFlag.Name)
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
 	in.MinVulnSev = types.ParseMinVulnSeverityOrDefault(c.String(minSeverityFlag.Name))
@@ -176,10 +168,6 @@ func runVulnsCmd(c *c.Context) error {
 
 	if err := in.Validate(); err != nil {
 		return errors.Wrap(err, "invalid input")
-	}
-
-	if in.CAAPI {
-		log.Info().Msg("note: Container Analysis scans currently are limited to base OS only")
 	}
 
 	if err := vulCmd(c.Context, in); err != nil {

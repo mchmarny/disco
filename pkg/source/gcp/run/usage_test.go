@@ -1,4 +1,4 @@
-package gcp
+package run
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 func TestUsage(t *testing.T) {
 	client = &testAPIClient{}
-	ok, err := IsAPIEnabled(context.Background(), "799736955886", CloudRunAPI)
+	ok, err := isAPIEnabled(context.Background(), "799736955886", cloudRunAPI)
 	assert.NoError(t, err)
 	assert.True(t, ok)
 }
