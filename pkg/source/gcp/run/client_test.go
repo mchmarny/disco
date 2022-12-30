@@ -88,3 +88,11 @@ func TestClientHead(t *testing.T) {
 	assert.NoError(t, err, "error executing request")
 	assert.NotEmpty(t, v)
 }
+
+func TestHTTPClientProvider(t *testing.T) {
+	ctx := context.Background()
+	httpClientProvider = testHTTPClientProvider
+	c, err := newHTTPClientWithCredentials(ctx, nil)
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+}
