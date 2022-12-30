@@ -1,8 +1,10 @@
 package run
 
 import (
+	"context"
 	"testing"
 
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -154,4 +156,19 @@ func TestImageManifestURL(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, img)
 	assert.Equal(t, "https://us-west1-docker.pkg.dev/v2/cloudy-demos/art/artomator/manifests/v0.8.3", img.ManifestURL())
+}
+
+func TestImages(t *testing.T) {
+	client = &testAPIClient{}
+	expectedRegions := 36
+	list, err := GetImages(context.Background(), &types.ImagesQuery{
+		SimpleQuery: types.SimpleQuery{
+			ProjectID: "cloudy-demos",
+			Kind:      types.KindImage,
+			Version:   "v1.2.3",
+		},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.GreaterOrEqual(t, expectedRegions, len(list))
 }
