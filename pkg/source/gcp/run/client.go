@@ -91,6 +91,7 @@ func (g *googleAPIClient) Head(ctx context.Context, req *http.Request, key strin
 
 func newHTTPClientWithCredentials(ctx context.Context, credProvider CredentialProvider) (*http.Client, error) {
 	var ops []option.ClientOption
+	var client *http.Client
 
 	if credProvider != nil {
 		creds, err := credProvider(ctx)
@@ -98,11 +99,13 @@ func newHTTPClientWithCredentials(ctx context.Context, credProvider CredentialPr
 			return nil, errors.Wrap(err, "failed to create credentials")
 		}
 		ops = append(ops, option.WithCredentials(creds))
-	}
-
-	client, _, err := htransport.NewClient(ctx, ops...)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create http client")
+		c, _, err := htransport.NewClient(ctx, ops...)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create http client")
+		}
+		client = c
+	} else {
+		client = &http.Client{}
 	}
 
 	return client, nil

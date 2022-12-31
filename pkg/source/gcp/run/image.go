@@ -252,7 +252,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Info().Msgf("processing: %s", s.FullName)
+				log.Debug().Msgf("processing: %s", s.FullName)
 
 				for _, c := range s.Containers {
 					img := &types.ImageItem{
