@@ -241,7 +241,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
 			continue
 		}
-		log.Info().Msgf("found %d regions in project %s where Cloud Run is supported, processing...", len(reg), p.ID)
+		log.Info().Msgf("found %d regions in project %s where Cloud Run is supported", len(reg), p.ID)
 
 		for _, r := range reg {
 			svcs, err := getServices(ctx, p.ID, r.ID)

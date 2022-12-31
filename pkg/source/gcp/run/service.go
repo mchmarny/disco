@@ -66,7 +66,8 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 	// add revision images
 	for _, s := range list.Services {
 		if s.Revision == "" {
-			return nil, errors.Errorf("service %s has no revision", s.Name)
+			log.Logger.Debug().Msgf("service %s has no revision", s.Name)
+			continue
 		}
 		u := fmt.Sprintf(revisionAPIBaseURL, s.Revision)
 		req, err = http.NewRequest(http.MethodGet, u, nil)
