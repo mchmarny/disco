@@ -1,6 +1,7 @@
 package disco
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -32,10 +33,76 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	reportName := fmt.Sprintf("%s.json", time.Now().UTC().Format("2006-01-02T15-04-05"))
+	// get image IDs
+	imageReport := fmt.Sprintf("img-%s.txt", time.Now().UTC().Format("2006-01-02T15-04-05"))
+	reportPath := path.Join(dir, imageReport)
+	query := &types.ImagesQuery{
+		URIOnly: true,
+		SimpleQuery: types.SimpleQuery{
+			OutputPath: reportPath,
+			Kind:       types.KindImage,
+			Version:    h.version,
+		},
+	}
+
+	if err := disco.DiscoverImages(r.Context(), query); err != nil {
+		writeError(w, errors.Wrap(err, "error discovering images"))
+		return
+	}
+
+	if err := h.discoVulns(r.Context(), dir, reportPath); err != nil {
+		writeError(w, errors.Wrap(err, "error discovering vulnerabilities"))
+		return
+	}
+
+	if err := h.discoLicenses(r.Context(), dir, reportPath); err != nil {
+		writeError(w, errors.Wrap(err, "error discovering licenses"))
+		return
+	}
+
+	writeMessage(w, "Done")
+}
+
+func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
+	reportName := fmt.Sprintf("lic-%s.json", time.Now().UTC().Format("2006-01-02T15-04-05"))
+	reportPath := path.Join(dir, reportName)
+	query := &types.SimpleQuery{
+		ImageFile:  src,
+		OutputPath: reportPath,
+		OutputFmt:  types.JSONFormat,
+		Kind:       types.KindVulnerability,
+		Version:    h.version,
+	}
+
+	if err := disco.DiscoverLicenses(ctx, query); err != nil {
+		return errors.Wrap(err, "error executing discover licenses")
+	}
+
+	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
+		return errors.Wrapf(err, "error writing content to: %s/%s",
+			h.bucket, reportName)
+	}
+
+	list, err := disco.MeterLicense(ctx, reportPath)
+	if err != nil {
+		return errors.Wrapf(err, "error metering licenses from: %s", reportPath)
+	}
+
+	if err := h.counter.CountAll(ctx, list...); err != nil {
+		return errors.Wrapf(err, "error counting licenses metrics: %d", len(list))
+	}
+
+	log.Info().Msgf("license report saved to: gs://%s/%s", h.bucket, reportName)
+
+	return nil
+}
+
+func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
+	reportName := fmt.Sprintf("vul-%s.json", time.Now().UTC().Format("2006-01-02T15-04-05"))
 	reportPath := path.Join(dir, reportName)
 	query := &types.VulnsQuery{
 		SimpleQuery: types.SimpleQuery{
+			ImageFile:  src,
 			OutputPath: reportPath,
 			OutputFmt:  types.JSONFormat,
 			Kind:       types.KindVulnerability,
@@ -43,23 +110,25 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	if err := disco.DiscoverVulns(r.Context(), query); err != nil {
-		writeError(w, errors.Wrap(err, "error validating"))
-		return
+	if err := disco.DiscoverVulns(ctx, query); err != nil {
+		return errors.Wrap(err, "error executing discover vulnerabilities")
 	}
 
-	if err := object.Save(r.Context(), h.bucket, reportName, reportPath); err != nil {
-		writeError(w, errors.Wrapf(err, "error writing content to: %s/%s",
-			h.bucket, reportName))
-		return
+	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
+		return errors.Wrapf(err, "error writing content to: %s/%s",
+			h.bucket, reportName)
 	}
 
-	if err := disco.MeterVulns(r.Context(), h.counter, reportPath); err != nil {
-		writeError(w, errors.Wrap(err, "error metering vulnerabilities"))
-		return
+	list, err := disco.MeterVulns(ctx, reportPath)
+	if err != nil {
+		return errors.Wrapf(err, "error metering vulnerabilities from: %s", reportPath)
 	}
 
-	log.Info().Msgf("discovery report saved to: gs://%s/%s", h.bucket, reportName)
+	if err := h.counter.CountAll(ctx, list...); err != nil {
+		return errors.Wrapf(err, "error counting vulnerability metrics: %d", len(list))
+	}
 
-	writeMessage(w, "Done")
+	log.Info().Msgf("vulnerability report saved to: gs://%s/%s", h.bucket, reportName)
+
+	return nil
 }

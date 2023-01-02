@@ -2,9 +2,7 @@ package disco
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os"
 	"path"
 	"strings"
 
@@ -84,51 +82,41 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 	return nil
 }
 
-func MeterVulns(ctx context.Context, counter metric.Counter, reportPath string) error {
-	if counter == nil {
-		return errors.New("nil counter")
-	}
-
-	if reportPath == "" {
-		return errors.New("report path required")
-	}
-
-	reportContent, err := os.ReadFile(reportPath)
-	if err != nil {
-		return errors.Wrapf(err, "error reading report file: %s", reportPath)
-	}
-
+func MeterVulns(ctx context.Context, reportPath string) ([]*metric.Record, error) {
 	var report types.ItemReport[types.VulnerabilityReport]
-	if err := json.Unmarshal(reportContent, &report); err != nil {
-		return errors.Wrapf(err, "error parsing report file: %s", reportPath)
+	if err := types.UnmarshalFromFile(reportPath, &report); err != nil {
+		return nil, errors.Wrapf(err, "error parsing report file: %s", reportPath)
 	}
 
 	if len(report.Items) == 0 {
 		log.Debug().Msgf("no vulnerabilities found in %s", reportPath)
-		return nil
+		return nil, nil
 	}
 
-	counterMap := make(map[string]int64, 0)
+	imageCounter := 0
+	severityCounter := make(map[string]int64)
+
 	for _, item := range report.Items {
-		counterMap["disco/image"]++
+		imageCounter++
 		for _, vuln := range item.Vulnerabilities {
-			counterMap["disco/vulnerability"]++
-			counterMap[fmt.Sprintf("disco/vulnerability/%s", vuln.Severity)]++
+			severityCounter[vuln.Severity]++
 		}
 	}
 
 	list := make([]*metric.Record, 0)
-	for k, v := range counterMap {
+	list = append(list, &metric.Record{
+		MetricType:  metric.MakeMetricType("disco/vulnerability/image"),
+		MetricValue: int64(imageCounter),
+	})
+	for k, v := range severityCounter {
 		list = append(list, &metric.Record{
-			MetricType:  metric.MakeMetricType(k),
+			MetricType:  metric.MakeMetricType("disco/vulnerability/severity"),
 			MetricValue: v,
-			Labels:      make(map[string]string, 0),
+			Labels: map[string]string{
+				"level": metric.MakeMetricLabelSafe(k),
+			},
 		})
 	}
 
-	if err := counter.CountAll(ctx, list...); err != nil {
-		return errors.Wrap(err, "error saving counts")
-	}
-
-	return nil
+	return list, nil
 }

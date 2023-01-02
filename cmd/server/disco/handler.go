@@ -26,7 +26,7 @@ func NewHandler(version, bucket string, counter metric.Counter) (*Handler, error
 	}
 
 	if counter == nil {
-		return nil, errors.New("counter service not set")
+		return nil, errors.New("recorder service not set")
 	}
 
 	h := &Handler{
