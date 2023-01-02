@@ -88,16 +88,7 @@ jobs:
         token_format: "access_token"
         workload_identity_provider: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
         service_account: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
-    - name: Download Syft
-      uses: anchore/sbom-action/download-syft@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
-    - name: Build CLI
-      uses: goreleaser/goreleaser-action@8f67e590f2d095516493f017008adc464e63adb1  # v4.1.0
-      with:
-        distribution: goreleaser
-        version: latest
-        args: release --snapshot --rm-dist --timeout 10m0s
     - name: Run Integration Tests
       run: |-
-        mkdir -p ./bin
-        mv dist/disco_linux_arm64/disco ./bin/disco
+        make build
         tools/e2e

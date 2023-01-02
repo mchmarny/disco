@@ -1,5 +1,7 @@
-RELEASE_VERSION ?=$(shell cat .version)
+RELEASE_VERSION :=$(shell cat .version)
+COMMIT          :=$(shell git rev-parse HEAD)
 YAML_FILES      :=$(shell find . -type f -regex ".*yaml" -print)
+CURRENT_DATE	:=$(shell date +%Y-%m-%d)
 
 all: help
 
@@ -52,9 +54,13 @@ build-server: tidy ## Builds Server binary
 .PHONY: build-server
 
 build-cli: tidy ## Builds CLI binary
-	goreleaser release --snapshot --rm-dist --timeout 10m0s
 	mkdir -p ./bin
-	mv dist/disco_darwin_all/disco ./bin/disco
+	CGO_ENABLED=0 go build -trimpath -ldflags="\
+    -w -s -X main.version=$(RELEASE_VERSION) \
+	-w -s -X main.commit=$(COMMIT) \
+	-w -s -X main.date=$(CURRENT_DATE) \
+	-extldflags '-static'" \
+    -a -mod vendor -o ./bin/server cmd/cli/main.go
 .PHONY: build-cli
 
 server: ## Runs previsouly built server binary
