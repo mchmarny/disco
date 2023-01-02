@@ -33,6 +33,13 @@ variable "server_img" {
   nullable    = false
 }
 
+variable "disco_schedule" {
+  description = "Cron for disco service invocation"
+  default     = "30 */2 * * *"
+  type        = string
+  nullable    = false
+}
+
 variable "runtime_only" {
   description = "Whether or not deploy the development resoruces"
   default     = true

@@ -19,4 +19,4 @@ if [ "$REP_TAG" != "$TAG" ]; then
 fi
 
 printf "\nApplying terraform..."
-terraform -chdir=./deployment apply -auto-approve
+terraform -chdir=./deploy apply -auto-approve

@@ -4,7 +4,7 @@
 resource "google_cloud_scheduler_job" "disco_refresh_job" {
   name             = "${var.name}-disco-refresh-job"
   description      = "Invokes Cloud Run service to run discovery"
-  schedule         = "42 */5 * * 0"
+  schedule         = var.disco_schedule
   time_zone        = "America/Los_Angeles"
   attempt_deadline = "900s"
   region           = var.location
