@@ -6,6 +6,8 @@ on:
       digest:
         description: "Digest of the published image"
         value: ${{ jobs.image.outputs.digest }}
+permissions:
+  contents: read
 jobs:
   image:
     runs-on: ubuntu-latest

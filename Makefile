@@ -40,7 +40,7 @@ lint-yaml: ## Runs yamllint on all yaml files
 	yamllint -c .yamllint $(YAML_FILES)
 .PHONY: lint-yaml
 
-build: release-server release-cli ## Builds binaries
+build: build-server build-cli ## Builds binaries
 	@echo "Completed release"
 .PHONY: build
 
