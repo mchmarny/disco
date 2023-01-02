@@ -71,6 +71,10 @@ image: ## Builds new image locally (dirty)
 	tools/image
 .PHONY: image
 
+invoke: ## Invokes the service
+	tools/invoke
+.PHONY: invoke
+
 run: ## Runs bash on latest artomator image
 	tools/run
 .PHONY: run
