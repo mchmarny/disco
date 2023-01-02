@@ -227,7 +227,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting projects")
 	}
-	log.Debug().Msgf("found %d projects", len(projects))
+	log.Info().Msgf("found %d projects", len(projects))
 
 	list := make([]*types.ImageItem, 0)
 
@@ -241,7 +241,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 			log.Error().Err(err).Msgf("error getting regions for project: %s (#%s)", p.ID, p.Number)
 			continue
 		}
-		log.Info().Msgf("found %d regions in project %s where Cloud Run is supported", len(reg), p.ID)
+		log.Debug().Msgf("found %d regions in project %s where Cloud Run is supported", len(reg), p.ID)
 
 		for _, r := range reg {
 			svcs, err := getServices(ctx, p.ID, r.ID)
@@ -252,7 +252,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
 			for _, s := range svcs {
-				log.Debug().Msgf("processing: %s", s.FullName)
+				log.Info().Msgf("processing: %s", s.FullName)
 
 				for _, c := range s.Containers {
 					img := &types.ImageItem{

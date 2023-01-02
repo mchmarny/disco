@@ -49,7 +49,7 @@ build: build-server build-cli ## Builds binaries
 build-server: tidy ## Builds Server binary
 	mkdir -p ./bin
 	CGO_ENABLED=0 go build -trimpath \
-    -ldflags="-w -s -X main.version=$(VERSION) -extldflags '-static'" \
+    -ldflags="-w -s -X main.version=$(RELEASE_VERSION) -extldflags '-static'" \
     -a -mod vendor -o bin/server cmd/server/main.go
 .PHONY: build-server
 

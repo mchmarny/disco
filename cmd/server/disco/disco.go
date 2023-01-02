@@ -2,7 +2,6 @@ package disco
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -13,12 +12,13 @@ import (
 	"github.com/mchmarny/disco/pkg/object"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // DiscoHandler is the HTTP handler for disco service.
 func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	log.Println("preparing discovery...")
+	log.Debug().Msg("preparing discovery...")
 
 	requestContextID := uuid.NewString()
 	dir, err := makeFolder(requestContextID)
@@ -28,7 +28,7 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() {
 		if err = os.RemoveAll(dir); err != nil {
-			log.Printf("error deleting context: %s\n", dir)
+			log.Error().Msgf("error deleting context: %s", dir)
 		}
 	}()
 
@@ -57,5 +57,7 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeMessage(w, fmt.Sprintf("gs://%s/%s", h.bucket, reportName))
+	log.Info().Msgf("discovery report saved to: gs://%s/%s", h.bucket, reportName)
+
+	writeMessage(w, "Done")
 }

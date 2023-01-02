@@ -3,12 +3,12 @@ package metric
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/genproto/googleapis/api/monitoredres"
 	timestamp "google.golang.org/protobuf/types/known/timestamppb"
@@ -50,7 +50,7 @@ func (r *APICounter) Count(ctx context.Context, metricType string, count int64, 
 // CountAll records multiple metrics to the monitoring API.
 func (r *APICounter) CountAll(ctx context.Context, records ...*Record) error {
 	if len(records) < 1 {
-		log.Printf("no metrics to record")
+		log.Debug().Msg("no metrics to record")
 	}
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
@@ -95,7 +95,7 @@ func (r *APICounter) CountAll(ctx context.Context, records ...*Record) error {
 		list = append(list, s)
 	}
 
-	log.Printf("creating %d metrics...", len(list))
+	log.Debug().Msgf("creating %d metrics...", len(list))
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		Name:       "projects/" + r.projectID,
 		TimeSeries: list,

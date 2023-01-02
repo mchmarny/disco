@@ -25,7 +25,7 @@ func writeOutput(path string, format types.OutputFormat, data any) error {
 	w = os.Stdout
 
 	if path != "" {
-		log.Info().Msgf("writing output to: '%s'", path)
+		log.Info().Msgf("writing report to: '%s'", path)
 		f, err := os.Create(path)
 		if err != nil {
 			return errors.Wrapf(err, "error creating file: %s", path)

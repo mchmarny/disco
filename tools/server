@@ -7,5 +7,5 @@ set -o errexit
 set -o pipefail
 
 PROJECT_ID=$PROJECT_ID \
-GCS_BUCKET=disco-$BUCKER_URI \
+GCS_BUCKET=$BUCKET_NAME \
 ./bin/server 

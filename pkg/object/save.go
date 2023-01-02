@@ -2,10 +2,10 @@ package object
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // Save persists the provided content into bucket using name.
@@ -22,7 +22,7 @@ func Save(ctx context.Context, bucket, name, path string) error {
 		return errors.Wrapf(err, "error writing content from: %s to:%s/%s",
 			path, bucket, name)
 	}
-	log.Printf("gs://%s/%v", bucket, name)
+	log.Debug().Msgf("gs://%s/%v", bucket, name)
 
 	return nil
 }
