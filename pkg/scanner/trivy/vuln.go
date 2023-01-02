@@ -52,8 +52,7 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 			}
 
 			// add only unique CVEs
-			vk := types.ToKey(v.ID, v.Package, v.PackageVersion)
-			if _, ok := m[vk]; ok {
+			if _, ok := m[v.ID]; ok {
 				continue
 			}
 
@@ -74,7 +73,7 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 			}
 
 			list = append(list, vul)
-			m[vk] = true
+			m[v.ID] = true
 		}
 	}
 

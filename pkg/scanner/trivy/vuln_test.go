@@ -11,7 +11,7 @@ import (
 
 func TestCVEFilterParsing(t *testing.T) {
 	cve := "CVE-2020-8911"
-	expectedResults := 2
+	expectedResults := 1
 
 	filter := func(v interface{}) bool {
 		vul := v.(*types.Vulnerability)
@@ -29,7 +29,7 @@ func TestCVEFilterParsing(t *testing.T) {
 
 func TestVulnFilterParsing(t *testing.T) {
 	severity := types.VulnSevHigh
-	expectedResults := 6
+	expectedResults := 5
 
 	filter := func(v interface{}) bool {
 		vul := v.(*types.Vulnerability)

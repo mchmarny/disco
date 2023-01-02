@@ -8,7 +8,7 @@ import (
 )
 
 func TestLicenseFilterParsing(t *testing.T) {
-	expectedResults := 15
+	expectedResults := 3
 
 	filter := func(v interface{}) bool {
 		return false

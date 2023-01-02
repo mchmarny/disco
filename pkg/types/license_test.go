@@ -16,12 +16,10 @@ func TestLicenses(t *testing.T) {
 			{Name: "Apache", Source: "test"},
 		},
 	}
-	assert.NotEmpty(t, report.Hash())
 	assert.NotEmpty(t, report.Licenses)
 	for _, l := range report.Licenses {
 		assert.NotEmpty(t, l.Name)
 		assert.NotEmpty(t, l.Source)
 		assert.NotEmpty(t, l.String())
-		assert.NotEmpty(t, l.Hash())
 	}
 }

@@ -20,6 +20,10 @@ Features:
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
 * Find out if those images are impacted by a specific CVE
+* Runs as a CLI or a Cloud Run service
+* Creates Cloud Monitoring metrics (when deployed as a service)
+  * time-series charts per project, service
+  * threshold alerts on vulnerability/severity counts
 
 ## Why
 
@@ -29,9 +33,12 @@ It's easy to end up with a large number of containerized workloads across many G
 
 ## Install
 
-`disco` CLI is available via the most common distribution methods. The full list of installation options is available on the [installation](INSTALL.md) page.
+You can install `disco` as either a CLI or a service:
 
-## Usage
+* [CLI](INSTALL.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc.)
+* [SERVER](SERVER.md) - Cloud Run service deployed via Terraform
+
+## CLI Usage
 
 ```shell
 disco [runtime] [command] [arguments...]

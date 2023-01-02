@@ -21,7 +21,6 @@ func TestVulns(t *testing.T) {
 		assert.NotEmpty(t, o.ID)
 		assert.NotEmpty(t, o.Package)
 		assert.NotEmpty(t, o.Package)
-		assert.NotEmpty(t, o.Hash())
 		assert.NotEmpty(t, o.String())
 	}
 }
