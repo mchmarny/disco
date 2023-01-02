@@ -18,7 +18,6 @@ FROM $FINAL_BASE
 ARG VERSION
 LABEL disco.version="${VERSION}"
 COPY --from=builder /src/server /app/
-COPY --from=builder /src/bin/ /app/bin/
 WORKDIR /app
 # packages
 RUN apk add --update curl bash ca-certificates python3
