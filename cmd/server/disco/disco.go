@@ -38,6 +38,8 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 		SimpleQuery: types.SimpleQuery{
 			OutputPath: reportPath,
 			OutputFmt:  types.JSONFormat,
+			Kind:       types.KindVulnerability,
+			Version:    h.version,
 		},
 	}
 
