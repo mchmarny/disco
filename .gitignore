@@ -72,9 +72,6 @@ tmp
 # Coverage
 *.out
 
-# Binaries
-server
-
 # Keys 
 cosign.*
 *.pem
