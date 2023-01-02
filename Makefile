@@ -50,7 +50,7 @@ build-server: tidy ## Builds Server binary
 	mkdir -p ./bin
 	CGO_ENABLED=0 go build -trimpath \
     -ldflags="-w -s -X main.version=$(VERSION) -extldflags '-static'" \
-    -a -mod vendor -o ./bin/server cmd/server/main.go
+    -a -mod vendor -o bin/server cmd/server/main.go
 .PHONY: build-server
 
 build-cli: tidy ## Builds CLI binary
@@ -60,7 +60,7 @@ build-cli: tidy ## Builds CLI binary
 	-w -s -X main.commit=$(COMMIT) \
 	-w -s -X main.date=$(CURRENT_DATE) \
 	-extldflags '-static'" \
-    -a -mod vendor -o ./bin/server cmd/cli/main.go
+    -a -mod vendor -o bin/disco cmd/cli/main.go
 .PHONY: build-cli
 
 server: ## Runs previsouly built server binary
