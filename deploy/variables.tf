@@ -28,7 +28,7 @@ variable "git_repo" {
 
 variable "server_img" {
   description = "Image URI"
-  default     = "us-west1-docker.pkg.dev/cloudy-demos/disco/disco:latest"
+  default     = "us-west1-docker.pkg.dev/cloudy-demos/disco/disco"
   type        = string
   nullable    = false
 }

@@ -47,7 +47,7 @@ resource "google_cloud_run_service" "app" {
   template {
     spec {
       containers {
-        image = var.server_img
+        image = "${var.server_img}:${data.template_file.version.rendered}"
 
         ports {
           name           = "http1"

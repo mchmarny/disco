@@ -1,7 +1,7 @@
 RELEASE_VERSION :=$(shell cat .version)
 COMMIT          :=$(shell git rev-parse HEAD)
 YAML_FILES      :=$(shell find . -type f -regex ".*yaml" -print)
-CURRENT_DATE	:=$(shell date +%Y-%m-%d)
+CURRENT_DATE	:=$(shell date +%Y-%m-%dT01:02:03Z)
 
 all: help
 

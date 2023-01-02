@@ -26,7 +26,7 @@ output "RUN_SERVICE_ACCOUNT" {
 }
 
 output "SERVING_IMAGE" {
-  value       = var.server_img
+  value       = "${var.server_img}:${data.template_file.version.rendered}"
   description = "Image currently being used in Cloud Run."
 }
 
