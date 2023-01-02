@@ -1,6 +1,6 @@
-# Installation
+# Disco CLI Installation
 
-You can install `disco` using one of the following ways:
+You can install `disco` CLI using one of the following ways:
 
 > If you are already using `gcloud` to manage GCP resources changes are you already have all the prerequisites. Otherwise, review the [prerequisites](#prerequisites) section.
 
