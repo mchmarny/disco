@@ -110,10 +110,10 @@ func MeterVulns(ctx context.Context, counter metric.Counter, reportPath string) 
 
 	counterMap := make(map[string]int64, 0)
 	for _, item := range report.Items {
-		counterMap["disco/images"]++
+		counterMap[metric.MakeMetricType("disco/images")]++
 		for _, vuln := range item.Vulnerabilities {
-			counterMap["disco/vulns"]++
-			counterMap[fmt.Sprintf("disco/vuln-%s", vuln.Severity)]++
+			counterMap[metric.MakeMetricType("disco/vulnerabilities")]++
+			counterMap[metric.MakeMetricType(fmt.Sprintf("disco/vulnerabilities/%s", vuln.Severity))]++
 		}
 	}
 
