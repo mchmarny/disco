@@ -76,11 +76,11 @@ release: test lint tag ## Runs test, lint, and tag before release
 .PHONY: release
 
 infra: ## Applies Terraform
-	terraform -chdir=./deployment apply -auto-approve
+	terraform -chdir=./deploy apply -auto-approve
 .PHONY: infra
 
 infra-fmt: ## Formats Terraform
-	terraform -chdir=./deployment fmt
+	terraform -chdir=./deploy fmt
 .PHONY: nice
 
 tag: ## Creates release tag 
