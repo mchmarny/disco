@@ -5,9 +5,6 @@ locals {
   # List of roles that will be assigned to the GitHub federted user
   ci_roles = toset([
     "roles/artifactregistry.writer",
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-    "roles/cloudkms.signerVerifier",
-    "roles/cloudkms.viewer",
     "roles/viewer",
   ])
 }
