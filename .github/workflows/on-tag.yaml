@@ -97,7 +97,7 @@ jobs:
       id: push
       uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5  # v3.2.0
       with:
-        file: deployment/Dockerfile
+        file: cmd/server/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
