@@ -14,6 +14,7 @@ import (
 	"github.com/mchmarny/disco/pkg/metric"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 const (
@@ -111,20 +112,13 @@ func run(ctx context.Context, mux *http.ServeMux, address string) {
 }
 
 func initLogging() {
-	level := zerolog.InfoLevel
-	levStr := os.Getenv(logLevelEnvVar)
-	if levStr == "true" {
-		level = zerolog.DebugLevel
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+
+	if os.Getenv(logLevelEnvVar) == "true" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
-	zerolog.SetGlobalLevel(level)
-
-	out := zerolog.ConsoleWriter{
-		Out: os.Stdout,
-		PartsExclude: []string{
-			zerolog.TimestampFieldName,
-		},
-	}
-
-	log.Logger = zerolog.New(out)
+	log.Logger = zerolog.New(os.Stdout).With().Str("version", version).Logger()
 }

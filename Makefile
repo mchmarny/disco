@@ -76,7 +76,7 @@ run: ## Runs bash on latest artomator image
 .PHONY: run
 
 release: test lint tag ## Runs test, lint, and tag before release
-	@echo "Releasing: $(VERSION)"
+	@echo "Releasing: $(RELEASE_VERSION)"
 	tools/gh-wait
 	tools/tf-apply
 .PHONY: release
