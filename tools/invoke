@@ -1,0 +1,37 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+# Requires:
+# gcloud run services add-iam-policy-binding $ROOT_NAME \
+# --member "user:<user used for gcloud auth>" \
+# --region $REGION --role=roles/run.invoker
+
+SERVICE_URL=$1
+CVE_ID=$2
+
+# If no service URL is provided, get it from gcloud
+if [[ -z "$SERVICE_URL" ]]
+then
+  SERVICE_URL=$(gcloud run services describe $ROOT_NAME \
+    --region $REGION --format="value(status.url)")
+fi
+
+# Set the disco endpoint
+SERVICE_URL="${SERVICE_URL}/disco"
+
+# If a CVE ID is provided, add it to the query string
+if [[ ! -z "$CVE_ID" ]]
+then
+  SERVICE_URL="${SERVICE_URL}?cve=${CVE_ID}"
+fi
+
+# Make the request
+curl -sS -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
+     -H "Content-Type: application/json" \
+     -H "X-Goog-User-Project: ${PROJECT_ID}" \
+     "${SERVICE_URL}" | jq -r .

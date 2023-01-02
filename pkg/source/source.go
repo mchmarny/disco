@@ -3,7 +3,7 @@ package source
 import (
 	"context"
 
-	"github.com/mchmarny/disco/pkg/source/gcp/run"
+	"github.com/mchmarny/disco/pkg/source/run"
 	"github.com/mchmarny/disco/pkg/types"
 )
 

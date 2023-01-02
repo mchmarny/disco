@@ -80,3 +80,18 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+    - id: auth
+      name: Get GCP token
+      uses: google-github-actions/auth@v1
+      with:
+        token_format: "access_token"
+        workload_identity_provider: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
+        service_account: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
+    - name: Build Binaries
+      run: |
+        make build
+    - name: Run Integration Tests
+      run: |-
+        bin/disco --version
+        bin/disco run --help
+        bin/disco run img -o images.txt

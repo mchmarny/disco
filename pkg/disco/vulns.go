@@ -2,11 +2,14 @@ package disco
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/mchmarny/disco/pkg/metric"
 	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -76,6 +79,55 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
+	}
+
+	return nil
+}
+
+func MeterVulns(ctx context.Context, counter metric.Counter, reportPath string) error {
+	if counter == nil {
+		return errors.New("nil counter")
+	}
+
+	if reportPath == "" {
+		return errors.New("report path required")
+	}
+
+	reportContent, err := os.ReadFile(reportPath)
+	if err != nil {
+		return errors.Wrapf(err, "error reading report file: %s", reportPath)
+	}
+
+	var report types.ItemReport[types.VulnerabilityReport]
+	if err := json.Unmarshal(reportContent, &report); err != nil {
+		return errors.Wrapf(err, "error parsing report file: %s", reportPath)
+	}
+
+	if len(report.Items) == 0 {
+		log.Debug().Msgf("no vulnerabilities found in %s", reportPath)
+		return nil
+	}
+
+	counterMap := make(map[string]int64, 0)
+	for _, item := range report.Items {
+		counterMap["disco/images-scanned"]++
+		for _, vuln := range item.Vulnerabilities {
+			counterMap["disco/vulnerabilities"]++
+			counterMap[fmt.Sprintf("disco/vulnerability-%s", vuln.Severity)]++
+		}
+	}
+
+	list := make([]*metric.Record, 0)
+	for k, v := range counterMap {
+		list = append(list, &metric.Record{
+			MetricType:  k,
+			MetricValue: v,
+			Labels:      make(map[string]string, 0),
+		})
+	}
+
+	if err := counter.CountAll(ctx, list...); err != nil {
+		return errors.Wrap(err, "error saving counts")
 	}
 
 	return nil

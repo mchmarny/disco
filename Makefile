@@ -1,4 +1,4 @@
-RELEASE_VERSION ?=$(shell cat ./.version)
+RELEASE_VERSION ?=$(shell cat .version)
 YAML_FILES      :=$(shell find . -type f -regex ".*yaml" -print)
 
 all: help
@@ -40,11 +40,48 @@ lint-yaml: ## Runs yamllint on all yaml files
 	yamllint -c .yamllint $(YAML_FILES)
 .PHONY: lint-yaml
 
-release: tidy ## Builds CLI binary
+build: release-server release-cli ## Builds binaries
+	@echo "Completed release"
+.PHONY: build
+
+build-server: tidy ## Builds Server binary
+	mkdir -p ./bin
+	CGO_ENABLED=0 go build -trimpath \
+    -ldflags="-w -s -X main.version=$(VERSION) -extldflags '-static'" \
+    -a -mod vendor -o ./bin/server cmd/server/main.go
+.PHONY: build-server
+
+build-cli: tidy ## Builds CLI binary
 	goreleaser release --snapshot --rm-dist --timeout 10m0s
 	mkdir -p ./bin
 	mv dist/disco_darwin_all/disco ./bin/disco
+.PHONY: build-cli
+
+server: ## Runs previsouly built server binary
+	tools/server 
+.PHONY: server
+
+image: ## Builds new image locally (dirty)
+	tools/image
+.PHONY: image
+
+run: ## Runs bash on latest artomator image
+	tools/run
+.PHONY: run
+
+release: test lint tag ## Runs test, lint, and tag before release
+	@echo "Releasing: $(VERSION)"
+	tools/gh-wait
+	tools/tf-apply
 .PHONY: release
+
+infra: ## Applies Terraform
+	terraform -chdir=./deployment apply -auto-approve
+.PHONY: infra
+
+infra-fmt: ## Formats Terraform
+	terraform -chdir=./deployment fmt
+.PHONY: nice
 
 tag: ## Creates release tag 
 	git tag -s -m "release $(RELEASE_VERSION)" $(RELEASE_VERSION)
@@ -56,20 +93,22 @@ tagless: ## Delete the current release tag
 	git push --delete origin $(RELEASE_VERSION)
 .PHONY: tagless
 
-scan: ## Scans the local repo for vulnerabilities
-	trivy fs \
-		--security-checks vuln,config,secret,license \
-		-f json \
-		-o report.json \
-		--timeout 5m \
-		.
-.PHONY: scan
-
 clean: ## Cleans bin and temp directories
 	go clean
 	rm -fr ./vendor
 	rm -fr ./bin
 .PHONY: clean
+
+docker-clean: ## Removes orpaned docker volumes
+	@echo "stopping all containers..."
+	docker stop $(shell docker ps -aq)
+	@echo "removing all containers..." 
+	docker rm $(shell docker ps -aq)
+	@echo "prunning system..."
+	docker system prune -a --volumes
+	@echo "done"
+.PHONY: docker-clean
+
 
 help: ## Display available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk \

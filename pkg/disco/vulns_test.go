@@ -1,9 +1,11 @@
 package disco
 
 import (
+	"context"
 	"strings"
 	"testing"
 
+	"github.com/mchmarny/disco/pkg/metric"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,4 +31,11 @@ func TestFilter(t *testing.T) {
 		}
 	}
 	assert.Equal(t, 1, found)
+}
+
+func TestCounter(t *testing.T) {
+	c := &metric.ConsoleCounter{}
+	ctx := context.TODO()
+	err := MeterVulns(ctx, c, "../../etc/data/report-vuln.json")
+	assert.NoError(t, err)
 }

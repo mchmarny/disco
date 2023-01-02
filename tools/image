@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+echo "Building image: ${IMAGE_URI}"
+
+# Build and push image
+docker build -f cmd/server/Dockerfile \
+             --build-arg VERSION="${VERSION}" \
+             --platform linux/amd64 \
+             -t $IMAGE_URI \
+             .
+docker push $IMAGE_URI
+
+IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_URI)
+echo "Image digest: ${IMAGE_DIGEST}"

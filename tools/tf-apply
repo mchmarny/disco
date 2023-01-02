@@ -1,0 +1,22 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+TAG=$(cat .version)
+
+echo "Checking for image $TAG in registry..."
+
+REP_TAG=$(gcloud container images list-tags "${IMAGE_REG}/${ROOT_NAME}" \
+			--filter "tags:$TAG" --format "value(tags)" --limit 1)
+
+if [ "$REP_TAG" != "$TAG" ]; then
+  echo "Want $TAG, got $REP_TAG. Aborting apply."
+  exit 1
+fi
+
+printf "\nApplying terraform..."
+terraform -chdir=./deployment apply -auto-approve

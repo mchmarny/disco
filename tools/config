@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# validation 
+gcloud=$(which gcloud)   || ( echo "gcloud not found" && exit 1 )
+
+if [[ -z "${PROJECT_ID}" ]]; then
+  echo "PROJECT_ID not set, 'export PROJECT_ID=YOUR-PROJECT'."
+  exit 1
+fi;
+
+ACCOUNT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
+if [[ -z "${ACCOUNT}" ]]; then
+  echo "Run 'gcloud auth login' to authenticate on GCP before running this script."
+  exit 1
+fi;
+
+if [[ -z "${REGION}" ]]; then
+  export REGION="us-west1"
+fi;
+
+# derived vars 
+export PROJECT_NUMBER="$(gcloud projects describe "${PROJECT_ID}" --format='value(projectNumber)')"
+
+# used as a root for all things created by this app
+export ROOT_NAME="disco"
+
+# derived values
+export VERSION=$(cat .version)
+export COMMIT=$(git rev-parse --short HEAD)
+export KEY_NAME="${ROOT_NAME}-signer"
+export KEY_PATH="${ROOT_NAME}/cryptoKeys/${KEY_NAME}/cryptoKeyVersions/1"
+export SIGN_KEY="gcpkms://projects/${PROJECT_ID}/locations/${REGION}/keyRings/${KEY_PATH}"
+export IMAGE_REG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ROOT_NAME}"
+export IMAGE_URI="${IMAGE_REG}/${ROOT_NAME}:${VERSION}"
+export BUCKER_URI="gs://${ROOT_NAME}-${PROJECT_ID}"
