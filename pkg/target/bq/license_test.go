@@ -9,6 +9,9 @@ import (
 )
 
 func TestLicenseImport(t *testing.T) {
+	if !testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.TODO()
 	req := &types.ImportRequest{
 		ProjectID: "cloudy-demos",
@@ -16,7 +19,6 @@ func TestLicenseImport(t *testing.T) {
 		TableID:   "licenses",
 		FilePath:  "../../../etc/data/report-lic.json",
 	}
-	inserter = &testInserter{}
 	err := ImportLicenses(ctx, req)
 	assert.NoError(t, err)
 }
