@@ -55,7 +55,7 @@ func main() {
 		log.Fatal().Msgf("unable to write metrics: %v", err)
 	}
 
-	h, err := disco.NewHandler(version, bucketName, counter)
+	h, err := disco.NewHandler(projectID, version, bucketName, counter)
 	if err != nil {
 		log.Fatal().Msgf("error while creating event handler: %v", err)
 	}
