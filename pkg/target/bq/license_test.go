@@ -9,7 +9,6 @@ import (
 )
 
 func TestLicenseImport(t *testing.T) {
-	inserter = &testInserter{}
 	ctx := context.TODO()
 	req := &types.ImportRequest{
 		ProjectID: "cloudy-demos",
@@ -17,6 +16,7 @@ func TestLicenseImport(t *testing.T) {
 		TableID:   "licenses",
 		FilePath:  "../../../etc/data/report-lic.json",
 	}
+	inserter = &testInserter{}
 	err := ImportLicenses(ctx, req)
 	assert.NoError(t, err)
 }
