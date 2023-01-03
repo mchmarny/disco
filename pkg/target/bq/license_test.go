@@ -9,6 +9,7 @@ import (
 )
 
 func TestLicenseImport(t *testing.T) {
+	inserter = &testInserter{}
 	ctx := context.TODO()
 	req := &types.ImportRequest{
 		ProjectID: "cloudy-demos",

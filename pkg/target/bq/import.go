@@ -8,6 +8,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	inserter rowInserter
+)
+
+type rowInserter interface {
+	Put(ctx context.Context, items interface{}) error
+}
+
 func insert(ctx context.Context, req *types.ImportRequest, items interface{}) error {
 	if req == nil || req.ProjectID == "" || req.DatasetID == "" || req.TableID == "" {
 		return errors.New("project, dataset and table must be specified")
@@ -19,7 +27,10 @@ func insert(ctx context.Context, req *types.ImportRequest, items interface{}) er
 	}
 	defer client.Close()
 
-	inserter := client.Dataset(req.DatasetID).Table(req.TableID).Inserter()
+	if inserter == nil {
+		inserter = client.Dataset(req.DatasetID).Table(req.TableID).Inserter()
+	}
+
 	if err := inserter.Put(ctx, items); err != nil {
 		return errors.Wrap(err, "failed to insert rows")
 	}
