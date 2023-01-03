@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/disco"
 	"github.com/mchmarny/disco/pkg/object"
+	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -83,6 +84,11 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 			h.bucket, reportName)
 	}
 
+	req := types.NewLicenseImportRequest(h.projectID, reportPath)
+	if err := target.LicenseImporter(ctx, req); err != nil {
+		return errors.Wrapf(err, "error importing licenses from: %+v", req)
+	}
+
 	list, err := disco.MeterLicense(ctx, reportPath)
 	if err != nil {
 		return errors.Wrapf(err, "error metering licenses from: %s", reportPath)
@@ -117,6 +123,11 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
 		return errors.Wrapf(err, "error writing content to: %s/%s",
 			h.bucket, reportName)
+	}
+
+	req := types.NewVulnerabilityImportRequest(h.projectID, reportPath)
+	if err := target.VulnerabilityImporter(ctx, req); err != nil {
+		return errors.Wrapf(err, "error importing vulnerabilities from: %+v", req)
 	}
 
 	list, err := disco.MeterVulns(ctx, reportPath)

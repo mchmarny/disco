@@ -39,3 +39,8 @@ output "REPORT_BUCKET" {
   value       = google_storage_bucket.report_bucket.url
   description = "GCS Bucket where exported artifacts will be saved"
 }
+
+output "DATSET" {
+  value       = google_bigquery_dataset.disco.dataset_id
+  description = "BigQuery dataset where exported artifacts will be saved"
+}

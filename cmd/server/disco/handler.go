@@ -20,9 +20,9 @@ type result struct {
 }
 
 // NewHandler creates new handler instance.
-func NewHandler(version, bucket string, counter metric.Counter) (*Handler, error) {
-	if bucket == "" || version == "" {
-		return nil, errors.New("bucket name or version not set")
+func NewHandler(projectID, version, bucket string, counter metric.Counter) (*Handler, error) {
+	if projectID == "" || bucket == "" || version == "" {
+		return nil, errors.New("projectID, bucket name, or version not set")
 	}
 
 	if counter == nil {
@@ -30,9 +30,10 @@ func NewHandler(version, bucket string, counter metric.Counter) (*Handler, error
 	}
 
 	h := &Handler{
-		version: version,
-		bucket:  bucket,
-		counter: counter,
+		projectID: projectID,
+		version:   version,
+		bucket:    bucket,
+		counter:   counter,
 	}
 
 	return h, nil
@@ -40,9 +41,10 @@ func NewHandler(version, bucket string, counter metric.Counter) (*Handler, error
 
 // Handler is the handler type.
 type Handler struct {
-	version string
-	bucket  string
-	counter metric.Counter
+	projectID string
+	version   string
+	bucket    string
+	counter   metric.Counter
 }
 
 // HandlerDefault is the default handler.
