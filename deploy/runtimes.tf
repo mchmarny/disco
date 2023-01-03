@@ -5,6 +5,7 @@ locals {
   # List of roles that will be assigned to the runner service account
   runner_roles = toset([
     "roles/artifactregistry.writer",
+    "roles/bigquery.dataEditor",
     "roles/browser",
     "roles/containeranalysis.notes.attacher",
     "roles/iam.serviceAccountTokenCreator",
