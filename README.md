@@ -26,7 +26,7 @@ Features:
   * Exports Licenses and Vulnerabilities to BigQuery tables 
   * Creates Looker Studio dashboard
 
-![](etc/img/diagram.png)
+![](etc/img/report.png)
 
 ## Why
 
