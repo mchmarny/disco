@@ -1,4 +1,6 @@
 # Disco Server Installation
+
+![](etc/img/query.png)
   
 To deploy the prebuilt version of `disco`, first clone this repo:
 

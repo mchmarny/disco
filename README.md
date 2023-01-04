@@ -14,16 +14,19 @@ Utility for bulk image, license, and vulnerability discovery in containerize wor
 
 Features:
 
+* Runs as a CLI or a Cloud Run service
 * Discover currently deployed container images
   * multiple project and region report with filters
   * deployed image to digest resolution
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
 * Find out if those images are impacted by a specific CVE
-* Runs as a CLI or a Cloud Run service
-* Creates Cloud Monitoring metrics (when deployed as a service)
-  * time-series charts per project, service
-  * threshold alerts on vulnerability/severity counts
+* When ran as a service:
+  * Creates time-series metrics in Cloud Monitoring (charts, alerts)
+  * Exports Licenses and Vulnerabilities to BigQuery tables 
+  * Creates Looker Studio dashboard
+
+![](etc/img/diagram.png)
 
 ## Why
 
