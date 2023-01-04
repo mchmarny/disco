@@ -29,6 +29,10 @@ cover: test ## Runs unit tests and putputs coverage
 	go tool cover -func=cover.out
 .PHONY: cover
 
+vulncheck: test ## Runs go vulneerability check locally
+	govulncheck ./...
+.PHONY: vulncheck
+
 lint: lint-go lint-yaml ## Lints the entire project 
 	@echo "Completed Go and YAML lints"
 .PHONY: lint
@@ -79,7 +83,7 @@ run: ## Runs bash on latest artomator image
 	tools/run
 .PHONY: run
 
-release: test lint tag ## Runs test, lint, and tag before release
+release: test lint vulncheck tag ## Runs test, lint, vulncheck, and tag before release
 	@echo "Releasing: $(RELEASE_VERSION)"
 	tools/gh-wait
 	tools/tf-apply
