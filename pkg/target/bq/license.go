@@ -32,14 +32,16 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 func MakeLicenseRows(in []*types.LicenseReport) []*LicenseRow {
 	list := make([]*LicenseRow, 0)
 	updated := time.Now().UTC().Format(time.RFC3339)
+	batchID := time.Now().UTC().Unix()
 
 	for _, r := range in {
 		for _, l := range r.Licenses {
 			list = append(list, &LicenseRow{
+				BatchID: batchID,
 				Image:   types.ParseImageNameFromDigest(r.Image),
 				Sha:     types.ParseImageShaFromDigest(r.Image),
 				Name:    l.Name,
-				Source:  l.Source,
+				Package: l.Source,
 				Updated: updated,
 			})
 		}
@@ -49,19 +51,21 @@ func MakeLicenseRows(in []*types.LicenseReport) []*LicenseRow {
 }
 
 type LicenseRow struct {
+	BatchID int64
 	Image   string
 	Sha     string
 	Name    string
-	Source  string
+	Package string
 	Updated string
 }
 
 func (i *LicenseRow) Save() (map[string]bigquery.Value, string, error) {
 	return map[string]bigquery.Value{
-		"image":   i.Image,
-		"sha":     i.Sha,
-		"name":    i.Name,
-		"source":  i.Source,
-		"updated": i.Updated,
+		"batch_id": i.BatchID,
+		"image":    i.Image,
+		"sha":      i.Sha,
+		"name":     i.Name,
+		"package":  i.Package,
+		"updated":  i.Updated,
 	}, "", nil
 }

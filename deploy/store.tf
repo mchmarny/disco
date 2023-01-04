@@ -13,12 +13,21 @@ resource "google_bigquery_table" "license" {
   dataset_id = google_bigquery_dataset.disco.dataset_id
   table_id   = "licenses"
 
+  time_partitioning {
+    type = "MONTH"
+  }
+
   labels = {
     env = "demo"
   }
 
   schema = <<EOF
 [
+    {
+        "name": "batch_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
     {
         "name": "image",
         "type": "STRING",
@@ -35,7 +44,7 @@ resource "google_bigquery_table" "license" {
         "mode": "REQUIRED"
     },
     {
-        "name": "source",
+        "name": "package",
         "type": "STRING",
         "mode": "NULLABLE"
     },
@@ -54,12 +63,21 @@ resource "google_bigquery_table" "vulnerability" {
   dataset_id = google_bigquery_dataset.disco.dataset_id
   table_id   = "vulnerabilities"
 
+  time_partitioning {
+    type = "MONTH"
+  }
+
   labels = {
     env = "demo"
   }
 
   schema = <<EOF
 [
+    {
+        "name": "batch_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
     {
         "name": "image",
         "type": "STRING",
