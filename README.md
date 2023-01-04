@@ -23,8 +23,7 @@ Features:
 * Find out if those images are impacted by a specific CVE
 * When ran as a service:
   * Creates time-series metrics in Cloud Monitoring (charts, alerts)
-  * Exports Licenses and Vulnerabilities to BigQuery tables 
-  * Creates Looker Studio dashboard
+  * Exports License and Vulnerability data to BigQuery tables (reports)
 
 ![](etc/img/report.png)
 
