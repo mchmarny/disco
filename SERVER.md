@@ -1,6 +1,6 @@
-# Disco Server Installation
+# Disco Server Deployment
 
-![](etc/img/query.png)
+![](etc/img/diagram.png)
   
 To deploy the prebuilt version of `disco`, first clone this repo:
 

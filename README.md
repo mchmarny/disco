@@ -207,6 +207,18 @@ The resulting report in JSON format will look something like this (abbreviated):
 > Not yet implemented.
 
 
+## Exports
+
+When running as a service, `disco` automatically exports metrics and report data:
+
+### Metrics
+
+![](etc/img/metrics.png)
+
+### Data
+
+![](etc/img/query.png)
+
 ## OSS
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmchmarny%2Fdisco.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmchmarny%2Fdisco?ref=badge_large)
