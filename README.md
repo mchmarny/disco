@@ -215,9 +215,43 @@ When running as a service, `disco` automatically exports metrics and report data
 
 ![](etc/img/metrics.png)
 
+Custom time-series metrics created by `disco`:
+
+* `disco/vulnerability/image` - count of images scanned for vulnerability (labels: project, version)
+* `disco/vulnerability/severity` - vulnerability severity count (labels: project, version, kind)
+* `disco/license/image` - count of images scanned for licenses (labels: project, version)
+* `disco/license/count` - count of licenses (labels: project, version)
+
+> License type has too high cardinality for label 
+
 ### Data
 
 ![](etc/img/query.png)
+
+BigQuery tables created by `disco`:
+
+**licenses**
+
+* `batch_id` (INTEGER, REQUIRED) - unique ID for each scan process
+* `image`	(STRING, REQUIRED) - image uri (registry qualified, no tag)
+* `sha`	(STRING, NULLABLE) - image sha (e.g. sha:1234...)
+* `name` (STRING, REQUIRED) - license name 
+* `package` (STRING, NULLABLE) - source package where this license was found
+* `updated` (TIMESTAMP, REQUIRED) - timestamp when the record was inserted
+
+**vulnerabilities**
+
+* `batch_id` (INTEGER, REQUIRED) - unique ID for each scan process
+* `image`	(STRING, REQUIRED) - image uri (registry qualified, no tag)
+* `sha`	(STRING, NULLABLE) - image sha (e.g. sha:1234...)
+* `cve`	(STRING, REQUIRED) - ID of the CVE (e.g. `CVE-2022-23525`)
+* `severity` (STRING, NULLABLE) - severity level fo the CVE (e.g. `LOW`, `MEDIUM`, `HIGH`, etc.)
+* `package` (STRING, NULLABLE) - source package where this vulnerability was found
+* `version` (STRING, NULLABLE) - version of the package where this vulnerability was found
+* `title`	(STRING, NULLABLE) - short title of the vulnerability
+* `description` (STRING, NULLABLE) - longer description of the vulnerability
+* `url`	(STRING, NULLABLE) - URL to the CVE reference
+* `updated` (TIMESTAMP, REQUIRED) - timestamp when the record was inserted
 
 ## OSS
 
