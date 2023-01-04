@@ -35,10 +35,10 @@ It's easy to end up with a large number of containerized workloads across many G
 
 ## Install
 
-You can install `disco` as either a CLI or a service:
+You can use `disco` either as CLI or Service. You can find information on how to install `disco` in either of these formats using the following links:
 
-* [CLI](INSTALL.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc.)
-* [SERVER](SERVER.md) - Cloud Run service deployed via Terraform
+* [CLI](CLI.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc).
+* [Service](SERVICE.md) - Deploys as a Cloud Run service via Terraform.
 
 ## OSS
 
