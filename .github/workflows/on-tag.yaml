@@ -4,7 +4,8 @@ on:
     tags:
     - 'v[0-9]+.[0-9]+.[0-9]+'  # Only build tag with semantic versioning format
 env:
-  REG_URI: us-west1-docker.pkg.dev/cloudy-demos/disco
+  REG_URI: us-west1-docker.pkg.dev
+  IMAGE_REG: cloudy-demos/disco
   IMAGE_NAME: disco
   SA_EMAIL: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
   PROVIDER_ID: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
@@ -94,7 +95,7 @@ jobs:
       uses: docker/metadata-action@57396166ad8aefe6098280995947635806a0e6ea  # v4.1.1
       with:
         images: |
-          ${{ env.REG_URI }}/${{ env.IMAGE_NAME }}
+          ${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}
         tags: |
           type=raw,enable=true,value=${{ env.RELEASE_VERSION }}
           type=raw,enable=true,value=${{ env.GITHUB_SHA }}
@@ -114,7 +115,7 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
     - name: Export Digest
       run: |
-        echo "${{ env.REG_URI }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" > digest.txt
+        echo "${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" > digest.txt
     - name: Install Cosign
       uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b  # v2.8.1
       with:
