@@ -3,7 +3,7 @@ on:
   push:
     tags:
     - 'v[0-9]+.[0-9]+.[0-9]+'  # Only build tag with semantic versioning format
-env: 
+env:
   REG_URI: us-west1-docker.pkg.dev/cloudy-demos/disco
   IMAGE_NAME: disco
   SA_EMAIL: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
