@@ -3,6 +3,13 @@ on:
   push:
     tags:
     - 'v[0-9]+.[0-9]+.[0-9]+'  # Only build tag with semantic versioning format
+env: 
+  REG_URI: us-west1-docker.pkg.dev/cloudy-demos/disco
+  IMAGE_NAME: disco
+  SA_EMAIL: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
+  PROVIDER_ID: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
+  COSIGN_VERSION: v1.13.1
+  KMS_KEY: projects/cloudy-demos/locations/global/keyRings/disco-signer-ring/cryptoKeys/disco-signer/cryptoKeyVersions/1
 jobs:
   test:
     uses: ./.github/workflows/test.yaml
@@ -80,21 +87,21 @@ jobs:
       uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d  # v1.0.0
       with:
         token_format: "access_token"
-        workload_identity_provider: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
-        service_account: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
+        workload_identity_provider: ${{ env.PROVIDER_ID }}
+        service_account: ${{ env.SA_EMAIL }}
     - name: Define Metadata
       id: meta
       uses: docker/metadata-action@57396166ad8aefe6098280995947635806a0e6ea  # v4.1.1
       with:
         images: |
-          us-west1-docker.pkg.dev/cloudy-demos/disco/disco
+          ${{ env.REG_URI }}/${{ env.IMAGE_NAME }}
         tags: |
           type=raw,enable=true,value=${{ env.RELEASE_VERSION }}
           type=raw,enable=true,value=${{ env.GITHUB_SHA }}
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
       with:
-        registry: us-west1-docker.pkg.dev/cloudy-demos/disco
+        registry: ${{ env.REG_URI }}
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
     - name: Image Push
@@ -105,6 +112,38 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-    - name: Print Digest
+    - name: Export Digest
       run: |
-        echo "digest=@${{ steps.push.outputs.digest }}"
+        echo "${{ env.REG_URI }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" > digest.txt
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b  # v2.8.1
+      with:
+        cosign-release: ${{ env.COSIGN_VERSION }}
+    - name: Auth Cosign
+      run: |
+        cosign version
+        cosign login ${{ env.REG_URI }} --username=oauth2accesstoken --password=${{ steps.auth.outputs.access_token }}
+    - name: Get KMS Key
+      run: |
+        cosign generate-key-pair --kms ${{ env.KMS_KEY }}
+    - name: Sign Image
+      run: |
+        cosign sign --force --key ${{ env.KMS_KEY }} $(cat digest.txt)
+      env:
+        COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
+    - name: Gen SBOM
+      uses: anchore/sbom-action@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
+      with:
+        image: $(cat digest.txt)
+        registry-username: oauth2accesstoken
+        registry-password: ${{ steps.auth.outputs.access_token }}
+        artifact-name: sbom.spdx.json
+        output-file: ./sbom.spdx.json
+        format: spdx-json
+    - name: Print SBOM
+      run: cat sbom.spdx.json
+    - name: Attest SBOM
+      run: |
+        cosign attest --predicate sbom.spdx.json --type spdxjson --key ${{ env.KMS_KEY }} $(cat digest.txt)
+      env:
+        COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}

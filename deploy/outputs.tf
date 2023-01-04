@@ -44,3 +44,8 @@ output "DATSET" {
   value       = google_bigquery_dataset.disco.dataset_id
   description = "BigQuery dataset where exported artifacts will be saved"
 }
+
+output "KMS_KEY" {
+  value       = data.google_kms_crypto_key_version.version.name
+  description = "Cosign-formated URI to the signing key."
+}

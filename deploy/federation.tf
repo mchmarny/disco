@@ -7,6 +7,9 @@ locals {
     "roles/artifactregistry.writer",
     "roles/bigquery.dataEditor",
     "roles/viewer",
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter",
+    "roles/cloudkms.signerVerifier",
+    "roles/cloudkms.viewer",
   ])
 }
 
