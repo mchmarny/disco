@@ -9,8 +9,8 @@ env:
   IMAGE_NAME: disco
   SA_EMAIL: disco-github-actions-user@cloudy-demos.iam.gserviceaccount.com
   PROVIDER_ID: projects/799736955886/locations/global/workloadIdentityPools/disco-github-pool/providers/github-provider
+  KMS_KEY: gcpkms://projects/cloudy-demos/locations/global/keyRings/disco-signer-ring/cryptoKeys/disco-signer/cryptoKeyVersions/1
   COSIGN_VERSION: v1.13.1
-  KMS_KEY: projects/cloudy-demos/locations/global/keyRings/disco-signer-ring/cryptoKeys/disco-signer/cryptoKeyVersions/1
 jobs:
   test:
     uses: ./.github/workflows/test.yaml
@@ -84,7 +84,7 @@ jobs:
       run: |
         echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - id: auth
-      name: Get GCP token
+      name: Auth GCP
       uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d  # v1.0.0
       with:
         token_format: "access_token"
@@ -124,7 +124,7 @@ jobs:
       run: |
         cosign version
         cosign login ${{ env.REG_URI }} --username=oauth2accesstoken --password=${{ steps.auth.outputs.access_token }}
-    - name: Get KMS Key
+    - name: Get Key
       run: |
         cosign generate-key-pair --kms ${{ env.KMS_KEY }}
     - name: Sign Image
@@ -132,7 +132,7 @@ jobs:
         cosign sign --force --key ${{ env.KMS_KEY }} $(cat digest.txt)
       env:
         COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
-    - name: Gen SBOM
+    - name: Create SBOM
       uses: anchore/sbom-action@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
       with:
         image: $(cat digest.txt)
@@ -141,9 +141,7 @@ jobs:
         artifact-name: sbom.spdx.json
         output-file: ./sbom.spdx.json
         format: spdx-json
-    - name: Print SBOM
-      run: cat sbom.spdx.json
-    - name: Attest SBOM
+    - name: Attest Image
       run: |
         cosign attest --predicate sbom.spdx.json --type spdxjson --key ${{ env.KMS_KEY }} $(cat digest.txt)
       env:
