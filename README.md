@@ -35,13 +35,13 @@ When deployed as a service, `disco` will perform continuous discovery, and:
 
 ## Why
 
-It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, or even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using [Container Analysis](https://cloud.google.com/container-analysis/docs/container-analysis) service, but currently it only [covers base OS](https://cloud.google.com/container-analysis/docs/os-overview). It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support [multiple revisions](https://cloud.google.com/run/docs/managing/revisions), each potentially using a different version of an image.
+It's easy to end up with a large number of containerized workloads across many GCP projects and regions: Cloud Run, GKE, or even Cloud Functions (yes, those end up running as a container too). You can scan these containers in Artifact Registry using [Container Analysis](https://cloud.google.com/container-analysis/docs/container-analysis) service, but currently it only [covers base OS](https://cloud.google.com/container-analysis/docs/os-overview). It's also not easy to know which of these images (and which versions) are actually being used in active services. Services like Cloud Run also support [multiple revisions](https://cloud.google.com/run/docs/managing/revisions), each potentially using a different version of an image, so identifying container images currently underpinning your services can get complicated. 
 
-`disco` provides an easy way to `disco`ver which of these container images are currently deployed. And, if one of the supported open source scanners is installed, `disco` automatically scans these images for any vulnerabilities, or lists the types of licenses used in those images. 
+`disco` provides an easy way to `disco`ver which of these container images are currently deployed, and automates the vulnerability/license scanning. 
 
 ## Install
 
-You can use `disco` either as CLI or Service. You can find information on how to install `disco` in either of these formats using the following links:
+You can use `disco` either as CLI or Service. Find information on how to install `disco` in either of these options using the following links:
 
 * [CLI](CLI.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc).
 * [Service](SERVICE.md) - Deploys as a Cloud Run service via Terraform.
