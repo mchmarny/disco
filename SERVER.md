@@ -121,7 +121,7 @@ You can use these in your custom queries:
 
 or in Sheet, Data Studio, or Looker reports 
 
-![](etc/img/report.png)
+![](etc/img/dashboard.png)
 
 ## Disclaimer
 

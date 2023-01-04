@@ -25,7 +25,7 @@ Features:
   * Creates time-series metrics in Cloud Monitoring (charts, alerts)
   * Exports License and Vulnerability data to BigQuery tables (reports)
 
-![](etc/img/report.png)
+![](etc/img/dashboard.png)
 
 ## Why
 
