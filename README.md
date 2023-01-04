@@ -14,16 +14,22 @@ Utility for bulk image, license, and vulnerability discovery in containerize wor
 
 Features:
 
-* Runs as a CLI or a Cloud Run service
 * Discover currently deployed container images
   * multiple project and region report with filters
   * deployed image to digest resolution
 * Report on vulnerabilities or licenses in these images
   * supports operating system and package-level scans
-* Find out if those images are impacted by a specific CVE
-* When ran as a service:
-  * Creates time-series metrics in Cloud Monitoring (charts, alerts)
-  * Exports License and Vulnerability data to BigQuery tables (reports)
+* Check if any of your currently deployed images are impacted by a specific CVE
+* Supports CLI and Service installations
+
+When deployed as a service, `disco` will perform continuous discovery, and:
+  * Create time-series metrics in Cloud Monitoring
+    * Build custom charts and dashboards (e.g. image vulnerability over time)
+    * Create metric threshold alerts (e.g. page on `CRITICAL` vulnerability in project `X`)
+  * Export image license and vulnerability data to BigQuery tables
+    * Query data using SQL (e.g. license types per package source)
+    * Create ML models (e.g. vulnerability source classification model using logistic regression)
+    * Build custom reports using Sheets, Data Studio, or Looker
 
 ![](etc/img/dashboard.png)
 
