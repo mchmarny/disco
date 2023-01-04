@@ -24,7 +24,7 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 		return errors.Wrap(err, "failed to insert rows")
 	}
 
-	log.Debug().Msgf("inserted %d rows into %s.%s.%s", len(rows), req.ProjectID, req.DatasetID, req.TableID)
+	log.Info().Msgf("inserted %d rows into %s.%s.%s", len(rows), req.ProjectID, req.DatasetID, req.TableID)
 
 	return nil
 }

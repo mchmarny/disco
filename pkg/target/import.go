@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	LicenseImporter       RecordImporter = bq.ImportLicenses
-	VulnerabilityImporter RecordImporter = bq.ImportVulnerabilities
+	LicenseImporter       RecordImporter   = bq.ImportLicenses
+	VulnerabilityImporter RecordImporter   = bq.ImportVulnerabilities
+	SetupConfigurer       TargetConfigurer = bq.ConfigureTarget
 )
 
 type RecordImporter func(ctx context.Context, req *types.ImportRequest) error
+type TargetConfigurer func(ctx context.Context, req *types.ImportRequest) error

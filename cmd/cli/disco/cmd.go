@@ -52,6 +52,7 @@ func newApp(version, commit, date string) (*c.App, error) {
 		},
 		Commands: []*c.Command{
 			runCmd,
+			importCmd,
 		},
 	}
 
