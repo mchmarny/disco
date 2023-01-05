@@ -45,6 +45,7 @@ func MakeLicenseRows(in *types.LicenseReport) []*LicenseRow {
 	batchID := time.Now().UTC().Unix()
 
 	for _, l := range in.Licenses {
+		log.Info().Msgf("adding license %s from %s", l.Name, l.Source)
 		list = append(list, &LicenseRow{
 			BatchID: batchID,
 			Image:   types.ParseImageNameFromDigest(in.Image),

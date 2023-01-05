@@ -60,7 +60,6 @@ func configureTarget(ctx context.Context, req *types.ImportRequest) error {
 		Str("project", req.ProjectID).
 		Str("dataset", req.DatasetID).
 		Str("table", req.TableID).
-		Str("file", req.FilePath).
 		Msg("configuring target")
 
 	exists, err := datasetExists(ctx, req)

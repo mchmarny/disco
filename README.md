@@ -43,8 +43,8 @@ It's easy to end up with a large number of containerized workloads across many G
 
 You can use `disco` either as CLI or Service. Find information on how to install `disco` in either of these options using the following links:
 
-* [CLI](CLI.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc).
-* [Service](SERVICE.md) - Deploys as a Cloud Run service via Terraform.
+* [CLI](docs/CLI.md) - Available via the most common distribution methods (Homebrew, RPM, DEB, Go, Binary etc).
+* [Service](docs/SERVICE.md) - Deploys as a Cloud Run service via Terraform.
 
 ## OSS
 

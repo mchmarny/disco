@@ -60,7 +60,7 @@ func printProjectScope(projectID, subject string) {
 	if projectID != "" {
 		log.Info().Msgf("scanning project: '%s' for: '%s'", projectID, subject)
 	} else {
-		log.Info().Msgf("scanning all projects accessible to current user for: '%s'", subject)
+		log.Info().Msgf("scanning all projects accessible to current user for %s", subject)
 	}
 }
 

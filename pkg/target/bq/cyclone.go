@@ -7,6 +7,7 @@ import (
 
 	"github.com/CycloneDX/cyclonedx-go"
 	"github.com/mchmarny/disco/pkg/types"
+	"github.com/rs/zerolog/log"
 )
 
 func MakeCycloneDXPackageRows(in *cyclonedx.BOM) []*PackageRow {
@@ -15,6 +16,7 @@ func MakeCycloneDXPackageRows(in *cyclonedx.BOM) []*PackageRow {
 	batchID := time.Now().UTC().Unix()
 
 	for _, c := range *in.Components {
+		log.Info().Msgf("adding package %s from %s", c.Name, c.BOMRef)
 		list = append(list, &PackageRow{
 			BatchID:        batchID,
 			Image:          types.ParseImageNameFromDigest(in.Metadata.Component.Name),

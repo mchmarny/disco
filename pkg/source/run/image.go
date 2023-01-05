@@ -229,7 +229,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 	}
 	log.Info().Msgf("found %d projects", len(projects))
 
-	list := make([]*types.ImageItem, 0)
+	images := make(map[string]*types.ImageItem)
 
 	for _, p := range projects {
 		if !isQualifiedProject(ctx, p, in.ProjectID) {
@@ -255,6 +255,10 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 				log.Info().Msgf("processing: %s", s.FullName)
 
 				for _, c := range s.Containers {
+					if _, ok := images[c.Image]; ok {
+						continue
+					}
+
 					img := &types.ImageItem{
 						URI: c.Image,
 						Context: map[string]interface{}{
@@ -268,10 +272,15 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 							"container-name":   c.Name,
 						},
 					}
-					list = append(list, img)
+					images[img.URI] = img
 				}
 			}
 		}
+	}
+
+	list := make([]*types.ImageItem, 0, len(images))
+	for _, v := range images {
+		list = append(list, v)
 	}
 
 	return list, nil

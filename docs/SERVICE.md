@@ -1,6 +1,6 @@
 # Disco Service
 
-![](etc/img/diagram.png)
+![](../etc/img/diagram.png)
 
 * [Deployment](#deployment)
 * [Usage](#usage)
@@ -75,7 +75,7 @@ When running as a service, `disco` automatically exports metrics and report data
 
 `disco` metrics can be found in 
 
-![](etc/img/metric-explore.png)
+![](../etc/img/metric-explore.png)
 
 Custom time-series metrics created by `disco`:
 
@@ -86,7 +86,7 @@ Custom time-series metrics created by `disco`:
 
 > License type has too high cardinality for label 
 
-![](etc/img/metrics.png)
+![](../etc/img/metrics.png)
 
 ### Data
 
@@ -117,11 +117,11 @@ Custom time-series metrics created by `disco`:
 
 You can use these in your custom queries: 
 
-![](etc/img/query.png)
+![](../etc/img/query.png)
 
 or in Sheet, Data Studio, or Looker reports 
 
-![](etc/img/dashboard.png)
+![](../etc/img/dashboard.png)
 
 ## Disclaimer
 

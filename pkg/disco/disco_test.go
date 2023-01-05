@@ -67,12 +67,14 @@ func TestLicense(t *testing.T) {
 	err := DiscoverLicenses(ctx, nil)
 	assert.Error(t, err, "error licenses images with nil query")
 
-	err = DiscoverLicenses(ctx, &types.SimpleQuery{})
+	err = DiscoverLicenses(ctx, &types.LicenseQuery{})
 	assert.NoError(t, err, "error discovering license")
 
-	err = DiscoverLicenses(ctx, &types.SimpleQuery{
-		ProjectID:  "test-project",
-		OutputPath: "../../tmp/license.tmp",
+	err = DiscoverLicenses(ctx, &types.LicenseQuery{
+		SimpleQuery: types.SimpleQuery{
+			ProjectID:  "test-project",
+			OutputPath: "../../tmp/license.tmp",
+		},
 	})
 	assert.NoError(t, err, "error discovering license")
 }

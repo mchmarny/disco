@@ -67,12 +67,14 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 	reportName := fmt.Sprintf("lic-%s.json", time.Now().UTC().Format("2006-01-02T15-04-05"))
 	reportPath := path.Join(dir, reportName)
-	query := &types.SimpleQuery{
-		ImageFile:  src,
-		OutputPath: reportPath,
-		OutputFmt:  types.JSONFormat,
-		Kind:       types.KindVulnerability,
-		Version:    h.version,
+	query := &types.LicenseQuery{
+		SimpleQuery: types.SimpleQuery{
+			ImageFile:  src,
+			OutputPath: reportPath,
+			OutputFmt:  types.JSONFormat,
+			Kind:       types.KindVulnerability,
+			Version:    h.version,
+		},
 	}
 
 	if err := disco.DiscoverLicenses(ctx, query); err != nil {

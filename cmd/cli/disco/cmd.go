@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
 )
 
@@ -43,7 +45,7 @@ func newApp(version, commit, date string) (*c.App, error) {
 		Suggest:              true,
 		Name:                 name,
 		Version:              fmt.Sprintf("%s (commit: %s, built: %s)", version, commit, dateStr),
-		Usage:                `Discover container images, vulnerabilities, and licenses in currently deployed across your runtimes`,
+		Usage:                `Discover container images, vulnerabilities, packages, and licenses`,
 		Compiled:             compileTime,
 		Metadata: map[string]interface{}{
 			metaKeyVersion: version,
@@ -51,10 +53,32 @@ func newApp(version, commit, date string) (*c.App, error) {
 			metaKeyDate:    date,
 		},
 		Commands: []*c.Command{
-			runCmd,
+			imgCmd,
+			vulnCmd,
+			licCmd,
 			importCmd,
 		},
 	}
 
 	return app, nil
+}
+
+func printVersion(c *c.Context) {
+	log.Info().Msgf(c.App.Version)
+}
+
+func getVersionFromContext(c *c.Context) string {
+	val, ok := c.App.Metadata[metaKeyVersion]
+	if !ok {
+		log.Debug().Msg("version not found in app context")
+		return "unknown"
+	}
+	return val.(string)
+}
+
+func addOptionalImportFlags(c *c.Context, req *types.ImportRequest) {
+	datasetID := c.String(datasetIDFlag.Name)
+	if datasetID != "" {
+		req.DatasetID = datasetID
+	}
 }

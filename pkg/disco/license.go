@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"path"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
@@ -12,19 +13,30 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverLicenses(ctx context.Context, in *types.SimpleQuery) error {
+func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
 
 	f := func(v interface{}) bool {
+		lic := v.(*types.License)
+
+		if in.TypeFilter != "" {
+			exclude := !strings.HasPrefix(
+				strings.ToLower(lic.Name),
+				strings.ToLower(in.TypeFilter))
+			log.Debug().Msgf("filter on license (want: %s, got: %s, filter out: %t",
+				in.TypeFilter, lic.Name, exclude)
+			return exclude
+		}
+
 		return false
 	}
 
 	log.Debug().Msgf("discovering licenses with: %s", in)
 	printProjectScope(in.ProjectID, "licenses")
 
-	if err := scanLicenses(ctx, in, f); err != nil {
+	if err := scanLicenses(ctx, &in.SimpleQuery, f); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 

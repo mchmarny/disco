@@ -93,13 +93,6 @@ roles/artifactregistry.reader
 roles/run.viewer
 ```
 
-Additionally, if you plan to use the Container Analysis option, ensure you also have these roles: 
-
-```shell
-roles/containeranalysis.occurrences.viewer
-roles/containeranalysis.notes.viewer
-```
-
 If you experience any issues, you can see the project level policy using following command:
 
 ```shell
@@ -117,39 +110,31 @@ gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 ## CLI Usage
 
 ```shell
-disco [runtime] [command] [arguments...]
+disco [command] [command options] [arguments...]
 ```
 
 > You can use the `--help` flag on any level to get more information about the runtime, commands, of `disco` itself.
 
-The command options available for all the runtimes include:
+### Images
 
-* `--project` - runs only on specific project (project ID)
-* `--format`  - specifies report format: `json`, `yaml`, `raw` (`json` by default)
-* `--output`  - saves report to file at this path (stdout by default) 
-
-### Cloud Run 
-
-To see all of the commands available for `run`:
+Discover deployed images from specific runtime. To see all of the commands available for `img`:
 
 ```shell
-disco run --help
+disco img --help
 ```
-
-* [Images](#images)
-* [Licenses](#licenses)
-* [Vulnerabilities](#vulnerabilities)
-
-#### Images
 
 To discover container images currently deployed in Cloud Run:
 
 ```shell
-disco run img
+disco img --runtime run
 ```
 
-The `images` or `img` command supports all of the generic options listed above, plus: 
+Options:
 
+* `--runtime` - runtime to use for discovery (e.g. run, gke, gcf) (default: `run`)
+* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--output`  - saves report to file at this path (stdout by default) 
+* `--project` - project filter during discovery (project ID)
 * `--uri` - outputs only image uri (default: false). This is helpful when you want to pipe the resulting images to another program.
 
 The resulting report in JSON format will look something like this (abbreviated):
@@ -181,63 +166,26 @@ The resulting report in JSON format will look something like this (abbreviated):
 }
 ```
 
-#### Licenses
+### Vulnerabilities
 
-To discover licenses used in container images currently deployed in Cloud Run.
-
-```shell
-disco run lic
-```
-
-The `licenses` or `lic` command supports all of the generic options listed above, plus: 
-
-* `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (`disco run img --uri -o images.txt`), instead of running through potentially lengthy discovery. 
-* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-
-The resulting report in JSON format will look something like this (abbreviated):
-
-```json
-{
-  "meta": {
-    "kind": "license",
-    "version": "v0.3.19-next",
-    "created": "2022-12-28T21:23:20Z",
-    "count": 7
-  },
-  "items": [
-    {
-      "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
-      "licenses": [
-        {
-          "name": "GPL-2.0",
-          "source": "alpine-baselayout-data"
-        },
-        {
-          "name": "MIT",
-          "source": "alpine-keys"
-        },
-        ...
-      ]
-    },
-    ...
-  ]
-}
-```
-
-#### Vulnerabilities
-
-To discover potential vulnerabilities in container images currently deployed in Cloud Run.
+Discover potential vulnerabilities in container images. To see all of the commands available for `vul`:
 
 ```shell
-disco run vul
+disco vul --help
 ```
 
-The `vul` or `vulnerabilities` command supports all of the generic options listed above, plus: 
+Options: 
 
-* `--source` - path to image list file to use as source. This allows you to use the previously generated list of images (e.g. `disco run img --uri -o images.txt`). If not provided, `disco` will discover images first. 
+* `--file` - path to file with images (one per line) to use as source. This allows you to use the previously generated list of images (e.g. `disco img --runtime run --uri -o images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all).
-* `--cve` - filters report on a specific CVE. This enables quick search if anything currently running is exposed to a new CVE.
+* `--runtime` - used for image discovery if `file` or `image` flags are not provided (e.g. run, gke, gcf) (default: "run").
+* `--output`  - saves report to file at this path (stdout by default) 
+* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--project` - during discovery, runs only on specific project (project ID)
+* `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all)
+* `--cve` - filter results on a specific CVE ID (e.g. `CVE-2020-22046`)
+
+> Using the `cve` filter you can quickly check if any of the currently deployed images have a vulnerability. 
 
 The resulting report in JSON format will look something like this (abbreviated):
 
@@ -269,6 +217,104 @@ The resulting report in JSON format will look something like this (abbreviated):
     ...
   ]
 }
+```
+
+### Licenses
+
+Discover licenses for OS and packages used in container images. To see all of the commands available for `lic`:
+
+```shell
+disco lic --help
+```
+
+Options: 
+
+* `--file` - path to file with images (one per line) to use as source. This allows you to use the previously generated list of images (e.g. `disco img --runtime run --uri -o images.txt`).
+* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
+* `--runtime` - used for image discovery if `file` or `image` flags are not provided (e.g. run, gke, gcf) (default: "run").
+* `--output`  - saves report to file at this path (stdout by default)  
+* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--project` - during discovery, runs only on specific project (project ID)
+* `--type` - license type filter (supports prefix: e.g. `apache`, `bsd`, `mit`, etc.).
+
+> Using the `type` you can quickly check if any of your currently deployed images are using specific license.
+
+The resulting report in JSON format will look something like this (abbreviated):
+
+```json
+{
+  "meta": {
+    "kind": "license",
+    "version": "v0.3.19-next",
+    "created": "2022-12-28T21:23:20Z",
+    "count": 7
+  },
+  "items": [
+    {
+      "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+      "licenses": [
+        {
+          "name": "GPL-2.0",
+          "source": "alpine-baselayout-data"
+        },
+        {
+          "name": "MIT",
+          "source": "alpine-keys"
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+}
+```
+
+### Import 
+
+In addition to discovery, `disco` can also import discovered data into a data store for forensic analyses using SQL. Currently `disco` only support BigQuery as a target store. More target DBs to come. 
+
+> Note, `disco` will try to create the dataset and tables in BigQuery so make sure you have sufficient rights (e.g. `roles/bigquery.dataEditor`)
+
+```shell
+disco imp -h
+```
+
+#### Vulnerabilities and Licenses
+
+Import vulnerabilities from output generated by one of the open source scanners (e.g. [trivy (disco default)](https://aquasecurity.github.io/trivy/v0.35/getting-started/installation/)
+ or [grype](https://github.com/anchore/grype#installation)).
+
+To import vulnerabilities:
+
+```shell
+disco imp vul --project $PROJECT_ID --file ./trivy-vuln.json
+```
+
+To import licenses:
+
+```shell
+disco imp vul --project $PROJECT_ID --file ./trivy-vuln.json
+```
+
+TO generate vulnerability (`vuln`) or license `license` report from an image:
+
+```shell
+trivy image $IMAGE_DIGEST --format json \
+  --security-checks license > ./trivy-vuln.json
+```
+
+#### Packages
+
+Import packages from SBOM in either SPDX 2.3 or CycloneDX 1.3 format. 
+
+```shell
+disco imp pkg --project $PROJECT_ID --file ./syft-spdx.json
+```
+
+To generate SBOM form a container using `syft`:
+
+```shell
+syft packages -o spdx-json $IMAGE_DIGEST > ./syft-spdx.json
 ```
 
 ## Disclaimer

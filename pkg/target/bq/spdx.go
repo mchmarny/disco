@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mchmarny/disco/pkg/types"
+	"github.com/rs/zerolog/log"
 	"github.com/spdx/tools-golang/spdx/v2_3"
 )
 
@@ -14,6 +15,7 @@ func MakeSPDXPackageRows(in *v2_3.Document) []*PackageRow {
 	batchID := time.Now().UTC().Unix()
 
 	for _, p := range in.Packages {
+		log.Info().Msgf("adding package %s from %s", p.PackageName, p.PackageSourceInfo)
 		list = append(list, &PackageRow{
 			BatchID:        batchID,
 			Image:          types.ParseImageNameFromDigest(in.DocumentName),

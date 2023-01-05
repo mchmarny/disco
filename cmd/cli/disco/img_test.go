@@ -38,7 +38,7 @@ func TestVulCmd(t *testing.T) {
 func TestLicCmd(t *testing.T) {
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String(
-		"source",
+		"file",
 		"../../../etc/data/images.txt",
 		"test",
 	)

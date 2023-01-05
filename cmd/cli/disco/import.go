@@ -8,43 +8,18 @@ import (
 )
 
 var (
-	importProjectIDFlag = &c.StringFlag{
-		Name:     "project",
-		Aliases:  []string{"p"},
-		Usage:    "ID of the project to import into",
-		Required: true,
-	}
-
-	datasetIDFlag = &c.StringFlag{
-		Name:     "dataset",
-		Aliases:  []string{"d"},
-		Usage:    "ID of the dataset to import into",
-		Required: false,
-	}
-
-	sourceFileFlag = &c.StringFlag{
-		Name:     "file",
-		Aliases:  []string{"f"},
-		Usage:    "Path to the source file to import",
-		Required: true,
-	}
-
-	sbomFormatFlag = &c.StringFlag{
-		Name:     "format",
-		Usage:    "SBOM Format of the source file to import (spdx or cyclonedx)",
-		Required: true,
-	}
-
 	importCmd = &c.Command{
 		Name:    "import",
 		Aliases: []string{"imp"},
-		Usage:   "Data import commands (currently supports only BigQuery)",
+		Usage:   "Import data from open source scanner reports",
 		Subcommands: []*c.Command{
 			{
-				Name:    "vulnerabilities",
-				Aliases: []string{"vul", "v"},
-				Usage:   "Import vulnerabilities from trivy report (e.g. trivy image python:3.4-alpine --format json --security-checks vuln > report.json)",
-				Action:  runVulnImportCmd,
+				Name:    "vulnerability",
+				Aliases: []string{"vul"},
+				Usage: `import vulnerabilities from exiting report
+e.g. result of trivy image python:3.4-alpine \
+	    --format json --security-checks vuln > report.json`,
+				Action: runVulnImportCmd,
 				Flags: []c.Flag{
 					importProjectIDFlag,
 					datasetIDFlag,
@@ -52,10 +27,12 @@ var (
 				},
 			},
 			{
-				Name:    "licenses",
-				Aliases: []string{"lic", "l"},
-				Usage:   "Import licenses from trivy report (e.g. trivy image python:3.4-alpine --format json --security-checks license > report.json)",
-				Action:  runLicenseImportCmd,
+				Name:    "license",
+				Aliases: []string{"lic"},
+				Usage: `import licenses from exiting report 
+e.g. result of trivy image python:3.4-alpine \
+	    --format json --security-checks license > report.json`,
+				Action: runLicenseImportCmd,
 				Flags: []c.Flag{
 					importProjectIDFlag,
 					datasetIDFlag,
@@ -64,9 +41,11 @@ var (
 			},
 			{
 				Name:    "packages",
-				Aliases: []string{"pkg", "p"},
-				Usage:   "Import packages from SBOM file (SPDX 2.3 and CycloneDX 1.3 supported, e.g. syft packages -o spdx-json python:3.4-alpine > report.json)",
-				Action:  runPackageImportCmd,
+				Aliases: []string{"pkg"},
+				Usage: `import packages from SBOM file
+(SPDX 2.3 and CycloneDX 1.3 supported)
+e.g. result of syft packages -o spdx-json python:3.4-alpine > report.json`,
+				Action: runPackageImportCmd,
 				Flags: []c.Flag{
 					importProjectIDFlag,
 					datasetIDFlag,
@@ -115,11 +94,4 @@ func runPackageImportCmd(c *c.Context) error {
 	}
 
 	return nil
-}
-
-func addOptionalImportFlags(c *c.Context, req *types.ImportRequest) {
-	datasetID := c.String(datasetIDFlag.Name)
-	if datasetID != "" {
-		req.DatasetID = datasetID
-	}
 }
