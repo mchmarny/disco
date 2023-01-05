@@ -19,7 +19,7 @@ func DiscoverVulns(ctx context.Context, in *types.VulnsQuery) error {
 		return errors.New("nil input")
 	}
 	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
-	printProjectScope(in.ProjectID)
+	printProjectScope(in.ProjectID, "vulnerabilities")
 
 	f := func(v interface{}) bool {
 		vul := v.(*types.Vulnerability)

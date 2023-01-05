@@ -16,7 +16,7 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		return errors.New("nil input")
 	}
 	log.Debug().Msgf("discovering images with: %s", in)
-	printProjectScope(in.ProjectID)
+	printProjectScope(in.ProjectID, "images")
 
 	images, err := source.ImageProvider(ctx, in)
 	if err != nil {
