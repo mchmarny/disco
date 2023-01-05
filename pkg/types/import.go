@@ -6,16 +6,50 @@ const (
 	dataSetID              = "disco"
 	tableLicenseID         = "licenses"
 	tableVulnerabilityID   = "vulnerabilities"
+	tablePackageID         = "packages"
 	datasetLocationDefault = "US"
 
 	TableKindUndefined TableKind = iota
 	TableKindLicense
 	TableKindVulnerability
+	TableKindPackage
 
 	TableKindUndefinedName     = "undefined"
 	TableKindLicenseName       = "license"
 	TableKindVulnerabilityName = "vulnerability"
+	TableKindPackageName       = "package"
+
+	SBOMFormatUndefined SBOMFormat = iota
+	SBOMFormatSPDX
+	SBOMFormatCycloneDX
+
+	sbomFormatSPDXName      = "spdx"
+	sbomFormatCycloneDXName = "cyclonedx"
 )
+
+type SBOMFormat int64
+
+func (f SBOMFormat) String() string {
+	switch f {
+	case SBOMFormatSPDX:
+		return sbomFormatSPDXName
+	case SBOMFormatCycloneDX:
+		return sbomFormatCycloneDXName
+	default:
+		return "undefined"
+	}
+}
+
+func ParseSBOMFormat(s string) SBOMFormat {
+	switch s {
+	case sbomFormatSPDXName:
+		return SBOMFormatSPDX
+	case sbomFormatCycloneDXName:
+		return SBOMFormatCycloneDX
+	default:
+		return SBOMFormatUndefined
+	}
+}
 
 type TableKind int64
 
@@ -25,8 +59,22 @@ func (t TableKind) String() string {
 		return TableKindLicenseName
 	case TableKindVulnerability:
 		return TableKindVulnerabilityName
+	case TableKindPackage:
+		return TableKindPackageName
 	default:
 		return TableKindUndefinedName
+	}
+}
+
+func NewPackageImportRequest(projectID, path, format string) *ImportRequest {
+	return &ImportRequest{
+		ProjectID:  projectID,
+		TableKind:  TableKindPackage,
+		Location:   datasetLocationDefault,
+		DatasetID:  dataSetID,
+		TableID:    tablePackageID,
+		FilePath:   path,
+		SBOMFormat: ParseSBOMFormat(format),
 	}
 }
 
@@ -53,12 +101,13 @@ func NewVulnerabilityImportRequest(projectID, path string) *ImportRequest {
 }
 
 type ImportRequest struct {
-	ProjectID string
-	Location  string
-	DatasetID string
-	TableKind TableKind
-	TableID   string
-	FilePath  string
+	ProjectID  string
+	Location   string
+	DatasetID  string
+	TableKind  TableKind
+	TableID    string
+	FilePath   string
+	SBOMFormat SBOMFormat
 }
 
 func ParseImageNameFromDigest(digest string) string {

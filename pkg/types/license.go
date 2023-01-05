@@ -12,6 +12,7 @@ type LicenseReport struct {
 type License struct {
 	Name   string `json:"name"`
 	Source string `json:"source"`
+	Image  string `json:"-"`
 }
 
 func (l *License) String() string {

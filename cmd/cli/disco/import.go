@@ -22,17 +22,16 @@ var (
 		Required: false,
 	}
 
-	tableIDFlag = &c.StringFlag{
-		Name:     "table",
-		Aliases:  []string{"t"},
-		Usage:    "ID of the table to import into",
-		Required: false,
-	}
-
 	sourceFileFlag = &c.StringFlag{
 		Name:     "file",
 		Aliases:  []string{"f"},
 		Usage:    "Path to the source file to import",
+		Required: true,
+	}
+
+	sbomFormatFlag = &c.StringFlag{
+		Name:     "format",
+		Usage:    "SBOM Format of the source file to import (spdx or cyclonedx)",
 		Required: true,
 	}
 
@@ -44,25 +43,35 @@ var (
 			{
 				Name:    "vulnerabilities",
 				Aliases: []string{"vul", "v"},
-				Usage:   "Import vulnerabilities from output report file",
+				Usage:   "Import vulnerabilities from trivy report (e.g. trivy image python:3.4-alpine --format json --security-checks vuln > report.json)",
 				Action:  runVulnImportCmd,
 				Flags: []c.Flag{
 					importProjectIDFlag,
 					datasetIDFlag,
-					tableIDFlag,
 					sourceFileFlag,
 				},
 			},
 			{
 				Name:    "licenses",
 				Aliases: []string{"lic", "l"},
-				Usage:   "Import licenses from output report file",
+				Usage:   "Import licenses from trivy report (e.g. trivy image python:3.4-alpine --format json --security-checks license > report.json)",
 				Action:  runLicenseImportCmd,
 				Flags: []c.Flag{
 					importProjectIDFlag,
 					datasetIDFlag,
-					tableIDFlag,
 					sourceFileFlag,
+				},
+			},
+			{
+				Name:    "packages",
+				Aliases: []string{"pkg", "p"},
+				Usage:   "Import packages from SBOM file (SPDX 2.3 and CycloneDX 1.3 supported, e.g. syft packages -o spdx-json python:3.4-alpine > report.json)",
+				Action:  runPackageImportCmd,
+				Flags: []c.Flag{
+					importProjectIDFlag,
+					datasetIDFlag,
+					sourceFileFlag,
+					sbomFormatFlag,
 				},
 			},
 		},
@@ -70,21 +79,10 @@ var (
 )
 
 func runVulnImportCmd(c *c.Context) error {
-	req := types.NewVulnerabilityImportRequest(c.String(projectIDFlag.Name), c.String(sourceFileFlag.Name))
-	datasetID := c.String(datasetIDFlag.Name)
-	if datasetID != "" {
-		req.DatasetID = datasetID
-	}
-	tableID := c.String(tableIDFlag.Name)
-	if tableID != "" {
-		req.TableID = tableID
-	}
-
+	req := types.NewVulnerabilityImportRequest(c.String(projectIDFlag.Name),
+		c.String(sourceFileFlag.Name))
+	addOptionalImportFlags(c, req)
 	printVersion(c)
-
-	if err := target.SetupConfigurer(c.Context, req); err != nil {
-		return errors.Wrap(err, "errors checking target configuration")
-	}
 
 	if err := target.VulnerabilityImporter(c.Context, req); err != nil {
 		return errors.Wrap(err, "error importing vulnerabilities")
@@ -94,25 +92,34 @@ func runVulnImportCmd(c *c.Context) error {
 }
 
 func runLicenseImportCmd(c *c.Context) error {
-	req := types.NewLicenseImportRequest(c.String(projectIDFlag.Name), c.String(sourceFileFlag.Name))
-	datasetID := c.String(datasetIDFlag.Name)
-	if datasetID != "" {
-		req.DatasetID = datasetID
-	}
-	tableID := c.String(tableIDFlag.Name)
-	if tableID != "" {
-		req.TableID = tableID
-	}
-
+	req := types.NewLicenseImportRequest(c.String(projectIDFlag.Name),
+		c.String(sourceFileFlag.Name))
+	addOptionalImportFlags(c, req)
 	printVersion(c)
-
-	if err := target.SetupConfigurer(c.Context, req); err != nil {
-		return errors.Wrap(err, "errors checking target configuration")
-	}
 
 	if err := target.LicenseImporter(c.Context, req); err != nil {
 		return errors.Wrap(err, "error importing licenses")
 	}
 
 	return nil
+}
+
+func runPackageImportCmd(c *c.Context) error {
+	req := types.NewPackageImportRequest(c.String(projectIDFlag.Name),
+		c.String(sourceFileFlag.Name), c.String(sbomFormatFlag.Name))
+	addOptionalImportFlags(c, req)
+	printVersion(c)
+
+	if err := target.PackageImporter(c.Context, req); err != nil {
+		return errors.Wrap(err, "error importing licenses")
+	}
+
+	return nil
+}
+
+func addOptionalImportFlags(c *c.Context, req *types.ImportRequest) {
+	datasetID := c.String(datasetIDFlag.Name)
+	if datasetID != "" {
+		req.DatasetID = datasetID
+	}
 }

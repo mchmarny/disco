@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -14,12 +15,21 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 	if req == nil || req.FilePath == "" {
 		return errors.Errorf("configured import request is required: %v", req)
 	}
-	var report types.ItemReport[types.LicenseReport]
-	if err := types.UnmarshalFromFile(req.FilePath, &report); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal report from %s", req.FilePath)
+
+	f := func(v interface{}) bool {
+		return false
 	}
 
-	rows := MakeLicenseRows(report.Items)
+	report, err := scanner.ParseLicense(req.FilePath, f)
+	if err != nil {
+		return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
+	}
+
+	if err := configureTarget(ctx, req); err != nil {
+		return errors.Wrap(err, "errors checking target configuration")
+	}
+
+	rows := MakeLicenseRows(report)
 	if err := insert(ctx, req, rows); err != nil {
 		return errors.Wrap(err, "failed to insert rows")
 	}
@@ -29,22 +39,20 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 	return nil
 }
 
-func MakeLicenseRows(in []*types.LicenseReport) []*LicenseRow {
+func MakeLicenseRows(in *types.LicenseReport) []*LicenseRow {
 	list := make([]*LicenseRow, 0)
 	updated := time.Now().UTC().Format(time.RFC3339)
 	batchID := time.Now().UTC().Unix()
 
-	for _, r := range in {
-		for _, l := range r.Licenses {
-			list = append(list, &LicenseRow{
-				BatchID: batchID,
-				Image:   types.ParseImageNameFromDigest(r.Image),
-				Sha:     types.ParseImageShaFromDigest(r.Image),
-				Name:    l.Name,
-				Package: l.Source,
-				Updated: updated,
-			})
-		}
+	for _, l := range in.Licenses {
+		list = append(list, &LicenseRow{
+			BatchID: batchID,
+			Image:   types.ParseImageNameFromDigest(in.Image),
+			Sha:     types.ParseImageShaFromDigest(in.Image),
+			Name:    l.Name,
+			Package: l.Source,
+			Updated: updated,
+		})
 	}
 
 	return list

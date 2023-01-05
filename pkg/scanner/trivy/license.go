@@ -11,6 +11,7 @@ import (
 )
 
 type licenseReport struct {
+	Image   string `json:"ArtifactName"` //nolint:tagliatelle
 	Results []struct {
 		Licenses []struct {
 			PkgName string `json:"pkgName"`
@@ -19,7 +20,7 @@ type licenseReport struct {
 	} `json:"results"`
 }
 
-func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseReport, error) {
+func ParseLicenses(path string, filter types.ItemFilter) (*types.LicenseReport, error) {
 	if path == "" {
 		return nil, fmt.Errorf("path is empty")
 	}
@@ -53,6 +54,7 @@ func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseR
 			lic := &types.License{
 				Name:   l.Name,
 				Source: l.PkgName,
+				Image:  report.Image,
 			}
 
 			// filter
@@ -66,7 +68,7 @@ func ParseLicenses(image, path string, filter types.ItemFilter) (*types.LicenseR
 	}
 
 	result := &types.LicenseReport{
-		Image:    image,
+		Image:    report.Image,
 		Licenses: list,
 	}
 

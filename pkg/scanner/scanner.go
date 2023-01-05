@@ -23,13 +23,13 @@ var (
 type MakeLicenseCmd func(digest, path string) *exec.Cmd
 
 // LicenseParser is an interface for license parsers.
-type LicenseParser func(image, path string, filter types.ItemFilter) (*types.LicenseReport, error)
+type LicenseParser func(path string, filter types.ItemFilter) (*types.LicenseReport, error)
 
 // MakeVulnerabilityCmd is an interface for vulnerability scanners.
 type MakeVulnerabilityCmd func(digest, path string) *exec.Cmd
 
 // VulnerabilityParser is an interface for vulnerability parsers.
-type VulnerabilityParser func(image, path string, filter types.ItemFilter) (*types.VulnerabilityReport, error)
+type VulnerabilityParser func(path string, filter types.ItemFilter) (*types.VulnerabilityReport, error)
 
 // GetLicenses returns licenses for the given image.
 func GetLicenses(digest, path string, filter types.ItemFilter) (*types.LicenseReport, error) {
@@ -38,7 +38,7 @@ func GetLicenses(digest, path string, filter types.ItemFilter) (*types.LicenseRe
 		return nil, errors.Wrap(err, "error running license scanning command")
 	}
 
-	report, err := ParseLicense(digest, path, filter)
+	report, err := ParseLicense(path, filter)
 	if err != nil {
 		return nil, errors.Wrap(err, "error parsing licenses")
 	}
@@ -53,7 +53,7 @@ func GetVulnerabilities(digest, path string, filter types.ItemFilter) (*types.Vu
 		return nil, errors.Wrap(err, "error running vulnerability scanner command")
 	}
 
-	report, err := ParseVulnerability(digest, path, filter)
+	report, err := ParseVulnerability(path, filter)
 	if err != nil {
 		return nil, errors.Wrap(err, "error parsing vulnerabilities")
 	}

@@ -6,6 +6,7 @@ locals {
   ci_roles = toset([
     "roles/artifactregistry.writer",
     "roles/bigquery.dataEditor",
+    "roles/bigquery.user",
     "roles/cloudkms.cryptoKeyEncrypterDecrypter",
     "roles/cloudkms.publicKeyViewer",
     "roles/cloudkms.signerVerifier",

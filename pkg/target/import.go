@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	LicenseImporter       RecordImporter   = bq.ImportLicenses
-	VulnerabilityImporter RecordImporter   = bq.ImportVulnerabilities
-	SetupConfigurer       TargetConfigurer = bq.ConfigureTarget
+	LicenseImporter       RecordImporter = bq.ImportLicenses
+	VulnerabilityImporter RecordImporter = bq.ImportVulnerabilities
+	PackageImporter       RecordImporter = bq.ImportPackages
 )
 
+// RecordImporter is a function that imports records into a target store.
 type RecordImporter func(ctx context.Context, req *types.ImportRequest) error
-type TargetConfigurer func(ctx context.Context, req *types.ImportRequest) error

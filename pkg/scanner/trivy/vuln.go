@@ -11,6 +11,7 @@ import (
 )
 
 type vulnerabilityReport struct {
+	Image   string `json:"ArtifactName"` //nolint:tagliatelle
 	Results []struct {
 		Vulnerabilities []struct {
 			ID             string `json:"VulnerabilityID"`  //nolint:tagliatelle
@@ -25,7 +26,7 @@ type vulnerabilityReport struct {
 	} `json:"Results"` //nolint:tagliatelle
 }
 
-func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.VulnerabilityReport, error) {
+func ParseVulnerabilities(path string, filter types.ItemFilter) (*types.VulnerabilityReport, error) {
 	if path == "" {
 		return nil, fmt.Errorf("path is empty")
 	}
@@ -65,6 +66,7 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 				Description:    v.Description,
 				Severity:       v.Severity,
 				Updated:        v.Updated,
+				Image:          report.Image,
 			}
 
 			// filter
@@ -78,7 +80,7 @@ func ParseVulnerabilities(image, path string, filter types.ItemFilter) (*types.V
 	}
 
 	result := &types.VulnerabilityReport{
-		Image:           image,
+		Image:           report.Image,
 		Vulnerabilities: list,
 	}
 

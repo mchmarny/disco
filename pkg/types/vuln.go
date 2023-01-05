@@ -86,6 +86,7 @@ type Vulnerability struct {
 	Description    string `json:"description"`
 	URL            string `json:"url"`
 	Updated        string `json:"updated"`
+	Image          string `json:"-"`
 }
 
 func (v *Vulnerability) String() string {

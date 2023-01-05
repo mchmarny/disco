@@ -34,9 +34,23 @@ var (
 		{Name: "url", Type: "STRING"},
 		{Name: "updated", Type: bigquery.TimestampFieldType, Required: true},
 	}
+
+	packageSchema = bigquery.Schema{
+		{Name: "batch_id", Type: bigquery.IntegerFieldType, Required: true},
+		{Name: "image", Type: bigquery.StringFieldType, Required: true},
+		{Name: "sha", Type: bigquery.StringFieldType},
+		{Name: "format", Type: bigquery.StringFieldType, Required: true},
+		{Name: "provider", Type: bigquery.StringFieldType, Required: true},
+		{Name: "originator", Type: bigquery.StringFieldType},
+		{Name: "package", Type: bigquery.StringFieldType, Required: true},
+		{Name: "version", Type: bigquery.StringFieldType, Required: true},
+		{Name: "source", Type: bigquery.StringFieldType},
+		{Name: "license", Type: bigquery.StringFieldType},
+		{Name: "updated", Type: bigquery.TimestampFieldType, Required: true},
+	}
 )
 
-func ConfigureTarget(ctx context.Context, req *types.ImportRequest) error {
+func configureTarget(ctx context.Context, req *types.ImportRequest) error {
 	if req == nil {
 		return errors.New("nil request")
 	}
@@ -72,6 +86,8 @@ func ConfigureTarget(ctx context.Context, req *types.ImportRequest) error {
 			tableSchema = licenseSchema
 		case types.TableKindVulnerability:
 			tableSchema = vulnerabilitySchema
+		case types.TableKindPackage:
+			tableSchema = packageSchema
 		default:
 			return errors.Errorf("unknown table kind: %d", req.TableKind)
 		}
