@@ -3,7 +3,7 @@ module github.com/mchmarny/disco
 go 1.19
 
 require (
-	cloud.google.com/go/bigquery v1.44.0
+	cloud.google.com/go/bigquery v1.45.0
 	cloud.google.com/go/monitoring v1.9.1
 	cloud.google.com/go/storage v1.28.1
 	github.com/CycloneDX/cyclonedx-go v0.7.1-0.20221222100750-41a1ac565cce
