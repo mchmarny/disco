@@ -72,7 +72,7 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 			ImageFile:  src,
 			OutputPath: reportPath,
 			OutputFmt:  types.JSONFormat,
-			Kind:       types.KindVulnerability,
+			Kind:       types.KindLicense,
 			Version:    h.version,
 		},
 	}
@@ -86,7 +86,8 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 			h.bucket, reportName)
 	}
 
-	req := types.NewLicenseImportRequest(h.projectID, reportPath, types.LicenseReportFormatTrivyName)
+	req := types.NewLicenseImportRequest(h.projectID, reportPath,
+		types.LicenseReportFormatDiscoName)
 	if err := target.LicenseImporter(ctx, req); err != nil {
 		return errors.Wrapf(err, "error importing licenses from: %+v", req)
 	}
@@ -127,7 +128,8 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 			h.bucket, reportName)
 	}
 
-	req := types.NewVulnerabilityImportRequest(h.projectID, reportPath, types.VulnReportFormatTrivyName)
+	req := types.NewVulnerabilityImportRequest(h.projectID, reportPath,
+		types.VulnReportFormatDiscoName)
 	if err := target.VulnerabilityImporter(ctx, req); err != nil {
 		return errors.Wrapf(err, "error importing vulnerabilities from: %+v", req)
 	}
