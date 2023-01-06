@@ -10,18 +10,29 @@ msg "root"
 time bin/disco -v > /dev/null
 time bin/disco -h > /dev/null
 
-msg "run img"
+msg "img"
 time bin/disco img --runtime run --uri -o images.tmp
 imgID=$(head -n 1 images.tmp)
 echo $imgID
 
-msg "run vul"
+msg "vul"
 time bin/disco vul --file images.tmp > /dev/null
 time bin/disco vul --image $imgID > /dev/null
 time bin/disco vul --file images.tmp --min-severity high > /dev/null
 time bin/disco vul --file images.tmp --cve CVE-2020-8911 > /dev/null
 
-msg "run lic"
+msg "lic"
 time bin/disco lic > /dev/null
 time bin/disco lic --file images.tmp > /dev/null
 time bin/disco lic --image $imgID > /dev/null
+
+msg "imp"
+time bin/disco imp > /dev/null
+time bin/disco imp vul --project cloudy-demos \
+                       --dataset disco_test \
+                       --file etc/data/test-vuln.json \
+                       --format trivy > /dev/null
+time bin/disco imp lic --project cloudy-demos \
+                       --dataset disco_test \
+                       --file etc/data/report-lic.json \
+                       --format disco > /dev/null
