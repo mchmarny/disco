@@ -1,20 +1,16 @@
 package bq
 
 import (
-	"encoding/json"
-	"os"
 	"testing"
 
+	"github.com/mchmarny/disco/pkg/types"
 	spdx "github.com/spdx/tools-golang/spdx/v2_3"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSPDXPackageImport(t *testing.T) {
-	b, err := os.ReadFile("../../../etc/data/spdx23.json")
-	assert.NoError(t, err)
-
 	var sbom spdx.Document
-	err = json.Unmarshal(b, &sbom)
+	err := types.UnmarshalFromFile("../../../etc/data/spdx23.json", &sbom)
 	assert.NoError(t, err)
 	assert.NotNil(t, sbom)
 

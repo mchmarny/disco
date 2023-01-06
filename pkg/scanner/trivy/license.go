@@ -1,9 +1,7 @@
 package trivy
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -27,13 +25,8 @@ func ParseLicenses(path string, filter types.ItemFilter) (*types.LicenseReport, 
 
 	log.Debug().Msgf("parsing licenses from %s using filter %t", path, filter != nil)
 
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to read file: %s", path)
-	}
-
 	var report licenseReport
-	if err := json.Unmarshal(b, &report); err != nil {
+	if err := types.UnmarshalFromFile(path, &report); err != nil {
 		return nil, errors.Wrapf(err, "failed to parse file: %s", path)
 	}
 

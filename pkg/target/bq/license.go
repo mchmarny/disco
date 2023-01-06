@@ -20,9 +20,21 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 		return false
 	}
 
-	report, err := scanner.ParseLicense(req.FilePath, f)
-	if err != nil {
-		return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
+	var report *types.LicenseReport
+	var err error
+
+	switch req.LicenseFormat {
+	case types.LicenseReportFormatTrivy:
+		report, err = scanner.ParseLicense(req.FilePath, f)
+		if err != nil {
+			return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
+		}
+	case types.LicenseReportFormatDisco:
+		if err := types.UnmarshalFromFile(req.FilePath, &report); err != nil {
+			return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
+		}
+	default:
+		return errors.Errorf("unsupported vulnerability report format: %s", req.VulnFormat)
 	}
 
 	if err := configureTarget(ctx, req); err != nil {

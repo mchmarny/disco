@@ -36,6 +36,12 @@ var (
 		Required: true,
 	}
 
+	reportFormatFlag = &c.StringFlag{
+		Name:     "format",
+		Usage:    "Report Format of the source file to import (disco or trivy)",
+		Required: true,
+	}
+
 	outputURIOnlyFlag = &c.BoolFlag{
 		Name:  "uri",
 		Usage: "output only image URI",

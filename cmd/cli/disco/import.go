@@ -24,6 +24,7 @@ e.g. result of trivy image python:3.4-alpine \
 					importProjectIDFlag,
 					datasetIDFlag,
 					sourceFileFlag,
+					reportFormatFlag,
 				},
 			},
 			{
@@ -37,6 +38,7 @@ e.g. result of trivy image python:3.4-alpine \
 					importProjectIDFlag,
 					datasetIDFlag,
 					sourceFileFlag,
+					reportFormatFlag,
 				},
 			},
 			{
@@ -59,7 +61,7 @@ e.g. result of syft packages -o spdx-json python:3.4-alpine > report.json`,
 
 func runVulnImportCmd(c *c.Context) error {
 	req := types.NewVulnerabilityImportRequest(c.String(projectIDFlag.Name),
-		c.String(sourceFileFlag.Name))
+		c.String(sourceFileFlag.Name), c.String(reportFormatFlag.Name))
 	addOptionalImportFlags(c, req)
 	printVersion(c)
 
@@ -72,7 +74,7 @@ func runVulnImportCmd(c *c.Context) error {
 
 func runLicenseImportCmd(c *c.Context) error {
 	req := types.NewLicenseImportRequest(c.String(projectIDFlag.Name),
-		c.String(sourceFileFlag.Name))
+		c.String(sourceFileFlag.Name), c.String(reportFormatFlag.Name))
 	addOptionalImportFlags(c, req)
 	printVersion(c)
 

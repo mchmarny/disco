@@ -1,9 +1,7 @@
 package trivy
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -33,13 +31,8 @@ func ParseVulnerabilities(path string, filter types.ItemFilter) (*types.Vulnerab
 
 	log.Debug().Msgf("parsing vulnerabilities from %s using filter: %v", path, filter)
 
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to read file: %s", path)
-	}
-
 	var report vulnerabilityReport
-	if err := json.Unmarshal(b, &report); err != nil {
+	if err := types.UnmarshalFromFile(path, &report); err != nil {
 		return nil, errors.Wrapf(err, "failed to parse file: %s", path)
 	}
 

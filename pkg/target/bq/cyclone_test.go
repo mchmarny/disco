@@ -1,20 +1,16 @@
 package bq
 
 import (
-	"encoding/json"
-	"os"
 	"testing"
 
 	"github.com/CycloneDX/cyclonedx-go"
+	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCycloneDXPackageImport(t *testing.T) {
-	b, err := os.ReadFile("../../../etc/data/cyclonedx12.json")
-	assert.NoError(t, err)
-
 	var sbom cyclonedx.BOM
-	err = json.Unmarshal(b, &sbom)
+	err := types.UnmarshalFromFile("../../../etc/data/cyclonedx12.json", &sbom)
 	assert.NoError(t, err)
 	assert.NotNil(t, sbom)
 

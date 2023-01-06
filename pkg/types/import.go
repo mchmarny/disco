@@ -23,28 +23,92 @@ const (
 	SBOMFormatSPDX
 	SBOMFormatCycloneDX
 
-	sbomFormatSPDXName      = "spdx"
-	sbomFormatCycloneDXName = "cyclonedx"
+	VulnReportFormatUndefined VulnReportFormat = iota
+	VulnReportFormatDisco
+	VulnReportFormatTrivy
+
+	LicenseReportFormatUndefined LicenseReportFormat = iota
+	LicenseReportFormatDisco
+	LicenseReportFormatTrivy
+
+	SBOMFormatSPDXName      = "spdx"
+	SBOMFormatCycloneDXName = "cyclonedx"
+
+	VulnReportFormatDiscoName = "disco"
+	VulnReportFormatTrivyName = "trivy"
+
+	LicenseReportFormatDiscoName = "disco"
+	LicenseReportFormatTrivyName = "trivy"
+
+	undefinedKind = "undefined"
 )
+
+type LicenseReportFormat int64
+
+func (f LicenseReportFormat) String() string {
+	switch f {
+	case LicenseReportFormatDisco:
+		return LicenseReportFormatDiscoName
+	case LicenseReportFormatTrivy:
+		return LicenseReportFormatTrivyName
+	default:
+		return undefinedKind
+	}
+}
+
+func ParseLicenseReportFormat(s string) LicenseReportFormat {
+	switch s {
+	case LicenseReportFormatDiscoName:
+		return LicenseReportFormatDisco
+	case LicenseReportFormatTrivyName:
+		return LicenseReportFormatTrivy
+	default:
+		return LicenseReportFormatUndefined
+	}
+}
+
+type VulnReportFormat int64
+
+func (f VulnReportFormat) String() string {
+	switch f {
+	case VulnReportFormatDisco:
+		return VulnReportFormatDiscoName
+	case VulnReportFormatTrivy:
+		return VulnReportFormatTrivyName
+	default:
+		return undefinedKind
+	}
+}
+
+func ParseVulnReportFormat(s string) VulnReportFormat {
+	switch s {
+	case VulnReportFormatDiscoName:
+		return VulnReportFormatDisco
+	case VulnReportFormatTrivyName:
+		return VulnReportFormatTrivy
+	default:
+		return VulnReportFormatUndefined
+	}
+}
 
 type SBOMFormat int64
 
 func (f SBOMFormat) String() string {
 	switch f {
 	case SBOMFormatSPDX:
-		return sbomFormatSPDXName
+		return SBOMFormatSPDXName
 	case SBOMFormatCycloneDX:
-		return sbomFormatCycloneDXName
+		return SBOMFormatCycloneDXName
 	default:
-		return "undefined"
+		return undefinedKind
 	}
 }
 
 func ParseSBOMFormat(s string) SBOMFormat {
 	switch s {
-	case sbomFormatSPDXName:
+	case SBOMFormatSPDXName:
 		return SBOMFormatSPDX
-	case sbomFormatCycloneDXName:
+	case SBOMFormatCycloneDXName:
 		return SBOMFormatCycloneDX
 	default:
 		return SBOMFormatUndefined
@@ -78,36 +142,40 @@ func NewPackageImportRequest(projectID, path, format string) *ImportRequest {
 	}
 }
 
-func NewLicenseImportRequest(projectID, path string) *ImportRequest {
+func NewLicenseImportRequest(projectID, path, format string) *ImportRequest {
 	return &ImportRequest{
-		ProjectID: projectID,
-		TableKind: TableKindLicense,
-		Location:  datasetLocationDefault,
-		DatasetID: dataSetID,
-		TableID:   tableLicenseID,
-		FilePath:  path,
+		ProjectID:     projectID,
+		TableKind:     TableKindLicense,
+		Location:      datasetLocationDefault,
+		DatasetID:     dataSetID,
+		TableID:       tableLicenseID,
+		FilePath:      path,
+		LicenseFormat: ParseLicenseReportFormat(format),
 	}
 }
 
-func NewVulnerabilityImportRequest(projectID, path string) *ImportRequest {
+func NewVulnerabilityImportRequest(projectID, path, format string) *ImportRequest {
 	return &ImportRequest{
-		ProjectID: projectID,
-		TableKind: TableKindVulnerability,
-		Location:  datasetLocationDefault,
-		DatasetID: dataSetID,
-		TableID:   tableVulnerabilityID,
-		FilePath:  path,
+		ProjectID:  projectID,
+		TableKind:  TableKindVulnerability,
+		Location:   datasetLocationDefault,
+		DatasetID:  dataSetID,
+		TableID:    tableVulnerabilityID,
+		FilePath:   path,
+		VulnFormat: ParseVulnReportFormat(format),
 	}
 }
 
 type ImportRequest struct {
-	ProjectID  string
-	Location   string
-	DatasetID  string
-	TableKind  TableKind
-	TableID    string
-	FilePath   string
-	SBOMFormat SBOMFormat
+	ProjectID     string
+	Location      string
+	DatasetID     string
+	TableKind     TableKind
+	TableID       string
+	FilePath      string
+	SBOMFormat    SBOMFormat
+	LicenseFormat LicenseReportFormat
+	VulnFormat    VulnReportFormat
 }
 
 func ParseImageNameFromDigest(digest string) string {
