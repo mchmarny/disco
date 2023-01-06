@@ -20,19 +20,21 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 		return false
 	}
 
-	var report *types.LicenseReport
-	var err error
+	var reports []*types.LicenseReport
 
 	switch req.LicenseFormat {
 	case types.LicenseReportFormatTrivy:
-		report, err = scanner.ParseLicense(req.FilePath, f)
+		report, err := scanner.ParseLicense(req.FilePath, f)
 		if err != nil {
 			return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
 		}
+		reports = append(reports, report)
 	case types.LicenseReportFormatDisco:
-		if err := types.UnmarshalFromFile(req.FilePath, &report); err != nil {
+		var itemReport types.ItemReport[types.LicenseReport]
+		if err := types.UnmarshalFromFile(req.FilePath, &itemReport); err != nil {
 			return errors.Wrapf(err, "failed to parse report from %s", req.FilePath)
 		}
+		reports = itemReport.Items
 	default:
 		return errors.Errorf("unsupported vulnerability report format: %s", req.VulnFormat)
 	}
@@ -41,31 +43,33 @@ func ImportLicenses(ctx context.Context, req *types.ImportRequest) error {
 		return errors.Wrap(err, "errors checking target configuration")
 	}
 
-	rows := MakeLicenseRows(report)
+	rows := MakeLicenseRows(reports...)
 	if err := insert(ctx, req, rows); err != nil {
 		return errors.Wrap(err, "failed to insert rows")
 	}
 
-	log.Info().Msgf("inserted %d rows into %s.%s.%s", len(rows), req.ProjectID, req.DatasetID, req.TableID)
+	log.Info().Msgf("inserted %d records into %s.%s.%s", len(rows), req.ProjectID, req.DatasetID, req.TableID)
 
 	return nil
 }
 
-func MakeLicenseRows(in *types.LicenseReport) []*LicenseRow {
+func MakeLicenseRows(in ...*types.LicenseReport) []*LicenseRow {
 	list := make([]*LicenseRow, 0)
 	updated := time.Now().UTC().Format(time.RFC3339)
 	batchID := time.Now().UTC().Unix()
 
-	for _, l := range in.Licenses {
-		log.Info().Msgf("adding license %s from %s", l.Name, l.Source)
-		list = append(list, &LicenseRow{
-			BatchID: batchID,
-			Image:   types.ParseImageNameFromDigest(in.Image),
-			Sha:     types.ParseImageShaFromDigest(in.Image),
-			Name:    l.Name,
-			Package: l.Source,
-			Updated: updated,
-		})
+	for _, r := range in {
+		for _, l := range r.Licenses {
+			log.Info().Msgf("adding license %s from %s", l.Name, l.Source)
+			list = append(list, &LicenseRow{
+				BatchID: batchID,
+				Image:   types.ParseImageNameFromDigest(r.Image),
+				Sha:     types.ParseImageShaFromDigest(r.Image),
+				Name:    l.Name,
+				Package: l.Source,
+				Updated: updated,
+			})
+		}
 	}
 
 	return list
