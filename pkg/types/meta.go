@@ -4,11 +4,13 @@ const (
 	KindImageName         = "image"
 	KindLicenseName       = "license"
 	KindVulnerabilityName = "vulnerability"
+	KindPackageName       = "package"
 	KindUndefinedName     = "undefined"
 
 	KindUndefined DiscoKind = iota
 	KindImage
 	KindLicense
+	KindPackage
 	KindVulnerability
 )
 
@@ -22,6 +24,8 @@ func (k DiscoKind) String() string {
 		return KindLicenseName
 	case KindVulnerability:
 		return KindVulnerabilityName
+	case KindPackage:
+		return KindPackageName
 	default:
 		return KindUndefinedName
 	}

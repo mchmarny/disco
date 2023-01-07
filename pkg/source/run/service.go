@@ -56,7 +56,6 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 	}
 
 	u := fmt.Sprintf(serviceAPIBaseURL, projectID, region)
-	log.Debug().Msgf("getting services from: %s", u)
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error client creating service request")
@@ -68,7 +67,6 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 	}
 
 	if len(list.Services) == 0 {
-		log.Debug().Msgf("no services found in project %s", projectID)
 		return list.Services, nil
 	}
 

@@ -13,7 +13,7 @@ type LicenseQuery struct {
 
 func (q *LicenseQuery) Validate() error {
 	if err := q.SimpleQuery.Validate(); err != nil {
-		return errors.Wrap(err, "invalid simple query")
+		return errors.Wrap(err, "invalid license query")
 	}
 
 	return nil

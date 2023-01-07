@@ -105,7 +105,7 @@ func (r *APICounter) CountAll(ctx context.Context, records ...*Record) error {
 	log.Debug().Msgf("creating %d metrics...", len(list))
 	pager, err := types.GetPager(list, metricPageSize)
 	if err != nil {
-		return errors.Wrapf(err, "getting pager of size %d from %d items",
+		return errors.Wrapf(err, "error getting pager of size %d from %d items",
 			metricPageSize, len(list))
 	}
 

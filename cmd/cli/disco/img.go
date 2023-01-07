@@ -14,7 +14,6 @@ var (
 		Usage:   "List deployed container images in specific runtime",
 		Action:  runImagesCmd,
 		Flags: []c.Flag{
-			runtimeFlag,
 			outputPathFlag,
 			outputFormatFlag,
 			outputURIOnlyFlag,

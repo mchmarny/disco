@@ -11,6 +11,7 @@ import (
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 )
 
@@ -114,6 +115,10 @@ func getImagesURIs(ctx context.Context, in *types.SimpleQuery) ([]string, error)
 	return list, nil
 }
 
+const (
+	maxItemHandler = 5
+)
+
 type itemHandler func(dir, uri string) error
 
 func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandler) error {
@@ -132,10 +137,18 @@ func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandle
 		}
 	}()
 
+	var g errgroup.Group
+	g.SetLimit(maxItemHandler)
+
 	for _, img := range list {
-		if handler(dir, img) != nil {
-			return errors.Wrap(err, "error handling image")
-		}
+		uri := img
+		g.Go(func() error {
+			return handler(dir, uri)
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return errors.Wrap(err, "error handling images")
 	}
 
 	return nil

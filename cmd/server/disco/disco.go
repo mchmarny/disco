@@ -61,6 +61,11 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.discoPackages(r.Context(), dir, reportPath); err != nil {
+		writeError(w, errors.Wrap(err, "error discovering packages"))
+		return
+	}
+
 	writeMessage(w, "Done")
 }
 
@@ -144,6 +149,48 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 	}
 
 	log.Info().Msgf("vulnerability report saved to: gs://%s/%s", h.bucket, reportName)
+
+	return nil
+}
+
+func (h *Handler) discoPackages(ctx context.Context, dir, src string) error {
+	reportName := fmt.Sprintf("pkg-%s.json", time.Now().UTC().Format("2006-01-02T15-04-05"))
+	reportPath := path.Join(dir, reportName)
+	query := &types.PackageQuery{
+		SimpleQuery: types.SimpleQuery{
+			ImageFile:  src,
+			OutputPath: reportPath,
+			OutputFmt:  types.JSONFormat,
+			Kind:       types.KindPackage,
+			Version:    h.version,
+		},
+	}
+
+	if err := disco.DiscoverPackages(ctx, query); err != nil {
+		return errors.Wrap(err, "error executing discover packages")
+	}
+
+	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
+		return errors.Wrapf(err, "error writing content to: %s/%s",
+			h.bucket, reportName)
+	}
+
+	req := types.NewPackageImportRequest(h.projectID, reportPath,
+		types.SBOMFormatSPDXName)
+	if err := target.PackageImporter(ctx, req); err != nil {
+		return errors.Wrapf(err, "error importing packages from: %+v", req)
+	}
+
+	list, err := disco.MeterPackage(ctx, reportPath)
+	if err != nil {
+		return errors.Wrapf(err, "error metering packages from: %s", reportPath)
+	}
+
+	if err := h.counter.CountAll(ctx, list...); err != nil {
+		return errors.Wrapf(err, "error counting packages metrics: %d", len(list))
+	}
+
+	log.Info().Msgf("package report saved to: gs://%s/%s", h.bucket, reportName)
 
 	return nil
 }

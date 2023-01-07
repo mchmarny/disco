@@ -16,7 +16,6 @@ var (
 		Flags: []c.Flag{
 			imageListPathFlag,
 			imageURIFlag,
-			runtimeFlag,
 			outputPathFlag,
 			outputFormatFlag,
 			projectIDFlag,

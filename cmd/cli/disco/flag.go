@@ -54,13 +54,6 @@ var (
 		Required: false,
 	}
 
-	runtimeFlag = &c.StringFlag{
-		Name:     "runtime",
-		Usage:    "runtime to use for discovery (e.g. run, gke, gcf)",
-		Required: false,
-		Value:    "run",
-	}
-
 	licenseTypeFlag = &c.StringFlag{
 		Name:     "type",
 		Aliases:  []string{"t"},

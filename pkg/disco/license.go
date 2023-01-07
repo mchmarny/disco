@@ -47,7 +47,7 @@ func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 	results := make([]*types.LicenseReport, 0)
 	h := func(dir, uri string) error {
 		p := path.Join(dir, uuid.NewString())
-		log.Debug().Msgf("getting %s for %s (file: %s)", types.KindLicenseName, uri, p)
+		log.Debug().Msgf("getting licenses for %s (file: %s)", uri, p)
 
 		rez, err := scanner.GetLicenses(uri, p, filter)
 		if err != nil {

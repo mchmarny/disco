@@ -56,6 +56,7 @@ func newApp(version, commit, date string) (*c.App, error) {
 			imgCmd,
 			vulnCmd,
 			licCmd,
+			pkgCmd,
 			importCmd,
 		},
 	}

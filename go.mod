@@ -3,8 +3,8 @@ module github.com/mchmarny/disco
 go 1.19
 
 require (
-	cloud.google.com/go/bigquery v1.44.0
-	cloud.google.com/go/monitoring v1.9.1
+	cloud.google.com/go/bigquery v1.45.0
+	cloud.google.com/go/monitoring v1.10.0
 	cloud.google.com/go/storage v1.28.1
 	github.com/CycloneDX/cyclonedx-go v0.7.1-0.20221222100750-41a1ac565cce
 	github.com/google/uuid v1.3.0
@@ -14,17 +14,18 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.23.7
 	golang.org/x/oauth2 v0.4.0
+	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.106.0
-	google.golang.org/genproto v0.0.0-20230104163317-caabf589fcbf
+	google.golang.org/genproto v0.0.0-20230106154932-a12b697841d9
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	cloud.google.com/go v0.107.0 // indirect
-	cloud.google.com/go/compute v1.14.0 // indirect
+	cloud.google.com/go v0.108.0 // indirect
+	cloud.google.com/go/compute v1.15.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/iam v0.9.0 // indirect
+	cloud.google.com/go/iam v0.10.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect

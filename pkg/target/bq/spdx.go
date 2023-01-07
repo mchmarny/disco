@@ -1,7 +1,6 @@
 package bq
 
 import (
-	"strings"
 	"time"
 
 	"github.com/mchmarny/disco/pkg/types"
@@ -21,7 +20,7 @@ func MakeSPDXPackageRows(in *v2_3.Document) []*PackageRow {
 			Image:          types.ParseImageNameFromDigest(in.DocumentName),
 			Sha:            types.ParseImageShaFromDigest(in.DocumentName),
 			Format:         in.SPDXVersion,
-			Provider:       spdxCreatorInfo(in.CreationInfo),
+			Provider:       types.SPDXCreatorInfo(in.CreationInfo),
 			Originator:     p.PackageOriginator.Originator,
 			Package:        p.PackageName,
 			PackageVersion: p.PackageVersion,
@@ -32,25 +31,4 @@ func MakeSPDXPackageRows(in *v2_3.Document) []*PackageRow {
 	}
 
 	return list
-}
-
-const spdxToolKey = "Tool"
-
-func spdxCreatorInfo(in *v2_3.CreationInfo) string {
-	if in == nil {
-		return ""
-	}
-
-	var sb strings.Builder
-
-	for _, c := range in.Creators {
-		if c.CreatorType == spdxToolKey {
-			return c.Creator
-		} else {
-			sb.WriteString(c.Creator)
-			sb.WriteString(" ")
-		}
-	}
-
-	return strings.TrimSpace(sb.String())
 }

@@ -31,6 +31,10 @@ func (q *SimpleQuery) Validate() error {
 		return errors.New("only one of image file or image URI can be specified")
 	}
 
+	if q.ProjectID != "" && (q.ImageFile != "" || q.ImageURI != "") {
+		return errors.New("project ID can only be used during image discovery")
+	}
+
 	return nil
 }
 

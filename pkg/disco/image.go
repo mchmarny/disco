@@ -23,8 +23,6 @@ func DiscoverImages(ctx context.Context, in *types.ImagesQuery) error {
 		return errors.Wrap(err, "error getting images")
 	}
 
-	log.Info().Msgf("found %d images", len(images))
-
 	if in.URIOnly {
 		if err := writeList(in.OutputPath, images); err != nil {
 			return errors.Wrap(err, "error writing output")
@@ -51,7 +49,6 @@ func discoverImageURIs(ctx context.Context, in *types.ImagesQuery) ([]string, er
 		return nil, errors.Wrap(err, "error getting images")
 	}
 
-	log.Info().Msgf("found %d images", len(images))
 	list := make([]string, 0, len(images))
 	for _, img := range images {
 		list = append(list, img.URI)

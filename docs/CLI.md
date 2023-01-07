@@ -123,15 +123,14 @@ Discover deployed images from specific runtime. To see all of the commands avail
 disco img --help
 ```
 
-To discover container images currently deployed in Cloud Run:
+To discover container images currently deployed:
 
 ```shell
-disco img --runtime run
+disco img
 ```
 
 Options:
 
-* `--runtime` - runtime to use for discovery (e.g. run, gke, gcf) (default: `run`)
 * `--format`  - report format: `json` or `yaml` (`json` is default)
 * `--output`  - saves report to file at this path (stdout by default) 
 * `--project` - project filter during discovery (project ID)
@@ -178,7 +177,6 @@ Options:
 
 * `--file` - path to file with images (one per line) to use as source. This allows you to use the previously generated list of images (e.g. `disco img --runtime run --uri -o images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--runtime` - used for image discovery if `file` or `image` flags are not provided (e.g. run, gke, gcf) (default: "run").
 * `--output`  - saves report to file at this path (stdout by default) 
 * `--format`  - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
@@ -231,7 +229,6 @@ Options:
 
 * `--file` - path to file with images (one per line) to use as source. This allows you to use the previously generated list of images (e.g. `disco img --runtime run --uri -o images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--runtime` - used for image discovery if `file` or `image` flags are not provided (e.g. run, gke, gcf) (default: "run").
 * `--output`  - saves report to file at this path (stdout by default)  
 * `--format`  - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)

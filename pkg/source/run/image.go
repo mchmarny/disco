@@ -249,7 +249,9 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
 				continue
 			}
-			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
+			if len(svcs) > 0 {
+				log.Debug().Msgf("found %d services in: %s/%s", len(svcs), r.ID, p.ID)
+			}
 
 			for _, s := range svcs {
 				log.Info().Msgf("processing %s: %s", s.Runtime, s.FullName)

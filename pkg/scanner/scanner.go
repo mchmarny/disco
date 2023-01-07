@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/mchmarny/disco/pkg/scanner/syft"
 	"github.com/mchmarny/disco/pkg/scanner/trivy"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -12,21 +13,24 @@ import (
 )
 
 var (
-	ScanLicense  MakeLicenseCmd = trivy.MakeLicenseCmd
-	ParseLicense LicenseParser  = trivy.ParseLicenses
+	ScanLicense  ScannerCmd    = trivy.MakeLicenseCmd
+	ParseLicense LicenseParser = trivy.ParseLicenses
 
-	ScanVulnerability  MakeVulnerabilityCmd = trivy.MakeVulnerabilityCmd
-	ParseVulnerability VulnerabilityParser  = trivy.ParseVulnerabilities
+	ScanVulnerability  ScannerCmd          = trivy.MakeVulnerabilityCmd
+	ParseVulnerability VulnerabilityParser = trivy.ParseVulnerabilities
+
+	ScanPackages ScannerCmd    = syft.MakePackagesCmd
+	ParsePackage PackageParser = syft.ParsePackages
 )
 
 // MakeLicenseCmd is an interface for license scanners.
-type MakeLicenseCmd func(digest, path string) *exec.Cmd
+type ScannerCmd func(digest, path string) *exec.Cmd
 
 // LicenseParser is an interface for license parsers.
 type LicenseParser func(path string, filter types.ItemFilter) (*types.LicenseReport, error)
 
-// MakeVulnerabilityCmd is an interface for vulnerability scanners.
-type MakeVulnerabilityCmd func(digest, path string) *exec.Cmd
+// PackageParser is an interface for package parsers.
+type PackageParser func(path string, filter types.ItemFilter) (*types.PackageReport, error)
 
 // VulnerabilityParser is an interface for vulnerability parsers.
 type VulnerabilityParser func(path string, filter types.ItemFilter) (*types.VulnerabilityReport, error)
@@ -56,6 +60,21 @@ func GetVulnerabilities(digest, path string, filter types.ItemFilter) (*types.Vu
 	report, err := ParseVulnerability(path, filter)
 	if err != nil {
 		return nil, errors.Wrap(err, "error parsing vulnerabilities")
+	}
+
+	return report, nil
+}
+
+// GetPackages returns packages for the given image.
+func GetPackages(digest, path string, filter types.ItemFilter) (*types.PackageReport, error) {
+	cmd := ScanPackages(digest, path)
+	if err := runCmd(cmd, path); err != nil {
+		return nil, errors.Wrap(err, "error running package scanning command")
+	}
+
+	report, err := ParsePackage(path, filter)
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing packages")
 	}
 
 	return report, nil

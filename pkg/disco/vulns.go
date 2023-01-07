@@ -56,7 +56,7 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 	}
 	h := func(dir, uri string) error {
 		p := path.Join(dir, uuid.NewString())
-		log.Debug().Msgf("getting %s for %s (file: %s)", types.KindVulnerabilityName, uri, p)
+		log.Debug().Msgf("getting vulnerabilities for %s (file: %s)", uri, p)
 
 		rez, err := scanner.GetVulnerabilities(uri, p, filter)
 		if err != nil {
