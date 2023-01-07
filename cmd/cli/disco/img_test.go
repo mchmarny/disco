@@ -10,7 +10,7 @@ import (
 )
 
 func TestImgCmd(t *testing.T) {
-	if !testing.Short() {
+	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
 

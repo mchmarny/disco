@@ -32,7 +32,7 @@ upgrade: ## Upgrades all dependancies
 .PHONY: test
 test: tidy ## Runs unit tests
 	mkdir -p tmp
-	go test -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
+	go test -short -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
 
 .PHONY: cover
 cover: test ## Runs unit tests and putputs coverage

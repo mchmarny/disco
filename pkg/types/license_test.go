@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLicenses(t *testing.T) {
+func TestLicenseReport(t *testing.T) {
 	report := &LicenseReport{
 		Licenses: []*License{
 			{Name: "MIT", Source: "test"},
