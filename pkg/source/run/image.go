@@ -249,10 +249,10 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
 				continue
 			}
-
 			log.Debug().Msgf("found %d services in: %s/%s", len(svcs), p.ID, r.ID)
+
 			for _, s := range svcs {
-				log.Info().Msgf("processing: %s", s.FullName)
+				log.Info().Msgf("processing %s: %s", s.Runtime, s.FullName)
 
 				for _, c := range s.Containers {
 					if _, ok := images[c.Image]; ok {
@@ -270,9 +270,10 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 							"service-name":     s.Name,
 							"service-revision": s.Revision,
 							"container-name":   c.Name,
+							"runtime":          s.Runtime,
 						},
 					}
-					images[img.URI] = img
+					images[c.Image] = img
 				}
 			}
 		}

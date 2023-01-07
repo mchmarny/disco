@@ -16,6 +16,11 @@ const (
 
 	// revisionAPIBaseURL is the base URL for Cloud Run revision.
 	revisionAPIBaseURL = "https://run.googleapis.com/v2/%s"
+
+	managedByGCF = "cloudfunctions"
+
+	runtimeGCF = "gcf"
+	runtimeRun = "run"
 )
 
 type serviceList struct {
@@ -27,9 +32,13 @@ type service struct {
 	FullName   string       `json:"fullName"`
 	Revision   string       `json:"latestReadyRevision"`
 	Containers []*container `json:"containers"`
+	Runtime    string       `json:"runtime"`
 }
 
 type revision struct {
+	Labels struct {
+		ManagedBy string `json:"goog-managed-by"` //nolint:tagliatelle
+	} `json:"labels"`
 	Conditions []*container `json:"containers"`
 }
 
@@ -81,6 +90,11 @@ func getServices(ctx context.Context, projectID, region string) ([]*service, err
 		s.FullName = s.Name
 		s.Name = parseServiceName(s.Name)
 		s.Containers = rev.Conditions
+		if rev.Labels.ManagedBy == managedByGCF {
+			s.Runtime = runtimeGCF
+		} else {
+			s.Runtime = runtimeRun
+		}
 	}
 
 	return list.Services, nil

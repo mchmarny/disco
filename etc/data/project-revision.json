@@ -1,0 +1,99 @@
+{
+  "name": "projects/cloudy-demos/locations/us-west1/services/artomator/revisions/artomator-qx5lj",
+  "uid": "e0c1f3d1-765c-4082-ae27-00a5f20627b5",
+  "generation": "1",
+  "createTime": "2022-12-23T01:34:36.925386Z",
+  "updateTime": "2022-12-23T01:34:36.925386Z",
+  "launchStage": "GA",
+  "service": "artomator",
+  "scaling": {
+    "maxInstanceCount": 3
+  },
+  "vpcAccess": {
+    "connector": "artomator-connector",
+    "egress": "PRIVATE_RANGES_ONLY"
+  },
+  "timeout": "900s",
+  "serviceAccount": "artomator-run-sa@cloudy-demos.iam.gserviceaccount.com",
+  "containers": [
+    {
+      "name": "artomator-1",
+      "image": "us-west1-docker.pkg.dev/cloudy-demos/artomator/artomator@sha256:b4a094e55244bc442bdaf2a5cd06a589f754ffc8ce09183868acaa79419cd88d",
+      "env": [
+        {
+          "name": "REDIS_IP",
+          "value": "10.108.32.4"
+        },
+        {
+          "name": "SIGN_KEY",
+          "value": "gcpkms://projects/cloudy-demos/locations/global/keyRings/artomator-signer-ring/cryptoKeys/artomator-signer"
+        },
+        {
+          "name": "ADDRESS",
+          "value": ":8080"
+        },
+        {
+          "name": "GCS_BUCKET",
+          "value": "artomator-cloudy-demos"
+        },
+        {
+          "name": "PROJECT_ID",
+          "value": "cloudy-demos"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        }
+      ],
+      "resources": {
+        "limits": {
+          "cpu": "1000m",
+          "memory": "2Gi"
+        },
+        "cpuIdle": true
+      },
+      "ports": [
+        {
+          "name": "http1",
+          "containerPort": 8080
+        }
+      ]
+    }
+  ],
+  "executionEnvironment": "EXECUTION_ENVIRONMENT_GEN2",
+  "conditions": [
+    {
+      "type": "Ready",
+      "state": "CONDITION_SUCCEEDED",
+      "message": "Revision retired.",
+      "lastTransitionTime": "2022-12-31T16:14:58.017327Z",
+      "revisionReason": "RETIRED"
+    },
+    {
+      "type": "Active",
+      "state": "CONDITION_FAILED",
+      "message": "Revision retired.",
+      "lastTransitionTime": "2022-12-31T16:14:58.017327Z",
+      "severity": "INFO",
+      "revisionReason": "RETIRED"
+    },
+    {
+      "type": "ResourcesAvailable",
+      "state": "CONDITION_RECONCILING",
+      "message": "Revision retired.",
+      "lastTransitionTime": "2022-12-31T16:14:58.017327Z",
+      "revisionReason": "RETIRED"
+    },
+    {
+      "type": "ContainerHealthy",
+      "state": "CONDITION_RECONCILING",
+      "message": "Revision retired.",
+      "lastTransitionTime": "2022-12-31T16:14:58.017327Z",
+      "revisionReason": "RETIRED"
+    }
+  ],
+  "observedGeneration": "1",
+  "logUri": "https://console.cloud.google.com/logs/viewer?project=cloudy-demos&resource=cloud_run_revision/service_name/artomator/revision_name/artomator-qx5lj&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22artomator%22%0Aresource.labels.revision_name%3D%22artomator-qx5lj%22",
+  "maxInstanceRequestConcurrency": 80,
+  "etag": "\"CKyLlJ0GEJCKobkD/cHJvamVjdHMvY2xvdWR5LWRlbW9zL2xvY2F0aW9ucy91cy13ZXN0MS9zZXJ2aWNlcy9hcnRvbWF0b3IvcmV2aXNpb25zL2FydG9tYXRvci1xeDVsag\""
+}

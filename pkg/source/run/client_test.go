@@ -17,6 +17,7 @@ var (
 	urlExpLocations   = regexp.MustCompile(`/locations$`)
 	urlEpxProjects    = regexp.MustCompile(`/projects$`)
 	urlExpServices    = regexp.MustCompile(`/locations/us-west1/services$`)
+	urlExpFunctions   = regexp.MustCompile(`/locations/us-west1/functions$`)
 	urlExpRevision    = regexp.MustCompile(`/revisions/`)
 	urlExpUsage       = regexp.MustCompile(`/projects/799736955886/services$`)
 	urlEpxOccurrences = regexp.MustCompile(`/occurrences$`)
@@ -36,6 +37,8 @@ func (t *testAPIClient) Get(ctx context.Context, req *http.Request, v any) error
 		testFile = "../../../etc/data/test-projects.json"
 	case urlExpServices.MatchString(u):
 		testFile = "../../../etc/data/test-services.json"
+	case urlExpFunctions.MatchString(u):
+		testFile = "../../../etc/data/test-functions.json"
 	case urlExpRevision.MatchString(u):
 		testFile = "../../../etc/data/test-revision.json"
 	case urlExpUsage.MatchString(u):
