@@ -7,12 +7,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverPackages(ctx context.Context, in *types.PackageQuery) error {
+func DiscoverPackages(ctx context.Context, in *types.PackageQuery, ir *types.ImportRequest) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -24,14 +25,14 @@ func DiscoverPackages(ctx context.Context, in *types.PackageQuery) error {
 	log.Debug().Msgf("discovering packages with: %s", in)
 	printProjectScope(in.ProjectID, "packages")
 
-	if err := scanPackages(ctx, &in.SimpleQuery, f); err != nil {
+	if err := scanPackages(ctx, &in.SimpleQuery, f, ir); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 
 	return nil
 }
 
-func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter) error {
+func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
 	results := make([]*types.PackageReport, 0)
 	h := func(dir, uri string) error {
 		p := path.Join(dir, uuid.NewString())
@@ -56,6 +57,12 @@ func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
+	}
+
+	if ir != nil {
+		if err := target.PackageImporter(ctx, ir, report.Items...); err != nil {
+			return errors.Wrap(err, "error importing")
+		}
 	}
 
 	return nil

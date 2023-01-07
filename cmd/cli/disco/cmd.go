@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -57,7 +58,6 @@ func newApp(version, commit, date string) (*c.App, error) {
 			vulnCmd,
 			licCmd,
 			pkgCmd,
-			importCmd,
 		},
 	}
 
@@ -77,9 +77,13 @@ func getVersionFromContext(c *c.Context) string {
 	return val.(string)
 }
 
-func addOptionalImportFlags(c *c.Context, req *types.ImportRequest) {
-	datasetID := c.String(datasetIDFlag.Name)
-	if datasetID != "" {
-		req.DatasetID = datasetID
+func validateTarget(req *types.SimpleQuery) (*types.ImportRequest, error) {
+	if req.TargetRaw != "" {
+		ir, err := target.ParseImportRequest(req)
+		if err != nil {
+			return nil, errors.Wrap(err, "invalid target definition")
+		}
+		return ir, nil
 	}
+	return nil, nil
 }

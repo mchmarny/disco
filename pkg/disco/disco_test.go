@@ -64,10 +64,10 @@ func TestLicense(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverLicenses(ctx, nil)
+	err := DiscoverLicenses(ctx, nil, nil)
 	assert.Error(t, err, "error licenses images with nil query")
 
-	err = DiscoverLicenses(ctx, &types.LicenseQuery{})
+	err = DiscoverLicenses(ctx, &types.LicenseQuery{}, nil)
 	assert.NoError(t, err, "error discovering license")
 
 	err = DiscoverLicenses(ctx, &types.LicenseQuery{
@@ -75,7 +75,7 @@ func TestLicense(t *testing.T) {
 			ProjectID:  "test-project",
 			OutputPath: "../../tmp/license.tmp",
 		},
-	})
+	}, nil)
 	assert.NoError(t, err, "error discovering license")
 }
 
@@ -84,17 +84,17 @@ func TestVuln(t *testing.T) {
 	setTestImplementations()
 	ctx := context.Background()
 
-	err := DiscoverVulns(ctx, nil)
+	err := DiscoverVulns(ctx, nil, nil)
 	assert.Error(t, err, "error vulns images with nil query")
 
-	err = DiscoverVulns(ctx, &types.VulnsQuery{})
+	err = DiscoverVulns(ctx, &types.VulnsQuery{}, nil)
 	assert.NoError(t, err, "error discovering vulns")
 
 	err = DiscoverVulns(ctx, &types.VulnsQuery{
 		SimpleQuery: types.SimpleQuery{
 			ProjectID: "test-project",
 		},
-	})
+	}, nil)
 	assert.NoError(t, err, "error discovering vulns with project")
 }
 

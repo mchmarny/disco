@@ -19,6 +19,7 @@ var (
 			outputPathFlag,
 			outputFormatFlag,
 			projectIDFlag,
+			targetFlag,
 		},
 	}
 )
@@ -32,6 +33,7 @@ func runPackageCmd(c *c.Context) error {
 	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
+	in.TargetRaw = c.String(targetFlag.Name)
 
 	printVersion(c)
 
@@ -39,7 +41,12 @@ func runPackageCmd(c *c.Context) error {
 		return errors.Wrap(err, "invalid input")
 	}
 
-	if err := disco.DiscoverPackages(c.Context, in); err != nil {
+	ir, err := validateTarget(&in.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "invalid target")
+	}
+
+	if err := disco.DiscoverPackages(c.Context, in, ir); err != nil {
 		return errors.Wrap(err, "error discovering packages")
 	}
 

@@ -1,9 +1,9 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -24,6 +24,8 @@ type SimpleQuery struct {
 	OutputFmt  OutputFormat
 	ImageFile  string
 	ImageURI   string
+	TargetRaw  string
+	Target     *ImportRequest
 }
 
 func (q *SimpleQuery) Validate() error {
@@ -39,8 +41,8 @@ func (q *SimpleQuery) Validate() error {
 }
 
 func (q *SimpleQuery) String() string {
-	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, target: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.Target)
 }
 
 type OutputFormat int64

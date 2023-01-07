@@ -9,12 +9,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
 	"github.com/mchmarny/disco/pkg/scanner"
+	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverVulns(ctx context.Context, in *types.VulnsQuery) error {
+func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRequest) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
@@ -41,14 +42,14 @@ func DiscoverVulns(ctx context.Context, in *types.VulnsQuery) error {
 		return false
 	}
 
-	if err := scanVulnerabilities(ctx, in, f); err != nil {
+	if err := scanVulnerabilities(ctx, in, f, ir); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 
 	return nil
 }
 
-func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter) error {
+func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
 	results := make([]*types.VulnerabilityReport, 0)
 	vSpacer := "vulnerabilities"
 	if in.CVE != "" {
@@ -77,6 +78,12 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
+	}
+
+	if ir != nil {
+		if err := target.VulnerabilityImporter(ctx, ir, report.Items...); err != nil {
+			return errors.Wrap(err, "error importing")
+		}
 	}
 
 	return nil

@@ -2,10 +2,8 @@ package types
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/spdx/tools-golang/spdx/v2_3"
 )
 
 type PackageQuery struct {
@@ -41,25 +39,4 @@ type Package struct {
 
 func (l *Package) String() string {
 	return fmt.Sprintf("package: %s, version: %s, format: %s, provider: %s, source: %s", l.Package, l.PackageVersion, l.Format, l.Provider, l.Source)
-}
-
-const spdxToolKey = "Tool"
-
-func SPDXCreatorInfo(in *v2_3.CreationInfo) string {
-	if in == nil {
-		return ""
-	}
-
-	var sb strings.Builder
-
-	for _, c := range in.Creators {
-		if c.CreatorType == spdxToolKey {
-			return c.Creator
-		} else {
-			sb.WriteString(c.Creator)
-			sb.WriteString(" ")
-		}
-	}
-
-	return strings.TrimSpace(sb.String())
 }

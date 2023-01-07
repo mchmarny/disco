@@ -20,6 +20,7 @@ var (
 			outputFormatFlag,
 			projectIDFlag,
 			licenseTypeFlag,
+			targetFlag,
 		},
 	}
 )
@@ -34,6 +35,7 @@ func runLicenseCmd(c *c.Context) error {
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
 	in.TypeFilter = c.String(licenseTypeFlag.Name)
+	in.TargetRaw = c.String(targetFlag.Name)
 
 	printVersion(c)
 
@@ -41,7 +43,12 @@ func runLicenseCmd(c *c.Context) error {
 		return errors.Wrap(err, "invalid input")
 	}
 
-	if err := disco.DiscoverLicenses(c.Context, in); err != nil {
+	ir, err := validateTarget(&in.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "invalid target")
+	}
+
+	if err := disco.DiscoverLicenses(c.Context, in, ir); err != nil {
 		return errors.Wrap(err, "error discovering licenses")
 	}
 

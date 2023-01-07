@@ -2,10 +2,12 @@ package trivy
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/spdx/tools-golang/spdx/v2_3"
 	spdx "github.com/spdx/tools-golang/spdx/v2_3"
 )
 
@@ -38,7 +40,7 @@ func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, 
 			Package:        p.PackageName,
 			PackageVersion: p.PackageVersion,
 			Format:         report.SPDXVersion,
-			Provider:       types.SPDXCreatorInfo(report.CreationInfo),
+			Provider:       SPDXCreatorInfo(report.CreationInfo),
 			Source:         p.PackageSourceInfo,
 		}
 
@@ -57,4 +59,25 @@ func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, 
 	}
 
 	return result, nil
+}
+
+const spdxToolKey = "Tool"
+
+func SPDXCreatorInfo(in *v2_3.CreationInfo) string {
+	if in == nil {
+		return ""
+	}
+
+	var sb strings.Builder
+
+	for _, c := range in.Creators {
+		if c.CreatorType == spdxToolKey {
+			return c.Creator
+		} else {
+			sb.WriteString(c.Creator)
+			sb.WriteString(" ")
+		}
+	}
+
+	return strings.TrimSpace(sb.String())
 }

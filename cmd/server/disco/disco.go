@@ -79,22 +79,22 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 			OutputFmt:  types.JSONFormat,
 			Kind:       types.KindLicense,
 			Version:    h.version,
+			TargetRaw:  fmt.Sprintf("bq://%s.disco.licenses", h.projectID),
 		},
 	}
 
-	if err := disco.DiscoverLicenses(ctx, query); err != nil {
+	tar, err := target.ParseImportRequest(&query.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "error parsing import request")
+	}
+
+	if err := disco.DiscoverLicenses(ctx, query, tar); err != nil {
 		return errors.Wrap(err, "error executing discover licenses")
 	}
 
 	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
 		return errors.Wrapf(err, "error writing content to: %s/%s",
 			h.bucket, reportName)
-	}
-
-	req := types.NewLicenseImportRequest(h.projectID, reportPath,
-		types.LicenseReportFormatDiscoName)
-	if err := target.LicenseImporter(ctx, req); err != nil {
-		return errors.Wrapf(err, "error importing licenses from: %+v", req)
 	}
 
 	list, err := disco.MeterLicense(ctx, reportPath)
@@ -121,22 +121,22 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 			OutputFmt:  types.JSONFormat,
 			Kind:       types.KindVulnerability,
 			Version:    h.version,
+			TargetRaw:  fmt.Sprintf("bq://%s.disco.vulnerabilities", h.projectID),
 		},
 	}
 
-	if err := disco.DiscoverVulns(ctx, query); err != nil {
+	tar, err := target.ParseImportRequest(&query.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "error parsing import request")
+	}
+
+	if err := disco.DiscoverVulns(ctx, query, tar); err != nil {
 		return errors.Wrap(err, "error executing discover vulnerabilities")
 	}
 
 	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
 		return errors.Wrapf(err, "error writing content to: %s/%s",
 			h.bucket, reportName)
-	}
-
-	req := types.NewVulnerabilityImportRequest(h.projectID, reportPath,
-		types.VulnReportFormatDiscoName)
-	if err := target.VulnerabilityImporter(ctx, req); err != nil {
-		return errors.Wrapf(err, "error importing vulnerabilities from: %+v", req)
 	}
 
 	list, err := disco.MeterVulns(ctx, reportPath)
@@ -163,22 +163,22 @@ func (h *Handler) discoPackages(ctx context.Context, dir, src string) error {
 			OutputFmt:  types.JSONFormat,
 			Kind:       types.KindPackage,
 			Version:    h.version,
+			TargetRaw:  fmt.Sprintf("bq://%s.disco.packages", h.projectID),
 		},
 	}
 
-	if err := disco.DiscoverPackages(ctx, query); err != nil {
+	tar, err := target.ParseImportRequest(&query.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "error parsing import request")
+	}
+
+	if err := disco.DiscoverPackages(ctx, query, tar); err != nil {
 		return errors.Wrap(err, "error executing discover packages")
 	}
 
 	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
 		return errors.Wrapf(err, "error writing content to: %s/%s",
 			h.bucket, reportName)
-	}
-
-	req := types.NewPackageImportRequest(h.projectID, reportPath,
-		types.SBOMFormatSPDXName)
-	if err := target.PackageImporter(ctx, req); err != nil {
-		return errors.Wrapf(err, "error importing packages from: %+v", req)
 	}
 
 	list, err := disco.MeterPackage(ctx, reportPath)

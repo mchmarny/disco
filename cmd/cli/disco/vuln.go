@@ -21,6 +21,7 @@ var (
 			projectIDFlag,
 			minSeverityFlag,
 			cveFlag,
+			targetFlag,
 		},
 	}
 )
@@ -36,6 +37,7 @@ func runVulnsCmd(c *c.Context) error {
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
 	in.MinVulnSev = types.ParseMinVulnSeverityOrDefault(c.String(minSeverityFlag.Name))
+	in.TargetRaw = c.String(targetFlag.Name)
 
 	printVersion(c)
 
@@ -43,7 +45,12 @@ func runVulnsCmd(c *c.Context) error {
 		return errors.Wrap(err, "invalid input")
 	}
 
-	if err := disco.DiscoverVulns(c.Context, in); err != nil {
+	ir, err := validateTarget(&in.SimpleQuery)
+	if err != nil {
+		return errors.Wrap(err, "invalid target")
+	}
+
+	if err := disco.DiscoverVulns(c.Context, in, ir); err != nil {
 		return errors.Wrap(err, "error excuting command")
 	}
 
