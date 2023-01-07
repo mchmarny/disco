@@ -21,7 +21,6 @@ func MakeSPDXPackageRows(in *v2_3.Document) []*PackageRow {
 			Sha:            types.ParseImageShaFromDigest(in.DocumentName),
 			Format:         in.SPDXVersion,
 			Provider:       types.SPDXCreatorInfo(in.CreationInfo),
-			Originator:     p.PackageOriginator.Originator,
 			Package:        p.PackageName,
 			PackageVersion: p.PackageVersion,
 			Source:         p.PackageSourceInfo,

@@ -61,7 +61,6 @@ type PackageRow struct {
 	Sha            string
 	Format         string
 	Provider       string
-	Originator     string
 	Package        string
 	PackageVersion string
 	Source         string
@@ -71,17 +70,16 @@ type PackageRow struct {
 
 func (i *PackageRow) Save() (map[string]bigquery.Value, string, error) {
 	return map[string]bigquery.Value{
-		"batch_id":   i.BatchID,
-		"image":      i.Image,
-		"sha":        i.Sha,
-		"format":     i.Format,
-		"provider":   i.Provider,
-		"originator": i.Originator,
-		"package":    i.Package,
-		"version":    i.PackageVersion,
-		"source":     i.Source,
-		"license":    i.License,
-		"updated":    i.Updated,
+		"batch_id": i.BatchID,
+		"image":    i.Image,
+		"sha":      i.Sha,
+		"format":   i.Format,
+		"provider": i.Provider,
+		"package":  i.Package,
+		"version":  i.PackageVersion,
+		"source":   i.Source,
+		"license":  i.License,
+		"updated":  i.Updated,
 	}, "", nil
 }
 

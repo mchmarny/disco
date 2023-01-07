@@ -23,7 +23,6 @@ func TestSPDXPackageImport(t *testing.T) {
 		assert.NotEmpty(t, r.Sha)
 		assert.NotEmpty(t, r.Format)
 		assert.NotEmpty(t, r.Provider)
-		assert.NotEmpty(t, r.Originator)
 		assert.NotEmpty(t, r.Package)
 		assert.NotEmpty(t, r.PackageVersion)
 		assert.NotEmpty(t, r.Source)

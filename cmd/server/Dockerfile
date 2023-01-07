@@ -28,9 +28,6 @@ ENV PATH $PATH:/gcloud/google-cloud-sdk/bin/:/app/bin/
 # aquasecurity
 RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
     | sh -s -- -b /usr/local/bin
-# anchore tools 
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
-    | sh -s -- -b /usr/local/bin
 # debug 
 RUN echo $PATH 
 RUN ls -al 

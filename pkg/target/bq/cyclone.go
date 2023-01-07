@@ -23,7 +23,6 @@ func MakeCycloneDXPackageRows(in *cyclonedx.BOM) []*PackageRow {
 			Sha:            types.ParseImageShaFromDigest(in.Metadata.Component.Name),
 			Format:         in.BOMFormat,
 			Provider:       cycloneDXCreatorInfo(in.Metadata),
-			Originator:     c.Author,
 			Package:        c.Name,
 			PackageVersion: c.Version,
 			Source:         c.BOMRef,

@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/mchmarny/disco/pkg/scanner/syft"
 	"github.com/mchmarny/disco/pkg/scanner/trivy"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -19,8 +18,8 @@ var (
 	ScanVulnerability  ScannerCmd          = trivy.MakeVulnerabilityCmd
 	ParseVulnerability VulnerabilityParser = trivy.ParseVulnerabilities
 
-	ScanPackages ScannerCmd    = syft.MakePackagesCmd
-	ParsePackage PackageParser = syft.ParsePackages
+	ScanPackages ScannerCmd    = trivy.MakePackageCmd
+	ParsePackage PackageParser = trivy.ParsePackages
 )
 
 // MakeLicenseCmd is an interface for license scanners.

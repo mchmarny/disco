@@ -1,4 +1,4 @@
-package syft
+package trivy
 
 import (
 	"testing"
@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLicenseFilterParsing(t *testing.T) {
+func TestPackageFilterParsing(t *testing.T) {
 	expectedResults := 100
 
 	filter := func(v interface{}) bool {
 		return false
 	}
 
-	rep, err := testLicenseParsing(t, filter)
+	rep, err := testPackageParsing(t, filter)
 	assert.NoError(t, err)
 	assert.NotNil(t, rep)
 	assert.Equal(t, expectedResults, len(rep.Packages))
@@ -24,13 +24,11 @@ func TestLicenseFilterParsing(t *testing.T) {
 		assert.NotEmpty(t, p.PackageVersion)
 		assert.NotEmpty(t, p.Format)
 		assert.NotEmpty(t, p.Provider)
-		assert.NotEmpty(t, p.Originator)
 		assert.NotEmpty(t, p.Source)
-		assert.NotEmpty(t, p.License)
 	}
 }
 
-func testLicenseParsing(t *testing.T, filter types.ItemFilter) (*types.PackageReport, error) {
+func testPackageParsing(t *testing.T, filter types.ItemFilter) (*types.PackageReport, error) {
 	src := "../../../etc/data/spdx23.json"
 	rep, err := ParsePackages(src, filter)
 	assert.NoError(t, err)

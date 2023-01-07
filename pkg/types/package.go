@@ -35,14 +35,12 @@ type Package struct {
 	PackageVersion string `json:"version"`
 	Format         string `json:"format"`
 	Provider       string `json:"provider"`
-	Originator     string `json:"originator"`
 	Source         string `json:"source"`
-	License        string `json:"license"`
 	Image          string `json:"-"`
 }
 
 func (l *Package) String() string {
-	return fmt.Sprintf("package: %s, version: %s, format: %s, provider: %s, originator: %s, source: %s, license: %s", l.Package, l.PackageVersion, l.Format, l.Provider, l.Originator, l.Source, l.License)
+	return fmt.Sprintf("package: %s, version: %s, format: %s, provider: %s, source: %s", l.Package, l.PackageVersion, l.Format, l.Provider, l.Source)
 }
 
 const spdxToolKey = "Tool"

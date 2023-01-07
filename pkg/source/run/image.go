@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -18,6 +20,8 @@ const (
 	partCountAR      = 4
 
 	arNameSuffix = "-docker"
+
+	maxConcurrentLocations = 10
 )
 
 // ImageInfo represents parsed GCP registry image (GCR or AR).
@@ -229,7 +233,7 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 	}
 	log.Info().Msgf("found %d projects", len(projects))
 
-	images := make(map[string]*types.ImageItem)
+	images := sync.Map{}
 
 	for _, p := range projects {
 		if !isQualifiedProject(ctx, p, in.ProjectID) {
@@ -243,48 +247,60 @@ func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, 
 		}
 		log.Debug().Msgf("found %d regions in project %s where Cloud Run is supported", len(reg), p.ID)
 
+		var locGroup errgroup.Group
+		locGroup.SetLimit(maxConcurrentLocations)
+
 		for _, r := range reg {
-			svcs, err := getServices(ctx, p.ID, r.ID)
-			if err != nil {
-				log.Error().Err(err).Msgf("error getting services for project: %s in region %s", p.Number, r.ID)
-				continue
-			}
-			if len(svcs) > 0 {
-				log.Debug().Msgf("found %d services in: %s/%s", len(svcs), r.ID, p.ID)
-			}
+			region := r
+			locGroup.Go(func() error {
+				return processLocation(ctx, p, region, &images)
+			})
+		}
 
-			for _, s := range svcs {
-				log.Info().Msgf("processing %s: %s", s.Runtime, s.FullName)
-
-				for _, c := range s.Containers {
-					if _, ok := images[c.Image]; ok {
-						continue
-					}
-
-					img := &types.ImageItem{
-						URI: c.Image,
-						Context: map[string]interface{}{
-							"project-id":       p.ID,
-							"project-number":   p.Number,
-							"location-id":      r.ID,
-							"location-name":    r.Name,
-							"service-id":       s.FullName,
-							"service-name":     s.Name,
-							"service-revision": s.Revision,
-							"container-name":   c.Name,
-							"runtime":          s.Runtime,
-						},
-					}
-					images[c.Image] = img
-				}
-			}
+		if err := locGroup.Wait(); err != nil {
+			return nil, errors.Wrap(err, "error processing locations")
 		}
 	}
 
-	list := make([]*types.ImageItem, 0, len(images))
-	for _, v := range images {
-		list = append(list, v)
-	}
+	list := make([]*types.ImageItem, 0)
+	images.Range(func(key, value interface{}) bool {
+		list = append(list, value.(*types.ImageItem))
+		return true
+	})
 
 	return list, nil
+}
+
+func processLocation(ctx context.Context, project *project, location *location, images *sync.Map) error {
+	svcs, err := getServices(ctx, project.ID, location.ID)
+	if err != nil {
+		return errors.Wrapf(err, "error getting services for project: %s in region %s", project.ID, location.ID)
+	}
+	if len(svcs) == 0 {
+		return nil
+	}
+
+	log.Info().Msgf("found %d services in: %s/%s", len(svcs), location.ID, project.ID)
+
+	for _, s := range svcs {
+		log.Debug().Msgf("processing %s: %s", s.Runtime, s.FullName)
+		for _, c := range s.Containers {
+			img := &types.ImageItem{
+				URI: c.Image,
+				Context: map[string]interface{}{
+					"project-id":       project.ID,
+					"project-number":   project.Number,
+					"location-id":      location.ID,
+					"location-name":    location.Name,
+					"service-id":       s.FullName,
+					"service-name":     s.Name,
+					"service-revision": s.Revision,
+					"container-name":   c.Name,
+					"runtime":          s.Runtime,
+				},
+			}
+			images.LoadOrStore(c.Image, img)
+		}
+	}
+	return nil
 }

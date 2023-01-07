@@ -1,4 +1,4 @@
-package syft
+package trivy
 
 import (
 	"fmt"
@@ -40,11 +40,6 @@ func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, 
 			Format:         report.SPDXVersion,
 			Provider:       types.SPDXCreatorInfo(report.CreationInfo),
 			Source:         p.PackageSourceInfo,
-			License:        p.PackageLicenseConcluded,
-		}
-
-		if p.PackageOriginator != nil {
-			pkg.Originator = p.PackageOriginator.Originator
 		}
 
 		// filter
