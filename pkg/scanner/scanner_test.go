@@ -32,7 +32,7 @@ func TestScan(t *testing.T) {
 }
 
 func TestLicenses(t *testing.T) {
-	if !testing.Short() {
+	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	dir, err := os.MkdirTemp("", "license")
@@ -51,7 +51,7 @@ func TestLicenses(t *testing.T) {
 }
 
 func TestVulns(t *testing.T) {
-	if !testing.Short() {
+	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	dir, err := os.MkdirTemp("", "vulns")
@@ -70,7 +70,7 @@ func TestVulns(t *testing.T) {
 }
 
 func TestPackages(t *testing.T) {
-	if !testing.Short() {
+	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	dir, err := os.MkdirTemp("", "packages")
