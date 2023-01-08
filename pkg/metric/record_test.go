@@ -48,5 +48,4 @@ func TestMetricRecord(t *testing.T) {
 
 	err = c.CountAll(ctx, records...)
 	assert.NoError(t, err)
-
 }
