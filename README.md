@@ -296,7 +296,7 @@ Common elements:
 
 **licenses**
 
-```json
+```shell
 {name: "batch_id", type: "integer", required: true},
 {name: "image", type: "string", required: true},
 {name: "sha", type: "string"},
@@ -307,7 +307,7 @@ Common elements:
 
 **packages**
 
-```json
+```shell
 {name: "batch_id", type: "integer", required: true},
 {name: "image", type: "string", required: true},
 {name: "sha", type: "string"},
@@ -323,7 +323,7 @@ Common elements:
 
 **vulnerabilities**
 
-```json
+```shell
 {name: "batch_id", type: "integer", required: true},
 {name: "image", type: "string", required: true},
 {name: "sha", type: "string"},
