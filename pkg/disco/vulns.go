@@ -84,6 +84,10 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 		}
 	}
 
+	if in.Quiet && in.OutputPath == "" {
+		return nil
+	}
+
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}

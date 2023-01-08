@@ -11,6 +11,10 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+const (
+	DatasetNameDefault = "disco"
+)
+
 var (
 	licenseSchema = bigquery.Schema{
 		{Name: "batch_id", Type: bigquery.IntegerFieldType, Required: true},

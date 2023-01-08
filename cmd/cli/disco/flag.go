@@ -11,7 +11,7 @@ var (
 
 	targetFlag = &c.StringFlag{
 		Name:  "target",
-		Usage: "Data store to where the results should be saved (e.g. bq://my-project.disco)",
+		Usage: "Data store to where the results should be saved (e.g. bq://my-project)",
 	}
 
 	outputPathFlag = &c.StringFlag{

@@ -27,6 +27,7 @@ var (
 
 func runPackageCmd(c *c.Context) error {
 	in := &types.PackageQuery{}
+	in.Quiet = isQuiet(c)
 	in.Version = getVersionFromContext(c)
 	in.Kind = types.KindPackage
 	in.ProjectID = c.String(projectIDFlag.Name)

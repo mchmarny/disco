@@ -26,6 +26,7 @@ type SimpleQuery struct {
 	ImageURI   string
 	TargetRaw  string
 	Target     *ImportRequest
+	Quiet      bool
 }
 
 func (q *SimpleQuery) Validate() error {

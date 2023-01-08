@@ -3,6 +3,7 @@ package target
 import (
 	"testing"
 
+	"github.com/mchmarny/disco/pkg/target/bq"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -36,5 +37,21 @@ func TestTargetParsingWithoutTable(t *testing.T) {
 	assert.Equal(t, "project", ir.ProjectID)
 	assert.Equal(t, "dataset", ir.DatasetID)
 	assert.Equal(t, types.TableKindLicenseName, ir.TableID)
+	assert.Equal(t, importDefaultLocation, ir.Location)
+}
+
+func TestTargetParsingWithoutDataset(t *testing.T) {
+	req := &types.SimpleQuery{
+		ProjectID: "test",
+		TargetRaw: "bq://project",
+		Kind:      types.KindVulnerability,
+	}
+
+	ir, err := ParseImportRequest(req)
+	assert.NoError(t, err)
+	assert.NotNil(t, ir)
+	assert.Equal(t, "project", ir.ProjectID)
+	assert.Equal(t, bq.DatasetNameDefault, ir.DatasetID)
+	assert.Equal(t, types.TableKindVulnerabilityName, ir.TableID)
 	assert.Equal(t, importDefaultLocation, ir.Location)
 }

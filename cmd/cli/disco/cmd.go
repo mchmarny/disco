@@ -7,6 +7,7 @@ import (
 	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
 )
@@ -48,6 +49,29 @@ func newApp(version, commit, date string) (*c.App, error) {
 		Version:              fmt.Sprintf("%s (commit: %s, built: %s)", version, commit, dateStr),
 		Usage:                `Discover container images, vulnerabilities, packages, and licenses`,
 		Compiled:             compileTime,
+		Flags: []c.Flag{
+			&c.BoolFlag{
+				Name:  "debug",
+				Usage: "verbose output",
+				Action: func(c *c.Context, debug bool) error {
+					if debug {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
+					return nil
+				},
+			},
+			&c.BoolFlag{
+				Name:    "quiet",
+				Aliases: []string{"q"},
+				Usage:   "suppress output unless error",
+				Action: func(c *c.Context, quiet bool) error {
+					if quiet {
+						c.App.Metadata["quiet"] = true
+					}
+					return nil
+				},
+			},
+		},
 		Metadata: map[string]interface{}{
 			metaKeyVersion: version,
 			metaKeyCommit:  commit,
@@ -62,6 +86,15 @@ func newApp(version, commit, date string) (*c.App, error) {
 	}
 
 	return app, nil
+}
+
+func isQuiet(c *c.Context) bool {
+	_, ok := c.App.Metadata["quiet"]
+	if ok {
+		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+	}
+
+	return ok
 }
 
 func printVersion(c *c.Context) {

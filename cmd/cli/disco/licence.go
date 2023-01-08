@@ -27,6 +27,7 @@ var (
 
 func runLicenseCmd(c *c.Context) error {
 	in := &types.LicenseQuery{}
+	in.Quiet = isQuiet(c)
 	in.Version = getVersionFromContext(c)
 	in.Kind = types.KindLicense
 	in.ProjectID = c.String(projectIDFlag.Name)

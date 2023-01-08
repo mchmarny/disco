@@ -31,8 +31,9 @@ func insert(ctx context.Context, req *types.ImportRequest, items interface{}) er
 const (
 	importDefaultLocation     = "US"
 	importTargetProtocolParts = 2
-	importTargetMinParts      = 2
-	importTargetMaxParts      = 3
+	importTargetProjectPart   = 1
+	importTargetDatasetPart   = 2
+	importTargetTablePart     = 3
 )
 
 // ParseImportRequest parses import request.
@@ -57,27 +58,39 @@ func ParseImportRequest(k types.DiscoKind, v string) (*types.ImportRequest, erro
 	}
 
 	parts := strings.Split(v, ".")
-	if len(parts) < importTargetMinParts || len(parts) > importTargetMaxParts {
+	if len(parts) < importTargetProjectPart || len(parts) > importTargetTablePart {
 		return nil, errors.Errorf("invalid import target: %s", v)
 	}
 
 	t.ProjectID = parts[0]
-	t.DatasetID = parts[1]
 
-	if len(parts) == importTargetMaxParts {
+	if len(parts) == importTargetTablePart {
+		t.DatasetID = parts[1]
 		t.TableID = parts[2]
+	} else if len(parts) == importTargetDatasetPart {
+		t.DatasetID = parts[1]
+		t.TableID = getTableFromKind(k)
 	} else {
-		switch k {
-		case types.KindLicense:
-			t.TableID = types.TableKindLicenseName
-		case types.KindVulnerability:
-			t.TableID = types.TableKindVulnerabilityName
-		case types.KindPackage:
-			t.TableID = types.TableKindPackageName
-		default:
-			return nil, errors.Errorf("invalid table kind: %s", k)
-		}
+		t.DatasetID = DatasetNameDefault
+		t.TableID = getTableFromKind(k)
+	}
+
+	if t.ProjectID == "" || t.DatasetID == "" || t.TableID == "" {
+		return nil, errors.Errorf("invalid import target: %s", v)
 	}
 
 	return t, nil
+}
+
+func getTableFromKind(k types.DiscoKind) string {
+	switch k {
+	case types.KindLicense:
+		return types.TableKindLicenseName
+	case types.KindVulnerability:
+		return types.TableKindVulnerabilityName
+	case types.KindPackage:
+		return types.TableKindPackageName
+	default:
+		return ""
+	}
 }

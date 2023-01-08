@@ -54,6 +54,10 @@ lint-go: ## Lints the entire project using go
 lint-yaml: ## Runs yamllint on all yaml files (brew install yamllint)
 	yamllint -c .yamllint $(YAML_FILES)
 
+.PHONY: lint-tf
+lint-tf: ## Runs terraform fmt on all terraform files
+	terraform -chdir=./deploy fmt
+
 .PHONY: build
 build: build-server build-cli ## Builds binaries
 	@echo "Completed release"
@@ -100,10 +104,6 @@ release: test lint vulncheck tag ## Runs test, lint, vulncheck, and tag before r
 .PHONY: infra
 infra: ## Applies Terraform
 	terraform -chdir=./deploy apply -auto-approve
-
-.PHONY: nice
-infra-fmt: ## Formats Terraform
-	terraform -chdir=./deploy fmt
 
 .PHONY: tag
 tag: ## Creates release tag 

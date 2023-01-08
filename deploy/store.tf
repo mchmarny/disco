@@ -1,11 +1,11 @@
 # dataset and tables for disco
 
 resource "google_bigquery_dataset" "disco" {
-  dataset_id                  = "disco"
-  friendly_name               = "disco"
-  description                 = "disco dataset"
-  location                    = "US"
-  
+  dataset_id    = "disco"
+  friendly_name = "disco"
+  description   = "disco dataset"
+  location      = "US"
+
   labels = {
     env = "demo"
   }
@@ -30,13 +30,13 @@ resource "google_bigquery_table" "licenses" {
 }
 
 
-resource "google_bigquery_table" "licenses_day"{
-    dataset_id = google_bigquery_dataset.disco.dataset_id
-    table_id = "licenses_day"
+resource "google_bigquery_table" "licenses_day" {
+  dataset_id = google_bigquery_dataset.disco.dataset_id
+  table_id   = "licenses_day"
 
-    view {
-        use_legacy_sql = false
-        query = <<EOF
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
 SELECT  	
   image,
   sha,
@@ -47,7 +47,7 @@ SELECT
 FROM `${google_bigquery_table.licenses.project}.${google_bigquery_table.licenses.dataset_id}.${google_bigquery_table.licenses.table_id}` 
 GROUP BY 1,2,3,4,5,6
 EOF
-    }
+  }
 }
 
 // Vulnerabilities
@@ -68,13 +68,13 @@ resource "google_bigquery_table" "vulnerabilities" {
 }
 
 
-resource "google_bigquery_table" "vulnerabilities_day"{
-    dataset_id = google_bigquery_dataset.disco.dataset_id
-    table_id = "vulnerabilities_day"
+resource "google_bigquery_table" "vulnerabilities_day" {
+  dataset_id = google_bigquery_dataset.disco.dataset_id
+  table_id   = "vulnerabilities_day"
 
-    view {
-        use_legacy_sql = false
-        query = <<EOF
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
 SELECT  	
   image,
   sha,
@@ -89,7 +89,7 @@ SELECT
 FROM `${google_bigquery_table.vulnerabilities.project}.${google_bigquery_table.vulnerabilities.dataset_id}.${google_bigquery_table.vulnerabilities.table_id}` 
 GROUP BY 1,2,3,4,5,6,7,8,9,10 
 EOF
-    }
+  }
 }
 
 // Packages
@@ -109,13 +109,13 @@ resource "google_bigquery_table" "packages" {
   schema = data.template_file.schema_packages.rendered
 }
 
-resource "google_bigquery_table" "packages_day"{
-    dataset_id = google_bigquery_dataset.disco.dataset_id
-    table_id = "packages_day"
+resource "google_bigquery_table" "packages_day" {
+  dataset_id = google_bigquery_dataset.disco.dataset_id
+  table_id   = "packages_day"
 
-    view {
-        use_legacy_sql = false
-        query = <<EOF
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
 SELECT  	
   image,
   sha,
@@ -130,5 +130,5 @@ SELECT
 FROM `${google_bigquery_table.packages.project}.${google_bigquery_table.packages.dataset_id}.${google_bigquery_table.packages.table_id}` 
 GROUP BY 1,2,3,4,5,6,7,8,9,10 
 EOF
-    }
+  }
 }

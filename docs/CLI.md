@@ -174,8 +174,8 @@ disco vulnerability --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
-* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default) 
 * `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
@@ -227,13 +227,13 @@ disco license --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
-* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default)  
 * `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
-* `--type` - license type filter (supports prefix: e.g. `apache`, `bsd`, `mit`, etc.).
-* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset` or  `bq://my-project.some-dataset.table-name`)
+* `--type` - license type filter (supports prefix: e.g. `apache`, `bsd`, `mit`, etc.)
+* `--target` - target data store to save the results to (e.g. `bq://my-project`)
 
 > Using the `type` you can quickly check if any of your currently deployed images are using specific license.
 
@@ -277,13 +277,13 @@ disco packages --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
-* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default)  
 * `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--name` - package name filter (uses contains, e.g. libgcc, gobinary, express, etc.)
-* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset` or  `bq://my-project.some-dataset.table-name`)
+* `--target` - target data store to save the results to (e.g. `bq://my-project`)
 
 > Using the `type` you can quickly check if any of your currently deployed images are using specific license.
 

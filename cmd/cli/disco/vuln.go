@@ -28,6 +28,7 @@ var (
 
 func runVulnsCmd(c *c.Context) error {
 	in := &types.VulnsQuery{}
+	in.Quiet = isQuiet(c)
 	in.Version = getVersionFromContext(c)
 	in.Kind = types.KindVulnerability
 	in.ProjectID = c.String(projectIDFlag.Name)

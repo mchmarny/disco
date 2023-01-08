@@ -74,6 +74,10 @@ func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 		}
 	}
 
+	if in.Quiet && in.OutputPath == "" {
+		return nil
+	}
+
 	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
 		return errors.Wrap(err, "error writing output")
 	}
