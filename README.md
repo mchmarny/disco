@@ -287,17 +287,54 @@ Custom time-series metrics created by `disco`:
 
 `disco` service automatically exports its data to two BigQuery tables
 
+Common elements:
+
+* `batch_id` is the unique ID of each discovery operation 
+* `image` is the image URI sans tag or sha
+* `sha` is the image digest prefixed with `sha:`
+* `updated` is the timestamp when the data element was extracted
+
 **licenses**
 
-![](docs/img/table-license.png)
+```json
+{name: "batch_id", type: "integer", required: true},
+{name: "image", type: "string", required: true},
+{name: "sha", type: "string"},
+{name: "name", type: "string", required: true},
+{name: "package", type: "string"},
+{name: "updated", type: "timestamp", required: true}
+```
 
 **packages**
 
-![](docs/img/table-package.png)
+```json
+{name: "batch_id", type: "integer", required: true},
+{name: "image", type: "string", required: true},
+{name: "sha", type: "string"},
+{name: "cve", type: "string", required: true},
+{name: "severity", type: "string"},
+{name: "package", type: "string"},
+{name: "version", type: "string"},
+{name: "title", type: "string"},
+{name: "description", type: "string"},
+{name: "url", type: "string"},
+{name: "updated", type: "timestamp", required: true}
+```
 
 **vulnerabilities**
 
-![](docs/img/table-vuln.png)
+```json
+{name: "batch_id", type: "integer", required: true},
+{name: "image", type: "string", required: true},
+{name: "sha", type: "string"},
+{name: "format", type: "string", required: true},
+{name: "provider", type: "string", required: true},
+{name: "package", type: "string", required: true},
+{name: "version", type: "string"},
+{name: "source", type: "string"},
+{name: "license", type: "string"},
+{name: "updated", type: "timestamp", required: true}
+```
 
 You can use these in your custom queries: 
 
