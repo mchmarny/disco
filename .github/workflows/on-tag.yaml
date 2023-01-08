@@ -115,7 +115,7 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
     - name: Export Digest
       run: |
-        echo "${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" > digest.txt
+        echo "IMAGE_DIGEST=${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" >> $GITHUB_ENV
     - name: Install Cosign
       uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b  # v2.8.1
       with:
@@ -129,13 +129,13 @@ jobs:
         cosign generate-key-pair --kms ${{ env.KMS_KEY }}
     - name: Sign Image
       run: |
-        cosign sign --force --key ${{ env.KMS_KEY }} $(cat digest.txt)
+        cosign sign --force --key ${{ env.KMS_KEY }} ${{ env.IMAGE_DIGEST }}
       env:
         COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
     - name: Create SBOM
       uses: anchore/sbom-action@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
       with:
-        image: $(cat digest.txt)
+        image: ${{ env.IMAGE_DIGEST }}
         registry-username: oauth2accesstoken
         registry-password: ${{ steps.auth.outputs.access_token }}
         artifact-name: sbom.spdx.json
@@ -143,6 +143,6 @@ jobs:
         format: spdx-json
     - name: Attest Image
       run: |
-        cosign attest --predicate sbom.spdx.json --type spdxjson --key ${{ env.KMS_KEY }} $(cat digest.txt)
+        cosign attest --predicate sbom.spdx.json --type spdxjson --key ${{ env.KMS_KEY }} ${{ env.IMAGE_DIGEST }}
       env:
         COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
