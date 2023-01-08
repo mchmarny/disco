@@ -23,6 +23,9 @@ func TestImgCmd(t *testing.T) {
 }
 
 func TestVulCmd(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String(
 		"image",
@@ -36,6 +39,9 @@ func TestVulCmd(t *testing.T) {
 }
 
 func TestLicCmd(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String(
 		"file",
@@ -45,6 +51,22 @@ func TestLicCmd(t *testing.T) {
 
 	c := cli.NewContext(newTestApp(t), set, nil)
 	err := runLicenseCmd(c)
+	assert.NoError(t, err)
+}
+
+func TestPkgCmd(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+	set := flag.NewFlagSet("", flag.ContinueOnError)
+	set.String(
+		"file",
+		"../../../etc/data/images.txt",
+		"test",
+	)
+
+	c := cli.NewContext(newTestApp(t), set, nil)
+	err := runPackageCmd(c)
 	assert.NoError(t, err)
 }
 
