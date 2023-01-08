@@ -18,7 +18,7 @@ resource "google_bigquery_table" "licenses" {
   table_id   = "licenses"
 
   time_partitioning {
-    type = "MONTH"
+    type = "DAY"
   }
 
   labels = {
@@ -45,6 +45,7 @@ SELECT
   package,
   FORMAT_TIMESTAMP("%Y-%m-%d",updated) updated
 FROM `${google_bigquery_table.licenses.project}.${google_bigquery_table.licenses.dataset_id}.${google_bigquery_table.licenses.table_id}` 
+WHERE _PARTITIONTIME IS NULL OR _PARTITIONTIME > TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DAY)
 GROUP BY 1,2,3,4,5,6
 EOF
   }
@@ -57,7 +58,7 @@ resource "google_bigquery_table" "vulnerabilities" {
   table_id   = "vulnerabilities"
 
   time_partitioning {
-    type = "MONTH"
+    type = "DAY"
   }
 
   labels = {
@@ -87,6 +88,7 @@ SELECT
   url,
   FORMAT_TIMESTAMP("%Y-%m-%d",updated) updated
 FROM `${google_bigquery_table.vulnerabilities.project}.${google_bigquery_table.vulnerabilities.dataset_id}.${google_bigquery_table.vulnerabilities.table_id}` 
+WHERE _PARTITIONTIME IS NULL OR _PARTITIONTIME > TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DAY)
 GROUP BY 1,2,3,4,5,6,7,8,9,10 
 EOF
   }
@@ -99,7 +101,7 @@ resource "google_bigquery_table" "packages" {
   table_id   = "packages"
 
   time_partitioning {
-    type = "MONTH"
+    type = "DAY"
   }
 
   labels = {
@@ -128,6 +130,7 @@ SELECT
   license,
   FORMAT_TIMESTAMP("%Y-%m-%d",updated) updated
 FROM `${google_bigquery_table.packages.project}.${google_bigquery_table.packages.dataset_id}.${google_bigquery_table.packages.table_id}` 
+WHERE _PARTITIONTIME IS NULL OR _PARTITIONTIME > TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DAY)
 GROUP BY 1,2,3,4,5,6,7,8,9,10 
 EOF
   }

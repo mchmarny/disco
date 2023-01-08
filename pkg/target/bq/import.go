@@ -21,6 +21,7 @@ func insert(ctx context.Context, req *types.ImportRequest, items interface{}) er
 	defer client.Close()
 
 	inserter := client.Dataset(req.DatasetID).Table(req.TableID).Inserter()
+	inserter.SkipInvalidRows = true
 	if err := inserter.Put(ctx, items); err != nil {
 		return errors.Wrap(err, "failed to insert rows")
 	}

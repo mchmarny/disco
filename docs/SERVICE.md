@@ -119,6 +119,8 @@ You can use these in your custom queries:
 
 ![](../etc/img/query.png)
 
+Sample of SQL queries available [here](QUERIES.md).
+
 or in Sheet, Data Studio, or Looker reports 
 
 ![](../etc/img/dashboard.png)
