@@ -1,0 +1,57 @@
+[
+    {
+        "name": "batch_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "image",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "sha",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "format",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "provider",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "originator",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "package",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "version",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "source",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "license",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "updated",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]

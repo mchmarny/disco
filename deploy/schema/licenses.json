@@ -1,0 +1,32 @@
+[
+    {
+        "name": "batch_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "image",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "sha",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "name",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "package",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "updated",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]

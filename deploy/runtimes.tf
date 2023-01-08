@@ -45,6 +45,12 @@ resource "google_cloud_run_service" "app" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      metadata[0].annotations["run.googleapis.com/operation-id"],
+    ]
+  }
+
   template {
     spec {
       containers {
