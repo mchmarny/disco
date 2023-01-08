@@ -344,7 +344,7 @@ Sample of SQL queries available [here](docs/QUERIES.md).
 
 or in Sheet, Data Studio, or Looker reports 
 
-![](docs/img/dashboard.png)
+![](docs/img/sheets.png)
 
 
 ## OSS
