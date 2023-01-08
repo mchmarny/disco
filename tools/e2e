@@ -11,7 +11,7 @@ bin/disco -v
 bin/disco -h
 
 msg "img"
-bin/disco img run --uri -o images.tmp
+bin/disco img --uri -o images.tmp
 imgID=$(head -n 1 images.tmp)
 echo $imgID
 
@@ -30,7 +30,7 @@ bin/disco lic --image $imgID --type MIT
 bin/disco lic --file images.tmp --target "bq://cloudy-demos.disco_test.licenses"
 
 msg "pkg"
-time bin/disco pkg
-time bin/disco pkg --file images.tmp
-time bin/disco pkg --image $imgID
-time bin/disco pkg --file images.tmp --target "bq://cloudy-demos.disco_test.packages"
+bin/disco pkg
+bin/disco pkg --file images.tmp
+bin/disco pkg --image $imgID
+bin/disco pkg --file images.tmp --target "bq://cloudy-demos.disco_test.packages"
