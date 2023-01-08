@@ -133,14 +133,13 @@ jobs:
       env:
         COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
     - name: Create SBOM
-      uses: anchore/sbom-action@06e109483e6aa305a2b2395eabae554e51530e1d  # v0.13.1
+      uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5  # master
       with:
-        image: ${{ env.IMAGE_DIGEST }}
-        registry-username: oauth2accesstoken
-        registry-password: ${{ steps.auth.outputs.access_token }}
-        artifact-name: sbom.spdx.json
-        output-file: ./sbom.spdx.json
+        scan-type: image
+        image-ref: ${{ env.IMAGE_DIGEST }}
+        hide-progress: true
         format: spdx-json
+        output: sbom.spdx.json
     - name: Attest Image
       run: |
         cosign attest --predicate sbom.spdx.json --type spdxjson --key ${{ env.KMS_KEY }} ${{ env.IMAGE_DIGEST }}

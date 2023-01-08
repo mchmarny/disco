@@ -65,7 +65,7 @@ jobs:
       with:
         scan-type: 'fs'
         ignore-unfixed: true
-        hide-progress: false
+        hide-progress: true
         format: 'sarif'
         output: 'trivy-results.sarif'
         severity: ${{ inputs.scan-severity }}
