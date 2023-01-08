@@ -1,12 +1,12 @@
 // Package spdx contains the struct definition for an SPDX Document
 // and its constituent parts.
 // SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
-package v2_3
+package v2_2
 
 import "github.com/spdx/tools-golang/spdx/common"
 
 // ExternalDocumentRef is a reference to an external SPDX document
-// as defined in section 6.6 for version 2.3 of the spec.
+// as defined in section 6.6 for version 2.2 of the spec.
 type ExternalDocumentRef struct {
 	// DocumentRefID is the ID string defined in the start of the
 	// reference. It should _not_ contain the "DocumentRef-" part
@@ -20,10 +20,10 @@ type ExternalDocumentRef struct {
 	Checksum common.Checksum `json:"checksum"`
 }
 
-// Document is an SPDX Document for version 2.3 of the spec.
-// See https://spdx.github.io/spdx-spec/v2.3/document-creation-information
+// Document is an SPDX Document for version 2.2 of the spec.
+// See https://spdx.github.io/spdx-spec/v2-draft/ (DRAFT)
 type Document struct {
-	// 6.1: SPDX Version; should be in the format "SPDX-2.3"
+	// 6.1: SPDX Version; should be in the format "SPDX-2.2"
 	// Cardinality: mandatory, one
 	SPDXVersion string `json:"spdxVersion"`
 
@@ -61,5 +61,5 @@ type Document struct {
 	Snippets      []Snippet       `json:"snippets,omitempty"`
 
 	// DEPRECATED in version 2.0 of spec
-	Reviews []*Review `json:"-" yaml:"-"`
+	Reviews []*Review `json:"-"`
 }

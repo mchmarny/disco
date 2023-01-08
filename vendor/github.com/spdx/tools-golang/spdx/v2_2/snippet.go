@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
 
-package v2_3
+package v2_2
 
 import "github.com/spdx/tools-golang/spdx/common"
 
-// Snippet is a Snippet section of an SPDX Document for version 2.3 of the spec.
+// Snippet is a Snippet section of an SPDX Document for version 2.2 of the spec.
 type Snippet struct {
 
 	// 9.1: Snippet SPDX Identifier: "SPDXRef-[idstring]"
@@ -19,8 +19,8 @@ type Snippet struct {
 	Ranges []common.SnippetRange `json:"ranges"`
 
 	// 9.5: Snippet Concluded License: SPDX License Expression, "NONE" or "NOASSERTION"
-	// Cardinality: optional, one
-	SnippetLicenseConcluded string `json:"licenseConcluded,omitempty"`
+	// Cardinality: mandatory, one
+	SnippetLicenseConcluded string `json:"licenseConcluded"`
 
 	// 9.6: License Information in Snippet: SPDX License Expression, "NONE" or "NOASSERTION"
 	// Cardinality: optional, one or many
@@ -44,5 +44,5 @@ type Snippet struct {
 
 	// 9.11: Snippet Attribution Text
 	// Cardinality: optional, one or many
-	SnippetAttributionTexts []string `json:"-" yaml:"-"`
+	SnippetAttributionTexts []string `json:"-"`
 }

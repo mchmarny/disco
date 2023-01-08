@@ -24,6 +24,7 @@ func MakePackageRows(in ...*types.PackageReport) []*PackageRow {
 				Package:        p.Package,
 				PackageVersion: p.PackageVersion,
 				Source:         p.Source,
+				License:        p.License,
 				Updated:        updated,
 			})
 		}

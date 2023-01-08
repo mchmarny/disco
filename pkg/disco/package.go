@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"path"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
@@ -13,19 +14,31 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+func makePackageFilter(in *types.PackageQuery) types.ItemFilter {
+	in.NamePart = strings.ToLower(strings.TrimSpace(in.NamePart))
+	return func(v interface{}) bool {
+		lic := v.(*types.Package)
+
+		if in.NamePart != "" {
+			exclude := !strings.Contains(strings.ToLower(lic.Package), in.NamePart)
+			log.Debug().Msgf("filter on package (want: %s, got: %s, filter out: %t",
+				in.NamePart, lic.Package, exclude)
+			return exclude
+		}
+
+		return false
+	}
+}
+
 func DiscoverPackages(ctx context.Context, in *types.PackageQuery, ir *types.ImportRequest) error {
 	if in == nil {
 		return errors.New("nil input")
 	}
 
-	f := func(v interface{}) bool {
-		return false
-	}
-
 	log.Debug().Msgf("discovering packages with: %s", in)
 	printProjectScope(in.ProjectID, "packages")
 
-	if err := scanPackages(ctx, &in.SimpleQuery, f, ir); err != nil {
+	if err := scanPackages(ctx, &in.SimpleQuery, makePackageFilter(in), ir); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 
@@ -55,14 +68,14 @@ func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 
 	report := types.NewItemReport(in, results...)
 
-	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
-		return errors.Wrap(err, "error writing output")
-	}
-
 	if ir != nil {
 		if err := target.PackageImporter(ctx, ir, report.Items...); err != nil {
 			return errors.Wrap(err, "error importing")
 		}
+	}
+
+	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
+		return errors.Wrap(err, "error writing output")
 	}
 
 	return nil

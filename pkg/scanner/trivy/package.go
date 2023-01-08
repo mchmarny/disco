@@ -7,8 +7,7 @@ import (
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"github.com/spdx/tools-golang/spdx/v2_3"
-	spdx "github.com/spdx/tools-golang/spdx/v2_3"
+	spdx "github.com/spdx/tools-golang/spdx/v2_2"
 )
 
 func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, error) {
@@ -40,8 +39,9 @@ func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, 
 			Package:        p.PackageName,
 			PackageVersion: p.PackageVersion,
 			Format:         report.SPDXVersion,
-			Provider:       SPDXCreatorInfo(report.CreationInfo),
-			Source:         p.PackageSourceInfo,
+			Provider:       parseCreatorInfo(report.CreationInfo),
+			License:        parseLicense(p),
+			Source:         parseSource(p),
 		}
 
 		// filter
@@ -63,7 +63,7 @@ func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, 
 
 const spdxToolKey = "Tool"
 
-func SPDXCreatorInfo(in *v2_3.CreationInfo) string {
+func parseCreatorInfo(in *spdx.CreationInfo) string {
 	if in == nil {
 		return ""
 	}
@@ -80,4 +80,32 @@ func SPDXCreatorInfo(in *v2_3.CreationInfo) string {
 	}
 
 	return strings.TrimSpace(sb.String())
+}
+
+func parseSource(in *spdx.Package) string {
+	if in.PackageSourceInfo != "" {
+		return in.PackageSourceInfo
+	}
+
+	for _, r := range in.PackageExternalReferences {
+		if r.Locator != "" {
+			return r.Locator
+		}
+	}
+
+	return ""
+}
+
+func parseLicense(in *spdx.Package) string {
+	if in.PackageLicenseDeclared != "" {
+		return in.PackageLicenseDeclared
+	}
+	if in.PackageLicenseConcluded != "" {
+		return in.PackageLicenseConcluded
+	}
+	if len(in.PackageLicenseInfoFromFiles) > 0 {
+		return in.PackageLicenseInfoFromFiles[0]
+	}
+
+	return ""
 }

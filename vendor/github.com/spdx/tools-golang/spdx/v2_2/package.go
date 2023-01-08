@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
 
-package v2_3
+package v2_2
 
 import "github.com/spdx/tools-golang/spdx/common"
 
-// Package is a Package section of an SPDX Document for version 2.3 of the spec.
+// Package is a Package section of an SPDX Document for version 2.2 of the spec.
 type Package struct {
 	// NOT PART OF SPEC
 	// flag: does this "package" contain files that were in fact "unpackaged",
 	// e.g. included directly in the Document without being in a Package?
-	IsUnpackaged bool `json:"-" yaml:"-"`
+	IsUnpackaged bool `json:"-"`
 
 	// 7.1: Package Name
 	// Cardinality: mandatory, one
@@ -45,13 +45,12 @@ type Package struct {
 	// Cardinality: optional, one; default value is "true" if omitted
 	FilesAnalyzed bool `json:"filesAnalyzed,omitempty"`
 	// NOT PART OF SPEC: did FilesAnalyzed tag appear?
-	IsFilesAnalyzedTagPresent bool `json:"-" yaml:"-"`
+	IsFilesAnalyzedTagPresent bool `json:"-"`
 
 	// 7.9: Package Verification Code
-	// Cardinality: if FilesAnalyzed == true must be present, if FilesAnalyzed == false must be omitted
-	PackageVerificationCode *common.PackageVerificationCode `json:"packageVerificationCode,omitempty"`
+	PackageVerificationCode common.PackageVerificationCode `json:"packageVerificationCode"`
 
-	// 7.10: Package Checksum: may have keys for SHA1, SHA256, SHA512, MD5, SHA3-256, SHA3-384, SHA3-512, BLAKE2b-256, BLAKE2b-384, BLAKE2b-512, BLAKE3, ADLER32
+	// 7.10: Package Checksum: may have keys for SHA1, SHA256, SHA512 and/or MD5
 	// Cardinality: optional, one or many
 	PackageChecksums []common.Checksum `json:"checksums,omitempty"`
 
@@ -64,17 +63,17 @@ type Package struct {
 	PackageSourceInfo string `json:"sourceInfo,omitempty"`
 
 	// 7.13: Concluded License: SPDX License Expression, "NONE" or "NOASSERTION"
-	// Cardinality: optional, one
-	PackageLicenseConcluded string `json:"licenseConcluded,omitempty"`
+	// Cardinality: mandatory, one
+	PackageLicenseConcluded string `json:"licenseConcluded"`
 
 	// 7.14: All Licenses Info from Files: SPDX License Expression, "NONE" or "NOASSERTION"
-	// Cardinality: optional, one or many if filesAnalyzed is true / omitted;
+	// Cardinality: mandatory, one or many if filesAnalyzed is true / omitted;
 	//              zero (must be omitted) if filesAnalyzed is false
-	PackageLicenseInfoFromFiles []string `json:"licenseInfoFromFiles,omitempty"`
+	PackageLicenseInfoFromFiles []string `json:"licenseInfoFromFiles"`
 
 	// 7.15: Declared License: SPDX License Expression, "NONE" or "NOASSERTION"
-	// Cardinality: optional, one
-	PackageLicenseDeclared string `json:"licenseDeclared,omitempty"`
+	// Cardinality: mandatory, one
+	PackageLicenseDeclared string `json:"licenseDeclared"`
 
 	// 7.16: Comments on License
 	// Cardinality: optional, one
@@ -108,23 +107,6 @@ type Package struct {
 	// Cardinality: optional, one or many
 	PackageAttributionTexts []string `json:"attributionTexts,omitempty"`
 
-	// 7.24: Primary Package Purpose
-	// Cardinality: optional, one or many
-	// Allowed values: APPLICATION, FRAMEWORK, LIBRARY, CONTAINER, OPERATING-SYSTEM, DEVICE, FIRMWARE, SOURCE, ARCHIVE, FILE, INSTALL, OTHER
-	PrimaryPackagePurpose string `json:"primaryPackagePurpose,omitempty"`
-
-	// 7.25: Release Date: YYYY-MM-DDThh:mm:ssZ
-	// Cardinality: optional, one
-	ReleaseDate string `json:"releaseDate,omitempty"`
-
-	// 7.26: Build Date: YYYY-MM-DDThh:mm:ssZ
-	// Cardinality: optional, one
-	BuiltDate string `json:"builtDate,omitempty"`
-
-	// 7.27: Valid Until Date: YYYY-MM-DDThh:mm:ssZ
-	// Cardinality: optional, one
-	ValidUntilDate string `json:"validUntilDate,omitempty"`
-
 	// Files contained in this Package
 	Files []*File `json:"files,omitempty"`
 
@@ -132,7 +114,7 @@ type Package struct {
 }
 
 // PackageExternalReference is an External Reference to additional info
-// about a Package, as defined in section 7.21 in version 2.3 of the spec.
+// about a Package, as defined in section 7.21 in version 2.2 of the spec.
 type PackageExternalReference struct {
 	// category is "SECURITY", "PACKAGE-MANAGER" or "OTHER"
 	Category string `json:"referenceCategory"`

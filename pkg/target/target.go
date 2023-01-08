@@ -67,9 +67,6 @@ func ParseImportRequest(req *types.SimpleQuery) (*types.ImportRequest, error) {
 	}
 
 	protocol := parseImportTargetProtocol(p[0])
-	if protocol != ImportTargetProtocolBigQuery {
-		return nil, errors.Errorf("invalid import target protocol: %s", p[0])
-	}
 
 	var r *types.ImportRequest
 	var err error

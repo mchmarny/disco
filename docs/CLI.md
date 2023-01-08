@@ -176,12 +176,12 @@ Options:
 
 * `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--output`  - saves report to file at this path (stdout by default) 
-* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--output` - saves report to file at this path (stdout by default) 
+* `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all)
 * `--cve` - filter results on a specific CVE ID (e.g. `CVE-2020-22046`)
-* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset.table-name`)
+* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset` or  `bq://my-project.some-dataset.table-name`)
 
 > Using the `cve` filter you can quickly check if any of the currently deployed images have a vulnerability. 
 
@@ -197,7 +197,7 @@ The resulting report in JSON format will look something like this (abbreviated):
   },
   "items": [
     {
-      "image": "gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f9485c8497c035de07391ba3c274a1035f504f8602531b2314e6",
+      "image": "gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f94...",
       "vulnerabilities": [
         {
           "source": "CVE-2021-28165",
@@ -229,11 +229,11 @@ Options:
 
 * `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--output`  - saves report to file at this path (stdout by default)  
-* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--output` - saves report to file at this path (stdout by default)  
+* `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--type` - license type filter (supports prefix: e.g. `apache`, `bsd`, `mit`, etc.).
-* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset.table-name`)
+* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset` or  `bq://my-project.some-dataset.table-name`)
 
 > Using the `type` you can quickly check if any of your currently deployed images are using specific license.
 
@@ -249,7 +249,7 @@ The resulting report in JSON format will look something like this (abbreviated):
   },
   "items": [
     {
-      "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+      "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92...",
       "licenses": [
         {
           "name": "GPL-2.0",
@@ -279,10 +279,11 @@ Options:
 
 * `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`).
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive.
-* `--output`  - saves report to file at this path (stdout by default)  
-* `--format`  - report format: `json` or `yaml` (`json` is default)
+* `--output` - saves report to file at this path (stdout by default)  
+* `--format` - report format: `json` or `yaml` (`json` is default)
 * `--project` - during discovery, runs only on specific project (project ID)
-* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset.table-name`)
+* `--name` - package name filter (uses contains, e.g. libgcc, gobinary, express, etc.)
+* `--target` - target data store to save the results to (e.g. `bq://my-project.some-dataset` or  `bq://my-project.some-dataset.table-name`)
 
 > Using the `type` you can quickly check if any of your currently deployed images are using specific license.
 
@@ -298,14 +299,15 @@ The resulting report in JSON format will look something like this (abbreviated):
   },
   "items": [
     {
-      "image": "us-central1-docker.pkg.dev/cloudy-labz/gcf-artifacts/test--go119@sha256:80be8e3c174f20aebc555d932c8ba3a8452e1eb46af1923200ac39f4ccd30016",
+      "image": "us-central1-docker.pkg.dev/cloudy-labz/gcf-artifacts/test--go119@sha256:80be8e3c174...",
       "packages": [
         {
-          "package": "gobinary",
-          "version": "",
+          "package": "minipass-sized",
+          "version": "1.0.3",
+          "source": "pkg:npm/minipass-sized@1.0.3",
+          "license": "ISC",
           "format": "SPDX-2.2",
-          "provider": "trivy",
-          "source": "layers/google.go.build/bin/main"
+          "provider": "trivy"
         },
         ...
       ],

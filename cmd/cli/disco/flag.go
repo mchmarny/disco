@@ -11,7 +11,7 @@ var (
 
 	targetFlag = &c.StringFlag{
 		Name:  "target",
-		Usage: "Target data store to save the results (e.g. bq://project.dataset.table)",
+		Usage: "Data store to where the results should be saved (e.g. bq://my-project.disco)",
 	}
 
 	outputPathFlag = &c.StringFlag{
@@ -33,6 +33,11 @@ var (
 	cveFlag = &c.StringFlag{
 		Name:  "cve",
 		Usage: "exposure ID (CVE number, e.g. CVE-2019-19378)",
+	}
+
+	pkgNameFlag = &c.StringFlag{
+		Name:  "name",
+		Usage: "package name contains (e.g. libgcc, gobinary, express, etc.)",
 	}
 
 	licenseTypeFlag = &c.StringFlag{

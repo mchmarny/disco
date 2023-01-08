@@ -96,7 +96,7 @@ github.com/russross/blackfriday/v2
 # github.com/spdx/tools-golang v0.3.1-0.20230104082527-d6f58551be3f
 ## explicit; go 1.13
 github.com/spdx/tools-golang/spdx/common
-github.com/spdx/tools-golang/spdx/v2_3
+github.com/spdx/tools-golang/spdx/v2_2
 # github.com/stretchr/testify v1.8.1
 ## explicit; go 1.13
 github.com/stretchr/testify/assert

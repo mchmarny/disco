@@ -11,9 +11,9 @@ const (
 	TableKindPackage
 
 	TableKindUndefinedName     = "undefined"
-	TableKindLicenseName       = "license"
-	TableKindVulnerabilityName = "vulnerability"
-	TableKindPackageName       = "package"
+	TableKindLicenseName       = "licenses"
+	TableKindVulnerabilityName = "vulnerabilities"
+	TableKindPackageName       = "packages"
 )
 
 type TableKind int64

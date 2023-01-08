@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
 
-package v2_3
+package v2_2
 
 // OtherLicense is an Other License Information section of an
-// SPDX Document for version 2.3 of the spec.
+// SPDX Document for version 2.2 of the spec.
 type OtherLicense struct {
 	// 10.1: License Identifier: "LicenseRef-[idstring]"
 	// Cardinality: conditional (mandatory, one) if license is not

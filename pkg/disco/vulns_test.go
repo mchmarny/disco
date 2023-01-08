@@ -1,32 +1,33 @@
 package disco
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilter(t *testing.T) {
-	in := &types.VulnsQuery{
-		CVE: "CVE-2019-0001",
+func TestFulnFilter(t *testing.T) {
+	filter := makeVulnerabilityFilter(&types.VulnsQuery{
+		CVE:        "CVE-2019-0001",
+		MinVulnSev: types.VulnSevHigh,
+	})
+
+	list := []*types.Vulnerability{
+		{
+			ID:       "CVE-2019-0001",
+			Severity: "low",
+		},
+		{
+			ID:       "CVE-2019-0002",
+			Severity: "medium",
+		},
+		{
+			ID:       "CVE-2019-0003",
+			Severity: "high",
+		},
 	}
 
-	list := []string{"CVE-2019-0001", "CVE-2019-0002", "CVE-2019-0003"}
-
-	filter := func(v string) bool {
-		if in.CVE == "" {
-			return false
-		}
-		return strings.EqualFold(in.CVE, v)
-	}
-
-	found := 0
-	for _, v := range list {
-		if filter(v) {
-			found++
-		}
-	}
+	found := testFilterOnList(filter, list)
 	assert.Equal(t, 1, found)
 }

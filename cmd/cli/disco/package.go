@@ -20,6 +20,7 @@ var (
 			outputFormatFlag,
 			projectIDFlag,
 			targetFlag,
+			pkgNameFlag,
 		},
 	}
 )
@@ -34,6 +35,7 @@ func runPackageCmd(c *c.Context) error {
 	in.ImageFile = c.String(imageListPathFlag.Name)
 	in.ImageURI = c.String(imageURIFlag.Name)
 	in.TargetRaw = c.String(targetFlag.Name)
+	in.NamePart = c.String(pkgNameFlag.Name)
 
 	printVersion(c)
 

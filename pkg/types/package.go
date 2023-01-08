@@ -8,6 +8,7 @@ import (
 
 type PackageQuery struct {
 	SimpleQuery
+	NamePart string
 }
 
 func (q *PackageQuery) Validate() error {
@@ -19,8 +20,8 @@ func (q *PackageQuery) Validate() error {
 }
 
 func (q *PackageQuery) String() string {
-	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, package: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.NamePart)
 }
 
 type PackageReport struct {
@@ -31,9 +32,10 @@ type PackageReport struct {
 type Package struct {
 	Package        string `json:"package"`
 	PackageVersion string `json:"version"`
+	Source         string `json:"source,omitempty"`
+	License        string `json:"license,omitempty"`
 	Format         string `json:"format"`
 	Provider       string `json:"provider"`
-	Source         string `json:"source"`
 	Image          string `json:"-"`
 }
 

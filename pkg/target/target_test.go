@@ -14,13 +14,27 @@ func TestTargetParsing(t *testing.T) {
 		Kind:      types.KindPackage,
 	}
 
-	// cloudy-demos.disco.packages
-
 	ir, err := ParseImportRequest(req)
 	assert.NoError(t, err)
 	assert.NotNil(t, ir)
 	assert.Equal(t, "project", ir.ProjectID)
 	assert.Equal(t, "dataset", ir.DatasetID)
 	assert.Equal(t, "packages", ir.TableID)
+	assert.Equal(t, importDefaultLocation, ir.Location)
+}
+
+func TestTargetParsingWithoutTable(t *testing.T) {
+	req := &types.SimpleQuery{
+		ProjectID: "test",
+		TargetRaw: "bq://project.dataset",
+		Kind:      types.KindLicense,
+	}
+
+	ir, err := ParseImportRequest(req)
+	assert.NoError(t, err)
+	assert.NotNil(t, ir)
+	assert.Equal(t, "project", ir.ProjectID)
+	assert.Equal(t, "dataset", ir.DatasetID)
+	assert.Equal(t, types.TableKindLicenseName, ir.TableID)
 	assert.Equal(t, importDefaultLocation, ir.Location)
 }

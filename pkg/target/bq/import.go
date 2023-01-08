@@ -29,9 +29,10 @@ func insert(ctx context.Context, req *types.ImportRequest, items interface{}) er
 }
 
 const (
-	importDefaultLocation              = "US"
-	importTargetProtocolParts          = 2
-	importTargetProjectAndDatasetParts = 3
+	importDefaultLocation     = "US"
+	importTargetProtocolParts = 2
+	importTargetMinParts      = 2
+	importTargetMaxParts      = 3
 )
 
 // ParseImportRequest parses import request.
@@ -56,13 +57,27 @@ func ParseImportRequest(k types.DiscoKind, v string) (*types.ImportRequest, erro
 	}
 
 	parts := strings.Split(v, ".")
-	if len(parts) != importTargetProjectAndDatasetParts {
+	if len(parts) < importTargetMinParts || len(parts) > importTargetMaxParts {
 		return nil, errors.Errorf("invalid import target: %s", v)
 	}
 
 	t.ProjectID = parts[0]
 	t.DatasetID = parts[1]
-	t.TableID = parts[2]
+
+	if len(parts) == importTargetMaxParts {
+		t.TableID = parts[2]
+	} else {
+		switch k {
+		case types.KindLicense:
+			t.TableID = types.TableKindLicenseName
+		case types.KindVulnerability:
+			t.TableID = types.TableKindVulnerabilityName
+		case types.KindPackage:
+			t.TableID = types.TableKindPackageName
+		default:
+			return nil, errors.Errorf("invalid table kind: %s", k)
+		}
+	}
 
 	return t, nil
 }

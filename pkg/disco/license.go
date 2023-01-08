@@ -14,12 +14,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery, ir *types.ImportRequest) error {
-	if in == nil {
-		return errors.New("nil input")
-	}
-
-	f := func(v interface{}) bool {
+func makeLicenseFilter(in *types.LicenseQuery) types.ItemFilter {
+	return func(v interface{}) bool {
 		lic := v.(*types.License)
 
 		if in.TypeFilter != "" {
@@ -33,11 +29,17 @@ func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery, ir *types.Imp
 
 		return false
 	}
+}
+
+func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery, ir *types.ImportRequest) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
 
 	log.Debug().Msgf("discovering licenses with: %s", in)
 	printProjectScope(in.ProjectID, "licenses")
 
-	if err := scanLicenses(ctx, &in.SimpleQuery, f, ir); err != nil {
+	if err := scanLicenses(ctx, &in.SimpleQuery, makeLicenseFilter(in), ir); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 
@@ -67,14 +69,14 @@ func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 
 	report := types.NewItemReport(in, results...)
 
-	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
-		return errors.Wrap(err, "error writing output")
-	}
-
 	if ir != nil {
 		if err := target.LicenseImporter(ctx, ir, report.Items...); err != nil {
 			return errors.Wrap(err, "error importing")
 		}
+	}
+
+	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
+		return errors.Wrap(err, "error writing output")
 	}
 
 	return nil

@@ -15,14 +15,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRequest) error {
-	if in == nil {
-		return errors.New("nil input")
-	}
-	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
-	printProjectScope(in.ProjectID, "vulnerabilities")
-
-	f := func(v interface{}) bool {
+func makeVulnerabilityFilter(in *types.VulnsQuery) types.ItemFilter {
+	return func(v interface{}) bool {
 		vul := v.(*types.Vulnerability)
 
 		if in.CVE != "" {
@@ -41,8 +35,16 @@ func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRe
 		}
 		return false
 	}
+}
 
-	if err := scanVulnerabilities(ctx, in, f, ir); err != nil {
+func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRequest) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
+	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
+	printProjectScope(in.ProjectID, "vulnerabilities")
+
+	if err := scanVulnerabilities(ctx, in, makeVulnerabilityFilter(in), ir); err != nil {
 		return errors.Wrap(err, "error scanning")
 	}
 
@@ -76,14 +78,14 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 
 	report := types.NewItemReport(&in.SimpleQuery, results...)
 
-	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
-		return errors.Wrap(err, "error writing output")
-	}
-
 	if ir != nil {
 		if err := target.VulnerabilityImporter(ctx, ir, report.Items...); err != nil {
 			return errors.Wrap(err, "error importing")
 		}
+	}
+
+	if err := writeOutput(in.OutputPath, in.OutputFmt, report); err != nil {
+		return errors.Wrap(err, "error writing output")
 	}
 
 	return nil
