@@ -49,8 +49,10 @@ func makeLicenseFilter(in *types.LicenseQuery) types.ItemFilter {
 	}
 }
 
-func makeLicenseHandler(ctx context.Context, in *types.SimpleQuery, results []*types.LicenseReport, filter types.ItemFilter) itemHandler {
-	return func(dir, uri string) error {
+func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
+	results := make([]*types.LicenseReport, 0)
+
+	h := func(dir, uri string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting licenses for %s (file: %s)", uri, scannerResultPath)
 
@@ -73,12 +75,6 @@ func makeLicenseHandler(ctx context.Context, in *types.SimpleQuery, results []*t
 		}
 		return nil
 	}
-}
-
-func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
-	results := make([]*types.LicenseReport, 0)
-
-	h := makeLicenseHandler(ctx, in, results, filter)
 
 	if err := handleImages(ctx, in, h); err != nil {
 		return errors.Wrap(err, "error handling images")

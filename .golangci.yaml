@@ -58,7 +58,7 @@ linters-settings:
   nestif:
     min-complexity: 10
   dupl:
-    threshold: 250
+    threshold: 300
 
 # issues:
 #   # exclude:

@@ -47,9 +47,10 @@ func makePackageFilter(in *types.PackageQuery) types.ItemFilter {
 		return false
 	}
 }
+func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
+	results := make([]*types.PackageReport, 0)
 
-func makePackageHandler(ctx context.Context, in *types.SimpleQuery, results []*types.PackageReport, filter types.ItemFilter) itemHandler {
-	return func(dir, uri string) error {
+	h := func(dir, uri string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting packages for %s (file: %s)", uri, scannerResultPath)
 
@@ -72,12 +73,6 @@ func makePackageHandler(ctx context.Context, in *types.SimpleQuery, results []*t
 		}
 		return nil
 	}
-}
-
-func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
-	results := make([]*types.PackageReport, 0)
-
-	h := makePackageHandler(ctx, in, results, filter)
 
 	if err := handleImages(ctx, in, h); err != nil {
 		return errors.Wrap(err, "error handling images")

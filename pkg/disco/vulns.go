@@ -53,12 +53,15 @@ func makeVulnerabilityFilter(in *types.VulnsQuery) types.ItemFilter {
 	}
 }
 
-func makeVulnerabilityHandler(ctx context.Context, in *types.VulnsQuery, results []*types.VulnerabilityReport, filter types.ItemFilter) itemHandler {
+func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
+	results := make([]*types.VulnerabilityReport, 0)
+
 	vSpacer := "vulnerabilities"
 	if in.CVE != "" {
 		vSpacer = fmt.Sprintf("%ss", in.CVE)
 	}
-	return func(dir, uri string) error {
+
+	h := func(dir, uri string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting vulnerabilities for %s (file: %s)", uri, scannerResultPath)
 
@@ -81,11 +84,6 @@ func makeVulnerabilityHandler(ctx context.Context, in *types.VulnsQuery, results
 		}
 		return nil
 	}
-}
-
-func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
-	results := make([]*types.VulnerabilityReport, 0)
-	h := makeVulnerabilityHandler(ctx, in, results, filter)
 
 	if err := handleImages(ctx, &in.SimpleQuery, h); err != nil {
 		return errors.Wrap(err, "error handling images")
