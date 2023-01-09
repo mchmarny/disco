@@ -10,6 +10,8 @@
 
 Utility for bulk image, license, package, and vulnerability discovery in containerize workloads on GCP.
 
+![](docs/img/dashboard.png)
+
 > Note: this is a personal project, not an official Google product.
 
 Features:
@@ -22,7 +24,7 @@ Features:
   * supports filters (e.g CVE, package name, license type)
 * Available as CLI os Service (for continuous discovery)
 
-![](docs/img/dashboard.png)
+![](docs/img/disco.gif)
 
 Additionally, when deployed as a service, `disco` will:
   * Publish custom metrics (time-series) in Cloud Monitoring to support:
@@ -34,8 +36,6 @@ Additionally, when deployed as a service, `disco` will:
     * build custom visualizations using Google Sheets, Data Studio, or Looker
   * Archive raw license, package, and vulnerability scanner outputs into GCS bucket
     *  each file stored in "folder" named after image SHA
-
-![](docs/img/disco.gif)
 
 ## Why
 
