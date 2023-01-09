@@ -22,7 +22,7 @@ Features:
   * supports filters (e.g CVE, package name, license type)
 * Available as CLI os Service (for continuous discovery)
 
-![](docs/img/disco.gif)
+![](docs/img/dashboard.png)
 
 Additionally, when deployed as a service, `disco` will:
   * Publish custom metrics (time-series) in Cloud Monitoring to support:
@@ -35,7 +35,7 @@ Additionally, when deployed as a service, `disco` will:
   * Archive raw license, package, and vulnerability scanner outputs into GCS bucket
     *  each file stored in "folder" named after image SHA
 
-![](docs/img/dashboard.png)
+![](docs/img/disco.gif)
 
 ## Why
 
