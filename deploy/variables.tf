@@ -35,7 +35,7 @@ variable "server_img" {
 
 variable "disco_schedule" {
   description = "Cron for disco service invocation"
-  default     = "30 */2 * * *"
+  default     = "30 */5 * * *"
   type        = string
   nullable    = false
 }

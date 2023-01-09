@@ -21,7 +21,7 @@ func TestLicenseFilterParsing(t *testing.T) {
 }
 
 func testLicenseParsing(t *testing.T, filter types.ItemFilter) (*types.LicenseReport, error) {
-	src := "../../../etc/data/test-license.json"
+	src := "../../../data/test-license.json"
 	rep, err := ParseLicenses(src, filter)
 	assert.NoError(t, err)
 	assert.NotNil(t, rep)

@@ -22,6 +22,8 @@ Features:
   * supports filters (e.g CVE, package name, license type)
 * Available as CLI os Service (for continuous discovery)
 
+![](docs/img/disco.gif)
+
 Additionally, when deployed as a service, `disco` will:
   * Publish custom metrics (time-series) in Cloud Monitoring to support:
     * custom charts and dashboards (e.g. image vulnerability over time)
@@ -30,6 +32,8 @@ Additionally, when deployed as a service, `disco` will:
     * query data using SQL (e.g. package versions over time)
     * create ML models (e.g. vulnerability source classification model)
     * build custom visualizations using Google Sheets, Data Studio, or Looker
+  * Archive raw license, package, and vulnerability scanner outputs into GCS bucket
+    *  each file stored in "folder" named after image SHA
 
 ![](docs/img/dashboard.png)
 

@@ -10,7 +10,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/disco"
-	"github.com/mchmarny/disco/pkg/object"
 	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
@@ -80,6 +79,7 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 			Kind:       types.KindLicense,
 			Version:    h.version,
 			TargetRaw:  fmt.Sprintf("bq://%s.disco.licenses", h.projectID),
+			Bucket:     h.bucket,
 		},
 	}
 
@@ -92,11 +92,6 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 		return errors.Wrap(err, "error executing discover licenses")
 	}
 
-	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
-		return errors.Wrapf(err, "error writing content to: %s/%s",
-			h.bucket, reportName)
-	}
-
 	list, err := disco.MeterLicense(ctx, reportPath)
 	if err != nil {
 		return errors.Wrapf(err, "error metering licenses from: %s", reportPath)
@@ -105,8 +100,6 @@ func (h *Handler) discoLicenses(ctx context.Context, dir, src string) error {
 	if err := h.counter.CountAll(ctx, list...); err != nil {
 		return errors.Wrapf(err, "error counting licenses metrics: %d", len(list))
 	}
-
-	log.Info().Msgf("license report saved to: gs://%s/%s", h.bucket, reportName)
 
 	return nil
 }
@@ -122,6 +115,7 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 			Kind:       types.KindVulnerability,
 			Version:    h.version,
 			TargetRaw:  fmt.Sprintf("bq://%s.disco.vulnerabilities", h.projectID),
+			Bucket:     h.bucket,
 		},
 	}
 
@@ -134,11 +128,6 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 		return errors.Wrap(err, "error executing discover vulnerabilities")
 	}
 
-	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
-		return errors.Wrapf(err, "error writing content to: %s/%s",
-			h.bucket, reportName)
-	}
-
 	list, err := disco.MeterVulns(ctx, reportPath)
 	if err != nil {
 		return errors.Wrapf(err, "error metering vulnerabilities from: %s", reportPath)
@@ -147,8 +136,6 @@ func (h *Handler) discoVulns(ctx context.Context, dir, src string) error {
 	if err := h.counter.CountAll(ctx, list...); err != nil {
 		return errors.Wrapf(err, "error counting vulnerability metrics: %d", len(list))
 	}
-
-	log.Info().Msgf("vulnerability report saved to: gs://%s/%s", h.bucket, reportName)
 
 	return nil
 }
@@ -164,6 +151,7 @@ func (h *Handler) discoPackages(ctx context.Context, dir, src string) error {
 			Kind:       types.KindPackage,
 			Version:    h.version,
 			TargetRaw:  fmt.Sprintf("bq://%s.disco.packages", h.projectID),
+			Bucket:     h.bucket,
 		},
 	}
 
@@ -176,11 +164,6 @@ func (h *Handler) discoPackages(ctx context.Context, dir, src string) error {
 		return errors.Wrap(err, "error executing discover packages")
 	}
 
-	if err := object.Save(ctx, h.bucket, reportName, reportPath); err != nil {
-		return errors.Wrapf(err, "error writing content to: %s/%s",
-			h.bucket, reportName)
-	}
-
 	list, err := disco.MeterPackage(ctx, reportPath)
 	if err != nil {
 		return errors.Wrapf(err, "error metering packages from: %s", reportPath)
@@ -189,8 +172,6 @@ func (h *Handler) discoPackages(ctx context.Context, dir, src string) error {
 	if err := h.counter.CountAll(ctx, list...); err != nil {
 		return errors.Wrapf(err, "error counting packages metrics: %d", len(list))
 	}
-
-	log.Info().Msgf("package report saved to: gs://%s/%s", h.bucket, reportName)
 
 	return nil
 }

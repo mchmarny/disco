@@ -2,17 +2,35 @@ package disco
 
 import (
 	"context"
+	"fmt"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
+	"github.com/mchmarny/disco/pkg/object"
 	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
+
+func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery, ir *types.ImportRequest) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
+
+	log.Debug().Msgf("discovering licenses with: %s", in)
+	printProjectScope(in.ProjectID, "licenses")
+
+	if err := scanLicenses(ctx, &in.SimpleQuery, makeLicenseFilter(in), ir); err != nil {
+		return errors.Wrap(err, "error scanning")
+	}
+
+	return nil
+}
 
 func makeLicenseFilter(in *types.LicenseQuery) types.ItemFilter {
 	return func(v interface{}) bool {
@@ -31,28 +49,12 @@ func makeLicenseFilter(in *types.LicenseQuery) types.ItemFilter {
 	}
 }
 
-func DiscoverLicenses(ctx context.Context, in *types.LicenseQuery, ir *types.ImportRequest) error {
-	if in == nil {
-		return errors.New("nil input")
-	}
+func makeLicenseHandler(ctx context.Context, in *types.SimpleQuery, results []*types.LicenseReport, filter types.ItemFilter) itemHandler {
+	return func(dir, uri string) error {
+		scannerResultPath := path.Join(dir, uuid.NewString())
+		log.Debug().Msgf("getting licenses for %s (file: %s)", uri, scannerResultPath)
 
-	log.Debug().Msgf("discovering licenses with: %s", in)
-	printProjectScope(in.ProjectID, "licenses")
-
-	if err := scanLicenses(ctx, &in.SimpleQuery, makeLicenseFilter(in), ir); err != nil {
-		return errors.Wrap(err, "error scanning")
-	}
-
-	return nil
-}
-
-func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
-	results := make([]*types.LicenseReport, 0)
-	h := func(dir, uri string) error {
-		p := path.Join(dir, uuid.NewString())
-		log.Debug().Msgf("getting licenses for %s (file: %s)", uri, p)
-
-		rez, err := scanner.GetLicenses(uri, p, filter)
+		rez, err := scanner.GetLicenses(uri, scannerResultPath, filter)
 		if err != nil {
 			return errors.Wrapf(err, "error getting licenses for %s", uri)
 		}
@@ -60,8 +62,23 @@ func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 		if len(rez.Licenses) > 0 {
 			results = append(results, rez)
 		}
+		if in.Bucket != "" {
+			objName := fmt.Sprintf("%s/%s/licenses-%d.json",
+				time.Now().UTC().Format("2006/01/02"),
+				types.ParseImageShaFromDigestWithoutPrefix(uri),
+				time.Now().UTC().Unix())
+			if err := object.Save(ctx, in.Bucket, objName, scannerResultPath); err != nil {
+				return errors.Wrapf(err, "error saving %s to %s", scannerResultPath, in.Bucket)
+			}
+		}
 		return nil
 	}
+}
+
+func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
+	results := make([]*types.LicenseReport, 0)
+
+	h := makeLicenseHandler(ctx, in, results, filter)
 
 	if err := handleImages(ctx, in, h); err != nil {
 		return errors.Wrap(err, "error handling images")

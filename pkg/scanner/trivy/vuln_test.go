@@ -47,7 +47,7 @@ func TestVulnFilterParsing(t *testing.T) {
 }
 
 func testVulnParsing(t *testing.T, filter types.ItemFilter) (*types.VulnerabilityReport, error) {
-	src := "../../../etc/data/test-vuln.json"
+	src := "../../../data/test-vuln.json"
 	rep, err := ParseVulnerabilities(src, filter)
 	assert.NoError(t, err)
 	assert.NotNil(t, rep)

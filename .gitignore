@@ -81,3 +81,7 @@ digest.txt
 
 /images
 images.txt
+
+# terminalizer 
+/config.yml
+/disco.yml

@@ -1,2 +1,0 @@
-gcr.io/cloudy-demos/system-package@sha256:92464e03ea61e922c46040359b32f55b7f38bb20eaa25b9679338fa07e5a71d7
-gcr.io/cloudy-demos/helloworld@sha256:1be1f28b29d3079e53a9fbc3b1f8e0e797b6aee33bdd647aecb7d21fe60add04

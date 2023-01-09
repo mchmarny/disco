@@ -40,19 +40,27 @@ type ImportRequest struct {
 }
 
 func ParseImageNameFromDigest(digest string) string {
-	p := strings.Split(digest, "@")
-	if len(p) > 0 {
-		return p[0]
-	}
-	return digest
+	return parseImageDigestParts(digest, 0)
 }
 
-const imageDigestParts = 2
-
 func ParseImageShaFromDigest(digest string) string {
-	p := strings.Split(digest, "@")
-	if len(p) == imageDigestParts {
-		return p[1]
+	return parseImageDigestParts(digest, 1)
+}
+
+func ParseImageShaFromDigestWithoutPrefix(digest string) string {
+	s := parseImageDigestParts(digest, 1)
+	return strings.TrimPrefix(s, "sha256:")
+}
+
+func parseImageDigestParts(digest string, index int) string {
+	if index < 0 {
+		return ""
 	}
+
+	p := strings.Split(digest, "@")
+	if index < len(p) {
+		return p[index]
+	}
+
 	return ""
 }

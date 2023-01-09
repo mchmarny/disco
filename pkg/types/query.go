@@ -27,6 +27,7 @@ type SimpleQuery struct {
 	TargetRaw  string
 	Target     *ImportRequest
 	Quiet      bool
+	Bucket     string
 }
 
 func (q *SimpleQuery) Validate() error {
@@ -42,8 +43,8 @@ func (q *SimpleQuery) Validate() error {
 }
 
 func (q *SimpleQuery) String() string {
-	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, target: %s",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.Target)
+	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, target: %s, backet: %s",
+		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.Target, q.Bucket)
 }
 
 type OutputFormat int64

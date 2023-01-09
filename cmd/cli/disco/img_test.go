@@ -45,7 +45,7 @@ func TestLicCmd(t *testing.T) {
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String(
 		"file",
-		"../../../etc/data/images.txt",
+		"../../../data/images.txt",
 		"test",
 	)
 
@@ -61,7 +61,7 @@ func TestPkgCmd(t *testing.T) {
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	set.String(
 		"file",
-		"../../../etc/data/images.txt",
+		"../../../data/images.txt",
 		"test",
 	)
 

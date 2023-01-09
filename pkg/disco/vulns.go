@@ -5,15 +5,31 @@ import (
 	"fmt"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mchmarny/disco/pkg/metric"
+	"github.com/mchmarny/disco/pkg/object"
 	"github.com/mchmarny/disco/pkg/scanner"
 	"github.com/mchmarny/disco/pkg/target"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
+
+func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRequest) error {
+	if in == nil {
+		return errors.New("nil input")
+	}
+	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
+	printProjectScope(in.ProjectID, "vulnerabilities")
+
+	if err := scanVulnerabilities(ctx, in, makeVulnerabilityFilter(in), ir); err != nil {
+		return errors.Wrap(err, "error scanning")
+	}
+
+	return nil
+}
 
 func makeVulnerabilityFilter(in *types.VulnsQuery) types.ItemFilter {
 	return func(v interface{}) bool {
@@ -37,31 +53,16 @@ func makeVulnerabilityFilter(in *types.VulnsQuery) types.ItemFilter {
 	}
 }
 
-func DiscoverVulns(ctx context.Context, in *types.VulnsQuery, ir *types.ImportRequest) error {
-	if in == nil {
-		return errors.New("nil input")
-	}
-	log.Debug().Msgf("discovering vulnerabilities with: %s", in)
-	printProjectScope(in.ProjectID, "vulnerabilities")
-
-	if err := scanVulnerabilities(ctx, in, makeVulnerabilityFilter(in), ir); err != nil {
-		return errors.Wrap(err, "error scanning")
-	}
-
-	return nil
-}
-
-func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
-	results := make([]*types.VulnerabilityReport, 0)
+func makeVulnerabilityHandler(ctx context.Context, in *types.VulnsQuery, results []*types.VulnerabilityReport, filter types.ItemFilter) itemHandler {
 	vSpacer := "vulnerabilities"
 	if in.CVE != "" {
 		vSpacer = fmt.Sprintf("%ss", in.CVE)
 	}
-	h := func(dir, uri string) error {
-		p := path.Join(dir, uuid.NewString())
-		log.Debug().Msgf("getting vulnerabilities for %s (file: %s)", uri, p)
+	return func(dir, uri string) error {
+		scannerResultPath := path.Join(dir, uuid.NewString())
+		log.Debug().Msgf("getting vulnerabilities for %s (file: %s)", uri, scannerResultPath)
 
-		rez, err := scanner.GetVulnerabilities(uri, p, filter)
+		rez, err := scanner.GetVulnerabilities(uri, scannerResultPath, filter)
 		if err != nil {
 			return errors.Wrapf(err, "error getting vulnerabilities for %s", uri)
 		}
@@ -69,8 +70,22 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 		if len(rez.Vulnerabilities) > 0 {
 			results = append(results, rez)
 		}
+		if in.Bucket != "" {
+			objName := fmt.Sprintf("%s/%s/vulnerabilities-%d.json",
+				time.Now().UTC().Format("2006/01/02"),
+				types.ParseImageShaFromDigestWithoutPrefix(uri),
+				time.Now().UTC().Unix())
+			if err := object.Save(ctx, in.Bucket, objName, scannerResultPath); err != nil {
+				return errors.Wrapf(err, "error saving %s to %s", scannerResultPath, in.Bucket)
+			}
+		}
 		return nil
 	}
+}
+
+func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
+	results := make([]*types.VulnerabilityReport, 0)
+	h := makeVulnerabilityHandler(ctx, in, results, filter)
 
 	if err := handleImages(ctx, &in.SimpleQuery, h); err != nil {
 		return errors.Wrap(err, "error handling images")

@@ -28,7 +28,7 @@ func TestPackageFilterParsing(t *testing.T) {
 }
 
 func testPackageParsing(t *testing.T, filter types.ItemFilter) (*types.PackageReport, error) {
-	src := "../../../etc/data/trivy-spdx-sbom.json"
+	src := "../../../data/trivy-spdx-sbom.json"
 	rep, err := ParsePackages(src, filter)
 	assert.NoError(t, err)
 	assert.NotNil(t, rep)

@@ -13,11 +13,11 @@ import (
 
 func setTestImplementations() {
 	scanner.ScanVulnerability = func(digest, path string) *exec.Cmd {
-		return exec.Command("cp", "../../etc/data/test-license.json", path) //nolint
+		return exec.Command("cp", "../../data/test-license.json", path) //nolint
 	}
 
 	scanner.ScanLicense = func(digest, path string) *exec.Cmd {
-		return exec.Command("cp", "../../etc/data/test-vuln.json", path) //nolint
+		return exec.Command("cp", "../../data/test-vuln.json", path) //nolint
 	}
 }
 
