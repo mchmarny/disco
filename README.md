@@ -77,8 +77,7 @@ disco img
 Options:
 
 * `--output` - path where to save the output (stdout by default) 
-* `--format` - output format (`json` or `yaml`, `json` is the default)
-* `--uri` - outputs only image uri (default: false). This is helpful when you want to pipe the resulting images to another program.
+* `--format` - output format (`yaml` or `json` which is the default)
 * `--project` - scope discovery to a single project using project ID
 
 
@@ -90,20 +89,20 @@ The resulting report in JSON format will look something like this (abbreviated):
     "kind": "image",
     "version": "v0.3.19-next",
     "created": "2022-12-28T21:20:15Z",
-    "count": 7
   },
   "items": [
     {
-      "uri": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
+      "uri": "us-west1-docker.pkg.dev/cloudy-demos/gcf-artifacts/test--func@sha256:d22bfc69913190ff9d274553bc55f782b5056b0d2ed62b52eb327a34c90d7203",
       "context": {
-        "container-name": "hello-1",
-        "location-id": "us-central1",
-        "location-name": "Iowa",
+        "container-name": "test--func-1",
+        "location-id": "us-west1",
+        "location-name": "Oregon",
         "project-id": "cloudy-demos",
         "project-number": "799736955886",
-        "service-id": "projects/cloudy-demos/locations/us-central1/services/hello",
-        "service-name": "hello",
-        "service-revision": "projects/cloudy-demos/locations/us-central1/services/hello/revisions/hello-00001-taj"
+        "runtime": "gcf",
+        "service-id": "projects/cloudy-demos/locations/us-west1/services/test-func",
+        "service-name": "test-func",
+        "service-revision": "projects/cloudy-demos/locations/us-west1/services/test-func/revisions/test-func-00001-fiz"
       }
     },
       ...
@@ -121,10 +120,10 @@ disco vulnerability --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --output images.json`)
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default) 
-* `--format` - report format: `json` or `yaml` (`json` is default)
+* `--format` - output format (`yaml` or `json` which is the default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--min-severity` - minimum severity of vulnerability to include in report (e.g. low, medium, high, critical, default: all)
 * `--cve` - filter results on a specific CVE ID (e.g. `CVE-2020-22046`)
@@ -145,6 +144,12 @@ The resulting report in JSON format will look something like this (abbreviated):
   "items": [
     {
       "image": "gcr.io/cloudy-demos/hello-broken@sha256:0900c08e7d40f94...",
+      "context": {
+        "container-name": "hello-broken-1",
+        "location-id": "us-central1",
+        "location-name": "Iowa",
+        ...
+      },
       "vulnerabilities": [
         {
           "source": "CVE-2021-28165",
@@ -174,10 +179,10 @@ disco license --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --output images.json`)
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default)  
-* `--format` - report format: `json` or `yaml` (`json` is default)
+* `--format` - output format (`yaml` or `json` which is the default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--type` - license type filter (supports prefix: e.g. `apache`, `bsd`, `mit`, etc.)
 * `--target` - target data store to save the results to (e.g. `bq://my-project`)
@@ -192,11 +197,16 @@ The resulting report in JSON format will look something like this (abbreviated):
     "kind": "license",
     "version": "v0.3.19-next",
     "created": "2022-12-28T21:23:20Z",
-    "count": 7
   },
   "items": [
     {
       "image": "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92...",
+      "context": {
+        "container-name": "hello-1",
+        "project-id": "cloudy-demos",
+        "project-number": "799736955886",
+        ...
+      },
       "licenses": [
         {
           "name": "GPL-2.0",
@@ -224,10 +234,10 @@ disco packages --help
 
 Options: 
 
-* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --uri --output images.txt`)
+* `--file` - image list input file path to serve as a source (instead of discovery) (e.g. `disco img --output images.json`)
 * `--image` - specific image URI to scan. Note: `source` and `image` are mutually exclusive
 * `--output` - saves report to file at this path (stdout by default)  
-* `--format` - report format: `json` or `yaml` (`json` is default)
+* `--format` - output format (`yaml` or `json` which is the default)
 * `--project` - during discovery, runs only on specific project (project ID)
 * `--name` - package name filter (uses contains, e.g. libgcc, gobinary, express, etc.)
 * `--target` - target data store to save the results to (e.g. `bq://my-project`)
@@ -242,11 +252,16 @@ The resulting report in JSON format will look something like this (abbreviated):
     "kind": "package",
     "version": "v0.9.4",
     "created": "2023-01-08T00:37:26Z",
-    "count": 8
   },
   "items": [
     {
       "image": "us-central1-docker.pkg.dev/cloudy-labz/gcf-artifacts/test--go119@sha256:80be8e3c174...",
+      "context": {
+        "container-name": "test--go119",
+        "location-id": "us-central1",
+        "location-name": "Iowa",
+        ...
+      },
       "packages": [
         {
           "package": "minipass-sized",
