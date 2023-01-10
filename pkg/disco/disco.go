@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/mchmarny/disco/pkg/source"
 	"github.com/mchmarny/disco/pkg/types"
@@ -59,7 +60,7 @@ func writeOutput(path string, format types.OutputFormat, data any) error {
 
 func printProjectScope(projectID, subject string) {
 	if projectID != "" {
-		log.Info().Msgf("scanning project: '%s' for: '%s'", projectID, subject)
+		log.Info().Msgf("scanning %s for %s", projectID, subject)
 	} else {
 		log.Info().Msgf("scanning all projects accessible to current user for %s", subject)
 	}
@@ -73,17 +74,29 @@ type itemHandler func(dir, uri string, labels map[string]string) error
 
 func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandler) error {
 	var list []*types.ImageItem
-	if in.ImageFile != "" {
-		var rep types.ItemReport[types.ImageItem]
-		if err := types.UnmarshalFromFile(in.ImageFile, &rep); err != nil {
-			return errors.Wrapf(err, "error reading image list from file: %s", in.ImageFile)
+
+	if in.ImageURI != "" {
+		list = []*types.ImageItem{
+			{
+				URI: in.ImageURI,
+				Context: map[string]string{
+					"scanned-on": time.Now().UTC().Format(time.RFC3339),
+				},
+			},
 		}
-		list = rep.Items
 	} else {
-		var err error
-		list, err = source.ImageProvider(ctx, in)
-		if err != nil {
-			return errors.Wrap(err, "error getting images")
+		if in.ImageFile != "" {
+			var rep types.ItemReport[types.ImageItem]
+			if err := types.UnmarshalFromFile(in.ImageFile, &rep); err != nil {
+				return errors.Wrapf(err, "error reading image list from file: %s", in.ImageFile)
+			}
+			list = rep.Items
+		} else {
+			var err error
+			list, err = source.ImageProvider(ctx, in)
+			if err != nil {
+				return errors.Wrap(err, "error getting images")
+			}
 		}
 	}
 

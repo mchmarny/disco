@@ -3,6 +3,7 @@ package run
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -43,11 +44,6 @@ func getProjects(ctx context.Context) ([]*project, error) {
 func isQualifiedProject(ctx context.Context, p *project, filterID string) bool {
 	log.Debug().Msgf("qualifying project: %s (%s - %s)", p.ID, p.Number, p.State)
 
-	if filterID != "" && p.ID == filterID {
-		log.Debug().Msgf("skipping: %s (filter: %s)", p.ID, filterID)
-		return false
-	}
-
 	if p.State != ProjectStateActive {
 		log.Debug().Msgf("skipping: %s (inactive)", p.ID)
 		return false
@@ -61,6 +57,11 @@ func isQualifiedProject(ctx context.Context, p *project, filterID string) bool {
 
 	if !on {
 		log.Debug().Msgf("skipping: %s (API not enabled)", p.ID)
+		return false
+	}
+
+	if filterID != "" && !strings.EqualFold(p.ID, filterID) {
+		log.Debug().Msgf("skipping: %s (filter: %s)", p.ID, filterID)
 		return false
 	}
 

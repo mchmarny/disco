@@ -35,5 +35,4 @@ type Meta struct {
 	Kind    string `json:"kind"`
 	Version string `json:"version"`
 	Created string `json:"created"`
-	Count   *int   `json:"count,omitempty"`
 }

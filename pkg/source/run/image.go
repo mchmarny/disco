@@ -223,15 +223,16 @@ func GetImages(ctx context.Context, in *types.SimpleQuery) ([]*types.ImageItem, 
 		return nil, errors.New("invalid input, image query is nil")
 	}
 
-	if in.ProjectID != "" {
-		log.Debug().Msgf("discovering images for project: %s", in.ProjectID)
-	}
-
 	projects, err := getProjects(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting projects")
 	}
-	log.Info().Msgf("found %d projects", len(projects))
+
+	if in.ProjectID != "" {
+		log.Info().Msg("found 1 project")
+	} else {
+		log.Info().Msgf("found %d projects", len(projects))
+	}
 
 	images := sync.Map{}
 

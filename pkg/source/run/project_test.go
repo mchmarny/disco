@@ -19,7 +19,7 @@ func TestProject(t *testing.T) {
 func TestProjectFilter(t *testing.T) {
 	apiClient = &testAPIClient{}
 
-	assert.False(t, isQualifiedProject(context.Background(), &project{
+	assert.True(t, isQualifiedProject(context.Background(), &project{
 		ID:     "test",
 		State:  ProjectStateActive,
 		Number: "799736955886",
@@ -31,7 +31,7 @@ func TestProjectFilter(t *testing.T) {
 		Number: "799736955886",
 	}, "test"))
 
-	assert.True(t, isQualifiedProject(context.Background(), &project{
+	assert.False(t, isQualifiedProject(context.Background(), &project{
 		ID:     "test",
 		State:  ProjectStateActive,
 		Number: "799736955886",

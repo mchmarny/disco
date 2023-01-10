@@ -5,13 +5,11 @@ import (
 )
 
 func NewItemReport[T any](in *SimpleQuery, items ...*T) *ItemReport[T] {
-	itemCount := len(items)
 	return &ItemReport[T]{
 		Meta: Meta{
 			Kind:    in.Kind.String(),
 			Version: in.Version,
 			Created: time.Now().UTC().Format(time.RFC3339),
-			Count:   &itemCount,
 		},
 		Items: items,
 	}
