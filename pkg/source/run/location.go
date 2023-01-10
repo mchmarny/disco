@@ -14,7 +14,7 @@ const (
 	regionAPIBaseURL = "https://run.googleapis.com/v1/projects/%s/locations"
 )
 
-type locaitonList struct {
+type locationList struct {
 	Locations []*location `json:"locations"`
 }
 
@@ -33,7 +33,7 @@ func getLocations(ctx context.Context, projectNumber string) ([]*location, error
 		return nil, errors.Wrap(err, "error client creating request")
 	}
 
-	var list locaitonList
+	var list locationList
 	if err := apiClient.Get(ctx, req, &list); err != nil {
 		return nil, errors.Wrap(err, "error decoding response")
 	}

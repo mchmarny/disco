@@ -16,10 +16,10 @@ import (
 var (
 	urlExpLocations   = regexp.MustCompile(`/locations$`)
 	urlEpxProjects    = regexp.MustCompile(`/projects$`)
-	urlExpServices    = regexp.MustCompile(`/locations/us-west1/services$`)
-	urlExpFunctions   = regexp.MustCompile(`/locations/us-west1/functions$`)
+	urlExpServices    = regexp.MustCompile(`/locations/([a-zA-Z0-9-]+)/services$`)
+	urlExpFunctions   = regexp.MustCompile(`/locations/([a-zA-Z0-9-]+)/functions$`)
 	urlExpRevision    = regexp.MustCompile(`/revisions/`)
-	urlExpUsage       = regexp.MustCompile(`/projects/799736955886/services$`)
+	urlExpUsage       = regexp.MustCompile(`/projects/([a-zA-Z0-9-]+)/services$`)
 	urlEpxOccurrences = regexp.MustCompile(`/occurrences$`)
 	urlExpTestGet     = regexp.MustCompile(`/users/mchmarny$`)
 	urlExpTestHead    = regexp.MustCompile(`api/v2/status.json$`)
