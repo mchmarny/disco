@@ -25,8 +25,9 @@ func (q *PackageQuery) String() string {
 }
 
 type PackageReport struct {
-	Image    string     `json:"image"`
-	Packages []*Package `json:"packages"`
+	Image    string            `json:"image"`
+	Context  map[string]string `json:"context"`
+	Packages []*Package        `json:"packages"`
 }
 
 type Package struct {

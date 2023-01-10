@@ -1,13 +1,13 @@
 package disco
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 
+	"github.com/mchmarny/disco/pkg/source"
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -65,66 +65,26 @@ func printProjectScope(projectID, subject string) {
 	}
 }
 
-func readImageList(path string) ([]string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, errors.Wrapf(err, "error opening file: %s", path)
-	}
-	defer f.Close()
-
-	var images []string
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		uri := scanner.Text()
-		if uri != "" {
-			images = append(images, uri)
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, errors.Wrapf(err, "error reading file: %s", path)
-	}
-
-	return images, nil
-}
-
-func getImagesURIs(ctx context.Context, in *types.SimpleQuery) ([]string, error) {
-	if in == nil {
-		return nil, errors.New("nil input")
-	}
-
-	if in.ImageURI != "" {
-		log.Debug().Msgf("using image URI: '%s'", in.ImageURI)
-		return []string{in.ImageURI}, nil
-	}
-
-	if in.ImageFile != "" {
-		log.Info().Msgf("reading image list from: '%s'", in.ImageFile)
-		return readImageList(in.ImageFile)
-	}
-
-	log.Debug().Msg("discovering images from API...")
-	list, err := discoverImageURIs(ctx, &types.ImagesQuery{
-		SimpleQuery: *in,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "error discovering images")
-	}
-
-	log.Debug().Msgf("found %d images", len(list))
-	return list, nil
-}
-
 const (
 	maxItemHandler = 5
 )
 
-type itemHandler func(dir, uri string) error
+type itemHandler func(dir, uri string, labels map[string]string) error
 
 func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandler) error {
-	list, err := getImagesURIs(ctx, in)
-	if err != nil {
-		return errors.Wrap(err, "error getting images")
+	var list []*types.ImageItem
+	if in.ImageFile != "" {
+		var rep types.ItemReport[types.ImageItem]
+		if err := types.UnmarshalFromFile(in.ImageFile, &rep); err != nil {
+			return errors.Wrapf(err, "error reading image list from file: %s", in.ImageFile)
+		}
+		list = rep.Items
+	} else {
+		var err error
+		list, err = source.ImageProvider(ctx, in)
+		if err != nil {
+			return errors.Wrap(err, "error getting images")
+		}
 	}
 
 	dir, err := os.MkdirTemp(os.TempDir(), in.Kind.String())
@@ -141,9 +101,10 @@ func handleImages(ctx context.Context, in *types.SimpleQuery, handler itemHandle
 	g.SetLimit(maxItemHandler)
 
 	for _, img := range list {
-		uri := img
+		uri := img.URI
+		labels := img.Context
 		g.Go(func() error {
-			return handler(dir, uri)
+			return handler(dir, uri, labels)
 		})
 	}
 

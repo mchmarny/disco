@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+trap 'echo "\"${last_command}\" filed with exit code $?."' EXIT
 
 msg () {
    echo "====== running $1 tests ======"
@@ -11,13 +13,10 @@ bin/disco -v
 bin/disco -h
 
 msg "img"
-bin/disco img --uri -o images.tmp
-imgID=$(head -n 1 images.tmp)
-echo $imgID
+bin/disco img -o images.tmp
 
 msg "vul"
 bin/disco vul --file images.tmp
-bin/disco vul --image $imgID
 bin/disco vul --file images.tmp --min-severity high
 bin/disco vul --file images.tmp --cve CVE-2020-8911
 bin/disco vul --file images.tmp --target "bq://cloudy-demos.disco_test.vulnerabilities"
@@ -25,12 +24,11 @@ bin/disco vul --file images.tmp --target "bq://cloudy-demos.disco_test.vulnerabi
 msg "lic"
 bin/disco lic
 bin/disco lic --file images.tmp
-bin/disco lic --image $imgID
-bin/disco lic --image $imgID --type MIT
+bin/disco lic --file images.tmp --type MIT
 bin/disco lic --file images.tmp --target "bq://cloudy-demos.disco_test.licenses"
 
 msg "pkg"
 bin/disco pkg
 bin/disco pkg --file images.tmp
-bin/disco pkg --image $imgID
+bin/disco pkg --file images.tmp --name express
 bin/disco pkg --file images.tmp --target "bq://cloudy-demos.disco_test.packages"

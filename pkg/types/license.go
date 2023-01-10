@@ -25,8 +25,9 @@ func (q *LicenseQuery) String() string {
 }
 
 type LicenseReport struct {
-	Image    string     `json:"image"`
-	Licenses []*License `json:"licenses"`
+	Image    string            `json:"image"`
+	Context  map[string]string `json:"context"`
+	Licenses []*License        `json:"licenses"`
 }
 
 type License struct {

@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	safeLabelNameExp = regexp.MustCompile(`[^a-zA-Z-]+`)
-	safeTypeNameExp  = regexp.MustCompile(`[^a-zA-Z0-9-/]+`)
+	safeLabelKeyExp   = regexp.MustCompile(`[^a-zA-Z_]+`)
+	safeLabelValueExp = regexp.MustCompile(`[^a-zA-Z0-9-_]+`)
+	safeTypeNameExp   = regexp.MustCompile(`[^a-zA-Z0-9-/]+`)
 )
 
 // Counter is the interface for metric counter.
@@ -23,9 +24,14 @@ func MakeMetricType(v string) string {
 	return fmt.Sprintf("custom.googleapis.com/%s", safeTypeNameExp.ReplaceAllString(strings.ToLower(v), ""))
 }
 
-// MakeMetricLabelSafe makes a metric label safe.
-func MakeMetricLabelSafe(v string) string {
-	return safeLabelNameExp.ReplaceAllString(v, "")
+// MakeMetricLabelKeySafe makes a metric label key safe.
+func MakeMetricLabelKeySafe(v string) string {
+	return safeLabelKeyExp.ReplaceAllString(v, "_")
+}
+
+// MakeMetricLabelValueSafe makes a metric label value safe.
+func MakeMetricLabelValueSafe(v string) string {
+	return safeLabelValueExp.ReplaceAllString(v, "_")
 }
 
 // Record is the metric record type.

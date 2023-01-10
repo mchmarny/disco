@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -24,16 +23,6 @@ type ItemReport[T any] struct {
 }
 
 type ImageItem struct {
-	URI     string                 `json:"uri"`
-	Context map[string]interface{} `json:"context"`
-}
-
-type ImagesQuery struct {
-	SimpleQuery
-	URIOnly bool
-}
-
-func (q *ImagesQuery) String() string {
-	return fmt.Sprintf("project: %s, output: %s, format: %s, source: %s, uri: %s, uri-only:%t",
-		q.ProjectID, q.OutputPath, q.OutputFmt, q.ImageFile, q.ImageURI, q.URIOnly)
+	URI     string            `json:"uri"`
+	Context map[string]string `json:"context"`
 }

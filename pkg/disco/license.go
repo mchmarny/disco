@@ -52,7 +52,7 @@ func makeLicenseFilter(in *types.LicenseQuery) types.ItemFilter {
 func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
 	results := make([]*types.LicenseReport, 0)
 
-	h := func(dir, uri string) error {
+	h := func(dir, uri string, labels map[string]string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting licenses for %s (file: %s)", uri, scannerResultPath)
 
@@ -60,6 +60,7 @@ func scanLicenses(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 		if err != nil {
 			return errors.Wrapf(err, "error getting licenses for %s", uri)
 		}
+		rez.Context = labels
 		log.Info().Msgf("found %d licenses in %s", len(rez.Licenses), uri)
 		if len(rez.Licenses) > 0 {
 			results = append(results, rez)
@@ -110,19 +111,25 @@ func MeterLicense(ctx context.Context, reportPath string) ([]*metric.Record, err
 		return nil, nil
 	}
 
-	imageCounter := 0
+	list := make([]*metric.Record, 0)
 	licenseCounter := 0
 
 	for _, item := range report.Items {
-		imageCounter++
 		licenseCounter += len(item.Licenses)
+
+		rec := &metric.Record{
+			MetricType:  metric.MakeMetricType("disco/license/image"),
+			MetricValue: 1,
+			Labels:      make(map[string]string, 0),
+		}
+
+		for k, v := range item.Context {
+			rec.Labels[metric.MakeMetricLabelKeySafe(k)] = metric.MakeMetricLabelValueSafe(v)
+		}
+
+		list = append(list, rec)
 	}
 
-	list := make([]*metric.Record, 0)
-	list = append(list, &metric.Record{
-		MetricType:  metric.MakeMetricType("disco/license/image"),
-		MetricValue: int64(imageCounter),
-	})
 	// licenses have too high (and unpredictable) cardinality for labels
 	list = append(list, &metric.Record{
 		MetricType:  metric.MakeMetricType("disco/license/count"),

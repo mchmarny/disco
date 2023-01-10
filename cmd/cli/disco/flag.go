@@ -25,11 +25,6 @@ var (
 		Usage: "output format (json, yaml)",
 	}
 
-	outputURIOnlyFlag = &c.BoolFlag{
-		Name:  "uri",
-		Usage: "output only image URI",
-	}
-
 	cveFlag = &c.StringFlag{
 		Name:  "cve",
 		Usage: "exposure ID (CVE number, e.g. CVE-2019-19378)",

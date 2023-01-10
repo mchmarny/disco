@@ -61,7 +61,7 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 		vSpacer = fmt.Sprintf("%ss", in.CVE)
 	}
 
-	h := func(dir, uri string) error {
+	h := func(dir, uri string, labels map[string]string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting vulnerabilities for %s (file: %s)", uri, scannerResultPath)
 
@@ -69,6 +69,7 @@ func scanVulnerabilities(ctx context.Context, in *types.VulnsQuery, filter types
 		if err != nil {
 			return errors.Wrapf(err, "error getting vulnerabilities for %s", uri)
 		}
+		rez.Context = labels
 		log.Info().Msgf("found %d %s in %s", len(rez.Vulnerabilities), vSpacer, uri)
 		if len(rez.Vulnerabilities) > 0 {
 			results = append(results, rez)
@@ -119,6 +120,7 @@ func MeterVulns(ctx context.Context, reportPath string) ([]*metric.Record, error
 		return nil, nil
 	}
 
+	list := make([]*metric.Record, 0)
 	imageCounter := 0
 	severityCounter := make(map[string]int64)
 
@@ -127,11 +129,22 @@ func MeterVulns(ctx context.Context, reportPath string) ([]*metric.Record, error
 		for _, vuln := range item.Vulnerabilities {
 			severityCounter[vuln.Severity]++
 		}
+
+		rec := &metric.Record{
+			MetricType:  metric.MakeMetricType("disco/vulnerability/image"),
+			MetricValue: 1,
+			Labels:      make(map[string]string, 0),
+		}
+
+		for k, v := range item.Context {
+			rec.Labels[metric.MakeMetricLabelKeySafe(k)] = metric.MakeMetricLabelValueSafe(v)
+		}
+
+		list = append(list, rec)
 	}
 
-	list := make([]*metric.Record, 0)
 	list = append(list, &metric.Record{
-		MetricType:  metric.MakeMetricType("disco/vulnerability/image"),
+		MetricType:  metric.MakeMetricType("disco/vulnerability/count"),
 		MetricValue: int64(imageCounter),
 	})
 	for k, v := range severityCounter {
@@ -139,7 +152,7 @@ func MeterVulns(ctx context.Context, reportPath string) ([]*metric.Record, error
 			MetricType:  metric.MakeMetricType("disco/vulnerability/severity"),
 			MetricValue: v,
 			Labels: map[string]string{
-				"level": metric.MakeMetricLabelSafe(k),
+				"level": metric.MakeMetricLabelValueSafe(k),
 			},
 		})
 	}

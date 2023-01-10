@@ -73,8 +73,9 @@ func (q *VulnsQuery) String() string {
 }
 
 type VulnerabilityReport struct {
-	Image           string           `json:"image"`
-	Vulnerabilities []*Vulnerability `json:"vulnerabilities"`
+	Image           string            `json:"image"`
+	Context         map[string]string `json:"context"`
+	Vulnerabilities []*Vulnerability  `json:"vulnerabilities"`
 }
 
 type Vulnerability struct {

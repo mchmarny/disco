@@ -21,11 +21,11 @@ func setTestImplementations() {
 	}
 }
 
-func testImageProvider(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, error) {
+func testImageProvider(ctx context.Context, in *types.SimpleQuery) ([]*types.ImageItem, error) {
 	return []*types.ImageItem{
 		{
 			URI: "us-docker.pkg.dev/cloudrun/container/hello@sha256:2e70803dbc92a7bffcee3af54b5d264b23a6096f304f00d63b7d1e177e40986c",
-			Context: map[string]interface{}{
+			Context: map[string]string{
 				"project": "cloudrun",
 				"folder":  "container",
 				"name":    "hello",
@@ -42,21 +42,14 @@ func TestImage(t *testing.T) {
 	err := DiscoverImages(ctx, nil)
 	assert.Error(t, err, "error discovering images with nil query")
 
-	err = DiscoverImages(ctx, &types.ImagesQuery{})
+	err = DiscoverImages(ctx, &types.SimpleQuery{})
 	assert.NoError(t, err, "error discovering images")
 
-	err = DiscoverImages(ctx, &types.ImagesQuery{
-		SimpleQuery: types.SimpleQuery{
-			ProjectID: "test-project",
-			OutputFmt: types.ParseOutputFormatOrDefault("yaml"),
-		},
+	err = DiscoverImages(ctx, &types.SimpleQuery{
+		ProjectID: "test-project",
+		OutputFmt: types.ParseOutputFormatOrDefault("yaml"),
 	})
 	assert.NoError(t, err, "error discovering images with project")
-
-	err = DiscoverImages(ctx, &types.ImagesQuery{
-		URIOnly: true,
-	})
-	assert.NoError(t, err, "error discovering images with digests only")
 }
 
 func TestLicense(t *testing.T) {

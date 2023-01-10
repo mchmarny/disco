@@ -16,20 +16,18 @@ var (
 		Flags: []c.Flag{
 			outputPathFlag,
 			outputFormatFlag,
-			outputURIOnlyFlag,
 			projectIDFlag,
 		},
 	}
 )
 
 func runImagesCmd(c *c.Context) error {
-	in := &types.ImagesQuery{}
+	in := &types.SimpleQuery{}
 	in.Version = getVersionFromContext(c)
 	in.Kind = types.KindImage
 	in.ProjectID = c.String(projectIDFlag.Name)
 	in.OutputPath = c.String(outputPathFlag.Name)
 	in.OutputFmt = types.ParseOutputFormatOrDefault(c.String(outputFormatFlag.Name))
-	in.URIOnly = c.Bool(outputURIOnlyFlag.Name)
 
 	printVersion(c)
 	if err := disco.DiscoverImages(c.Context, in); err != nil {
