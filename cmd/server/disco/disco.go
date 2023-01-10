@@ -36,13 +36,10 @@ func (h *Handler) DiscoHandler(w http.ResponseWriter, r *http.Request) {
 	// get image IDs
 	imageReport := fmt.Sprintf("img-%s.txt", time.Now().UTC().Format("2006-01-02T15-04-05"))
 	reportPath := path.Join(dir, imageReport)
-	query := &types.ImagesQuery{
-		URIOnly: true,
-		SimpleQuery: types.SimpleQuery{
-			OutputPath: reportPath,
-			Kind:       types.KindImage,
-			Version:    h.version,
-		},
+	query := &types.SimpleQuery{
+		OutputPath: reportPath,
+		Kind:       types.KindImage,
+		Version:    h.version,
 	}
 
 	if err := disco.DiscoverImages(r.Context(), query); err != nil {

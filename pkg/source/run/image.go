@@ -218,7 +218,7 @@ func parseRegistryAndRegion(uri string, info *ImageInfo) bool {
 	return false
 }
 
-func GetImages(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, error) {
+func GetImages(ctx context.Context, in *types.SimpleQuery) ([]*types.ImageItem, error) {
 	if in == nil {
 		return nil, errors.New("invalid input, image query is nil")
 	}
@@ -287,7 +287,7 @@ func processLocation(ctx context.Context, project *project, location *location, 
 		for _, c := range s.Containers {
 			img := &types.ImageItem{
 				URI: c.Image,
-				Context: map[string]interface{}{
+				Context: map[string]string{
 					"project-id":       project.ID,
 					"project-number":   project.Number,
 					"location-id":      location.ID,

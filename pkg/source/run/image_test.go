@@ -161,12 +161,10 @@ func TestImageManifestURL(t *testing.T) {
 func TestImages(t *testing.T) {
 	apiClient = &testAPIClient{}
 	expectedRegions := 36
-	list, err := GetImages(context.Background(), &types.ImagesQuery{
-		SimpleQuery: types.SimpleQuery{
-			ProjectID: "cloudy-demos",
-			Kind:      types.KindImage,
-			Version:   "v1.2.3",
-		},
+	list, err := GetImages(context.Background(), &types.SimpleQuery{
+		ProjectID: "cloudy-demos",
+		Kind:      types.KindImage,
+		Version:   "v1.2.3",
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, list)

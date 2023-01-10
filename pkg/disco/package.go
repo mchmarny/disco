@@ -50,7 +50,7 @@ func makePackageFilter(in *types.PackageQuery) types.ItemFilter {
 func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemFilter, ir *types.ImportRequest) error {
 	results := make([]*types.PackageReport, 0)
 
-	h := func(dir, uri string) error {
+	h := func(dir, uri string, labels map[string]string) error {
 		scannerResultPath := path.Join(dir, uuid.NewString())
 		log.Debug().Msgf("getting packages for %s (file: %s)", uri, scannerResultPath)
 
@@ -58,6 +58,7 @@ func scanPackages(ctx context.Context, in *types.SimpleQuery, filter types.ItemF
 		if err != nil {
 			return errors.Wrapf(err, "error getting packages for %s", uri)
 		}
+		rez.Context = labels
 		log.Info().Msgf("found %d packages in %s", len(rez.Packages), uri)
 		if len(rez.Packages) > 0 {
 			results = append(results, rez)
@@ -108,19 +109,27 @@ func MeterPackage(ctx context.Context, reportPath string) ([]*metric.Record, err
 		return nil, nil
 	}
 
+	list := make([]*metric.Record, 0)
 	imageCounter := 0
 	packageCounter := 0
 
 	for _, item := range report.Items {
 		imageCounter++
 		packageCounter += len(item.Packages)
+
+		rec := &metric.Record{
+			MetricType:  metric.MakeMetricType("disco/package/image"),
+			MetricValue: 1,
+			Labels:      make(map[string]string, 0),
+		}
+
+		for k, v := range item.Context {
+			rec.Labels[metric.MakeMetricLabelKeySafe(k)] = metric.MakeMetricLabelValueSafe(v)
+		}
+
+		list = append(list, rec)
 	}
 
-	list := make([]*metric.Record, 0)
-	list = append(list, &metric.Record{
-		MetricType:  metric.MakeMetricType("disco/package/image"),
-		MetricValue: int64(imageCounter),
-	})
 	// packages have too high (and unpredictable) cardinality for labels
 	list = append(list, &metric.Record{
 		MetricType:  metric.MakeMetricType("disco/package/count"),

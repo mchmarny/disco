@@ -11,4 +11,4 @@ var (
 	ImageProvider SourceImageProvider = run.GetImages
 )
 
-type SourceImageProvider func(ctx context.Context, in *types.ImagesQuery) ([]*types.ImageItem, error)
+type SourceImageProvider func(ctx context.Context, in *types.SimpleQuery) ([]*types.ImageItem, error)
