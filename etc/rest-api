@@ -8,6 +8,53 @@ curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      "https://cloudresourcemanager.googleapis.com/v1/projects" | \
      jq -r '.projects[] | select(.parent.type == "organization") | select(.lifecycleState == "ACTIVE") | .projectNumber'
 
+
+curl -X POST \
+-H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+-H "Content-Type: application/json" \
+-d '{
+"statement": "
+  SELECT
+    name, assetType, resource.location
+  FROM
+    compute_googleapis_com_Instance
+  LIMIT 2"
+}' \
+https://cloudasset.googleapis.com/v1/organizations/110572507568:queryAssets
+
+curl -X GET \
+-H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+-H "Content-Type: application/json" \
+https://cloudasset.googleapis.com/v1/organizations/110572507568/assets
+
+
+
+curl -X POST \
+    -H "X-HTTP-Method-Override: GET" \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    -H "Content-Type: application/json" \
+    -H "X-Goog-User-Project: cloudy-demos"
+    -d '{"assetTypes": "compute.googleapis.com/Instance"}' \
+    https://cloudasset.googleapis.com/v1/ogranizations/110572507568/assets
+
+
+
+curl \
+    -X GET \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    -H "X-Goog-User-Project: cloudy-demos" \
+    -H "Content-Type: application/json" \
+    https://cloudasset.googleapis.com/v1/organizations/110572507568/assets?assetTypes=run.googleapis.com/Service&pageSize=1000
+
+    
+curl \
+    -X GET \
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+    -H "X-Goog-User-Project: cloudy-demos" \
+    -H "Content-Type: application/json" \
+    https://cloudasset.googleapis.com/v1/organizations/110572507568/assets?assetTypes=run.googleapis.com/Service&contentType=RESRELATIONSHIPOURCE&pageSize=1000
+
+
 # does project has cloud run anabled? 
 curl -Ss -H "Content-Type: application/json; charset=utf-8" \
      -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \

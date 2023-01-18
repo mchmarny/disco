@@ -5,6 +5,7 @@ locals {
   services = [
     "artifactregistry.googleapis.com",
     "binaryauthorization.googleapis.com",
+    "cloudasset.googleapis.com",
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "cloudscheduler.googleapis.com",
