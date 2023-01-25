@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/bigquery v1.45.0
-	cloud.google.com/go/monitoring v1.11.0
+	cloud.google.com/go/monitoring v1.12.0
 	cloud.google.com/go/storage v1.29.0
 	github.com/google/uuid v1.3.0
 	github.com/pkg/errors v0.9.1
@@ -15,7 +15,7 @@ require (
 	golang.org/x/oauth2 v0.4.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.107.0
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
+	google.golang.org/genproto v0.0.0-20230112194545-e10362b5ecf9
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
