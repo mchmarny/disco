@@ -102,6 +102,8 @@ gcloud projects get-iam-policy $PROJECT_ID --format=json > policy.json
 
 `disco` shells out the vulnerability scans to one of the supported OSS scanners: 
 
+> Make sure one of these is installed before running disco CLI
+
 * [trivy (disco default)](https://aquasecurity.github.io/trivy/v0.35/getting-started/installation/)
 * [grype](https://github.com/anchore/grype#installation)
 
