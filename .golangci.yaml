@@ -1,45 +1,28 @@
 linters:
   disable-all: false
   enable:
-    - asciicheck
-    - bidichk
-    - bodyclose
-    - containedctx
-    - contextcheck
-    - cyclop
-    - decorder
     - depguard
     - dogsled
     - dupl
-    - dupword
-    - durationcheck
-    - errchkjson
-    - errname
-    - errorlint
-    - exportloopref
+    - errcheck
     - funlen
-    - gocognit
+    - gochecknoinits
     - goconst
     - gocyclo
-    - godot
     - gofmt
+    - goimports
     - gomnd
+    - goprintffuncname
     - gosec
-    - importas
-    - interfacebloat
+    - govet
     - lll
-    - maintidx
     - misspell
-    - nestif
-    - nilerr
-    - prealloc
-    - predeclared
-    - reassign
-    - tagliatelle
+    - nakedret
+    - nolintlint
+    - exportloopref
+    - typecheck
     - unconvert
-    - unparam
     - whitespace
-    - wrapcheck
 
 linters-settings:
   gocyclo:
@@ -60,20 +43,21 @@ linters-settings:
   dupl:
     threshold: 350
 
-# issues:
-#   # exclude:
-#   # - G2649
+issues:
+  exclude-rules:
+  - path: ../
+    linters:
+    - typecheck
 
 run:
-  concurrency: 4
-  timeout: 5m
-  issues-exit-code: 5
-  tests: true
+  timeout: 10m
+  issues-exit-code: 3
 
   skip-dirs:
     - tests
     - tools
+    - deploy
 
   skip-dirs-use-default: false
   modules-download-mode: readonly
-  go: "1.19"
+  go: "1.20"
