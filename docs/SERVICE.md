@@ -47,6 +47,8 @@ When promoted, provide requested variables:
 
 When completed, this will output the configured resource information. 
 
+> Note: to discover across projects in the same organization, the `disco` service account (listed under `RUN_SERVICE_ACCOUNT` after service deployment) must be granted `Browser` or `Viewer` roles in those projects. 
+
 ### Test Deployment
 
 To test the deployed `disco` service:
