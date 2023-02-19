@@ -12,7 +12,7 @@ require (
 	github.com/spdx/tools-golang v0.4.0
 	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.24.4
-	golang.org/x/oauth2 v0.4.0
+	golang.org/x/oauth2 v0.5.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.108.0
 	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
