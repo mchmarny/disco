@@ -50,6 +50,7 @@ jobs:
       uses: golangci/golangci-lint-action@08e2f20817b15149a52b5b3ebe7de50aff2ba8c5  # v3.4.0
       with:
         version: latest
+        args: --verbose
     - name: Config YAML Lint
       id: yamllint_config
       uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b  # v2.0
