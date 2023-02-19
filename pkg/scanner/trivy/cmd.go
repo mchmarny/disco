@@ -5,13 +5,13 @@ import (
 )
 
 func MakeLicenseCmd(digest, path string) *exec.Cmd {
-	return exec.Command("trivy", "image", "--quiet", "--security-checks", "license", "--format", "json", "--no-progress", "--output", path, digest) //nolint
+	return exec.Command("trivy", "image", "--quiet", "--security-checks", "license", "--format", "json", "--no-progress", "--output", path, digest)
 }
 
 func MakeVulnerabilityCmd(digest, path string) *exec.Cmd {
-	return exec.Command("trivy", "image", "--quiet", "--security-checks", "vuln", "--format", "json", "--no-progress", "--output", path, digest) //nolint
+	return exec.Command("trivy", "image", "--quiet", "--security-checks", "vuln", "--format", "json", "--no-progress", "--output", path, digest)
 }
 
 func MakePackageCmd(digest, path string) *exec.Cmd {
-	return exec.Command("trivy", "image", "--quiet", "--format", "spdx-json", "--no-progress", "--output", path, digest) //nolint
+	return exec.Command("trivy", "image", "--quiet", "--format", "spdx-json", "--no-progress", "--output", path, digest)
 }
