@@ -47,7 +47,20 @@ When promoted, provide requested variables:
 
 When completed, this will output the configured resource information. 
 
-> Note: to discover across projects in the same organization, the `disco` service account (listed under `RUN_SERVICE_ACCOUNT` after service deployment) must be granted `Browser` or `Viewer` roles in those projects. 
+### Cross-project Discovery
+
+`disco` service will automatically discover services in any project where it has been granted `viewer` role. The name of the service account used by `disco` to discover will be listed under `RUN_SERVICE_ACCOUNT` after service deployed.
+
+For example, assuming the ID of the project where you deployed `disco` is `$DISCO_PROJECT_ID` and the project in which you want it to discover services is `$TARGET_PROJECT_ID`, the command granting the necessary role would look like this:
+
+
+```shell
+gcloud projects add-iam-policy-binding $TARGET_PROJECT_ID \
+    --member "serviceAccount:disco-run-sa@${DISCO_PROJECT_ID}".iam.gserviceaccount.com" \
+    --role "roles/viewer"
+```
+
+> Note, you can make `disco` discover across as many projects as you wish. 
 
 ### Test Deployment
 
