@@ -1,4 +1,4 @@
-package disco
+package cli
 
 import c "github.com/urfave/cli/v2"
 

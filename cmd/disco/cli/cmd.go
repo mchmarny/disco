@@ -1,4 +1,4 @@
-package disco
+package cli
 
 import (
 	"fmt"

@@ -16,7 +16,7 @@ sboms:
 builds:
 - binary: disco
   mod_timestamp: '{{ .CommitTimestamp }}'
-  dir: ./cmd/cli
+  dir: ./cmd/disco
   env:
   - CGO_ENABLED=0
   flags:
