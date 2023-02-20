@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	disco "github.com/mchmarny/disco/cmd/cli/disco"
+	disco "github.com/mchmarny/disco/cmd/disco/cli"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )

@@ -1,4 +1,4 @@
-package disco
+package cli
 
 import (
 	"github.com/mchmarny/disco/pkg/disco"
