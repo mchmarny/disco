@@ -38,7 +38,8 @@ func newApp(version, commit, date string) (*c.App, error) {
 
 	compileTime, err := time.Parse("2006-01-02T15:04:05Z", date)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse date")
+		log.Warn().Err(err).Msg("compile time not set")
+		compileTime = time.Now()
 	}
 	dateStr := compileTime.UTC().Format("2006-01-02 15:04 UTC")
 
