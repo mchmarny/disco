@@ -3,7 +3,7 @@ module github.com/mchmarny/disco
 go 1.20
 
 require (
-	cloud.google.com/go/bigquery v1.47.0
+	cloud.google.com/go/bigquery v1.48.0
 	cloud.google.com/go/monitoring v1.12.0
 	cloud.google.com/go/storage v1.29.0
 	github.com/google/uuid v1.3.0
@@ -15,7 +15,7 @@ require (
 	golang.org/x/oauth2 v0.5.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
+	google.golang.org/genproto v0.0.0-20230222225845-10f96fb3dbec
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
