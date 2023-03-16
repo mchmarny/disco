@@ -3,7 +3,7 @@ module github.com/mchmarny/disco
 go 1.20
 
 require (
-	cloud.google.com/go/bigquery v1.46.0
+	cloud.google.com/go/bigquery v1.47.0
 	cloud.google.com/go/monitoring v1.12.0
 	cloud.google.com/go/storage v1.29.0
 	github.com/google/uuid v1.3.0
