@@ -24,9 +24,9 @@ resource "google_service_account" "github_actions_user" {
 
 # IAM policy bindings to the service account resources created by GitHub identify
 resource "google_project_iam_member" "ci_role_bindings" {
-  for_each = local.ci_roles
+  for_each = var.runtime_only ? [] : local.ci_roles
   project  = var.project_id
-  role     = var.runtime_only ? null : each.value
+  role     = each.value
   member   = "serviceAccount:${google_service_account.runner_service_account.email}"
 }
 
