@@ -281,6 +281,8 @@ The resulting report in JSON format will look something like this (abbreviated):
 
 ### Service 
 
+> Instructions on how to deploy the `disco` service are [here](docs/SERVICE.md).
+
 When running as a service, `disco` automatically exports metrics and report data:
 
 #### Metrics
