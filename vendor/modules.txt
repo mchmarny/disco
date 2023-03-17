@@ -178,7 +178,7 @@ github.com/russross/blackfriday/v2
 ## explicit; go 1.13
 github.com/spdx/tools-golang/spdx/common
 github.com/spdx/tools-golang/spdx/v2_2
-# github.com/stretchr/testify v1.8.1
+# github.com/stretchr/testify v1.8.2
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 # github.com/urfave/cli/v2 v2.25.0
