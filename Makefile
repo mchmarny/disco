@@ -48,7 +48,7 @@ lint: lint-go lint-yaml ## Lints the entire project
 
 .PHONY: lint
 lint-go: ## Lints the entire project using go 
-	golangci-lint run -c .golangci.yaml -v
+	golangci-lint run -c .golangci.yaml
 
 .PHONY: lint-yaml
 lint-yaml: ## Runs yamllint on all yaml files (brew install yamllint)
