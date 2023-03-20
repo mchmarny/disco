@@ -368,11 +368,6 @@ or in Sheet, Data Studio, or Looker reports
 ![](docs/img/sheets.png)
 
 
-## OSS
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmchmarny%2Fdisco.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmchmarny%2Fdisco?ref=badge_large)
-
-
 ## Disclaimer
 
 This is my personal project and it does not represent my employer. While I do my best to ensure that everything works, I take no responsibility for issues caused by this code.
