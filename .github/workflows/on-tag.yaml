@@ -22,7 +22,7 @@ jobs:
       contents: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568  # v3.5.0
+      uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
       with:
         go-version: ^1.20.1
     - run: go version
@@ -36,11 +36,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
+      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
       with:
         fetch-depth: 2
     - name: Install Syft
-      uses: anchore/sbom-action/download-syft@07978da4bdb4faa726e52dfc6b1bed63d4b56479  # v0.13.3
+      uses: anchore/sbom-action/download-syft@448520c4f19577ffce70a8317e619089054687e3  # v0.13.4
       with:
         version: v0.13.1
     - name: Build CLI
@@ -61,7 +61,7 @@ jobs:
       id-token: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568  # v3.5.0
+      uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
       with:
         go-version: ^1.20.1
     - run: go version
@@ -75,7 +75,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
+      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
     - name: Tidy Modules
       run: |
         go mod tidy
