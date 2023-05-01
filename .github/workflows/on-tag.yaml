@@ -133,7 +133,7 @@ jobs:
       env:
         COSIGN_PASSWORD: ${{ steps.auth.outputs.access_token }}
     - name: Create SBOM
-      uses: aquasecurity/trivy-action@1f0aa582c8c8f5f7639610d6d38baddfea4fdcee  # master
+      uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2  # master
       with:
         scan-type: image
         image-ref: ${{ env.IMAGE_DIGEST }}
