@@ -1710,7 +1710,7 @@
       }
     }
   },
-  "revision": "20230218",
+  "revision": "20230422",
   "rootUrl": "https://bigquery.googleapis.com/",
   "schemas": {
     "AggregateClassificationMetrics": {
@@ -3642,6 +3642,13 @@
     "HivePartitioningOptions": {
       "id": "HivePartitioningOptions",
       "properties": {
+        "fields": {
+          "description": "[Output-only] For permanent external tables, this field is populated with the hive partition keys in the order they were inferred. The types of the partition keys can be deduced by checking the table schema (which will include the partition keys). Not every API will populate this field in the output. For example, Tables.Get will populate it, but Tables.List will not contain this field.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "mode": {
           "description": "[Optional] When set, what mode of hive partitioning to use when reading data. The following modes are supported. (1) AUTO: automatically infer partition key name(s) and type(s). (2) STRINGS: automatically infer partition key name(s). All types are interpreted as strings. (3) CUSTOM: partition key schema is encoded in the source URI prefix. Not all storage formats support hive partitioning. Requesting hive partitioning on an unsupported format will lead to an error. Currently supported types include: AVRO, CSV, JSON, ORC and Parquet.",
           "type": "string"
@@ -4279,6 +4286,10 @@
             "$ref": "ConnectionProperty"
           },
           "type": "array"
+        },
+        "continuous": {
+          "description": "[Optional] Specifies whether the query should be executed as a continuous query. The default value is false.",
+          "type": "boolean"
         },
         "createDisposition": {
           "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion.",
@@ -5124,6 +5135,7 @@
             "DNN_CLASSIFIER",
             "TENSORFLOW",
             "DNN_REGRESSOR",
+            "XGBOOST",
             "BOOSTED_TREE_REGRESSOR",
             "BOOSTED_TREE_CLASSIFIER",
             "ARIMA",
@@ -5134,8 +5146,11 @@
             "DNN_LINEAR_COMBINED_REGRESSOR",
             "AUTOENCODER",
             "ARIMA_PLUS",
+            "ARIMA_PLUS_XREG",
             "RANDOM_FOREST_REGRESSOR",
-            "RANDOM_FOREST_CLASSIFIER"
+            "RANDOM_FOREST_CLASSIFIER",
+            "TENSORFLOW_LITE",
+            "ONNX"
           ],
           "enumDescriptions": [
             "",
@@ -5146,6 +5161,7 @@
             "DNN classifier model.",
             "An imported TensorFlow model.",
             "DNN regressor model.",
+            "An imported XGBoost model.",
             "Boosted tree regressor model.",
             "Boosted tree classifier model.",
             "ARIMA model.",
@@ -5156,8 +5172,11 @@
             "Wide-and-deep regressor model.",
             "Autoencoder model.",
             "New name for the ARIMA model.",
+            "ARIMA with external regressors.",
             "Random Forest regressor model.",
-            "Random Forest classifier model."
+            "Random Forest classifier model.",
+            "An imported TensorFlow Lite model.",
+            "An imported ONNX model."
           ],
           "readOnly": true,
           "type": "string"
@@ -5170,6 +5189,11 @@
           },
           "readOnly": true,
           "type": "array"
+        },
+        "remoteModelInfo": {
+          "$ref": "RemoteModelInfo",
+          "description": "Output only. Remote model info",
+          "readOnly": true
         },
         "trainingRuns": {
           "description": "Information for all training runs in increasing order of start_time.",
@@ -5471,6 +5495,10 @@
             "$ref": "ConnectionProperty"
           },
           "type": "array"
+        },
+        "continuous": {
+          "description": "[Optional] Specifies whether the query should be executed as a continuous query. The default value is false.",
+          "type": "boolean"
         },
         "createSession": {
           "description": "If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode.",
@@ -5777,6 +5805,46 @@
       },
       "type": "object"
     },
+    "RemoteModelInfo": {
+      "description": "Remote Model Info",
+      "id": "RemoteModelInfo",
+      "properties": {
+        "connection": {
+          "description": "Output only. Fully qualified name of the user-provided connection object of the remote model. Format: ```\"projects/{project_id}/locations/{location_id}/connections/{connection_id}\"```",
+          "readOnly": true,
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "Output only. The endpoint for remote model.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "maxBatchingRows": {
+          "description": "Output only. Max number of rows in each batch sent to the remote service. If unset, the number of rows in each batch is set dynamically.",
+          "format": "int64",
+          "readOnly": true,
+          "type": "string"
+        },
+        "remoteServiceType": {
+          "description": "Output only. The remote service type for remote model.",
+          "enum": [
+            "REMOTE_SERVICE_TYPE_UNSPECIFIED",
+            "CLOUD_AI_TRANSLATE_V3",
+            "CLOUD_AI_VISION_V1",
+            "CLOUD_AI_NATURAL_LANGUAGE_V1"
+          ],
+          "enumDescriptions": [
+            "Unspecified remote service type.",
+            "V3 Cloud AI Translation API. See more details at [Cloud Translation API] (https://cloud.google.com/translate/docs/reference/rest).",
+            "V1 Cloud AI Vision API See more details at [Cloud Vision API] (https://cloud.google.com/vision/docs/reference/rest).",
+            "V1 Cloud AI Natural Language API. See more details at [REST Resource: documents](https://cloud.google.com/natural-language/docs/reference/rest/v1/documents)."
+          ],
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "Routine": {
       "description": "A user-defined function or a stored procedure.",
       "id": "Routine",
@@ -5834,13 +5902,17 @@
             "LANGUAGE_UNSPECIFIED",
             "SQL",
             "JAVASCRIPT",
-            "PYTHON"
+            "PYTHON",
+            "JAVA",
+            "SCALA"
           ],
           "enumDescriptions": [
             "",
             "SQL language.",
             "JavaScript language.",
-            "Python language."
+            "Python language.",
+            "Java language.",
+            "Scala language."
           ],
           "type": "string"
         },
@@ -6149,6 +6221,10 @@
           },
           "type": "array"
         },
+        "mainClass": {
+          "description": "The fully qualified name of a class in jar_uris, for example, com.example.wordcount. Exactly one of main_class and main_jar_uri field should be set for Java/Scala language type.",
+          "type": "string"
+        },
         "mainFileUri": {
           "description": "The main file/jar URI of the Spark application. Exactly one of the definition_body field and the main_file_uri field must be set for Python. Exactly one of main_class and main_file_uri field should be set for Java/Scala language type.",
           "type": "string"
@@ -6157,7 +6233,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Configuration properties as a set of key/value pairs, which will be passed on to the Spark application. For more information, see [Apache Spark](https://spark.apache.org/docs/latest/index.html).",
+          "description": "Configuration properties as a set of key/value pairs, which will be passed on to the Spark application. For more information, see [Apache Spark](https://spark.apache.org/docs/latest/index.html) and the [procedure option list](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-definition-language#procedure_option_list).",
           "type": "object"
         },
         "pyFileUris": {
@@ -6212,7 +6288,7 @@
           "description": "The fields of this struct, in order, if type_kind = \"STRUCT\"."
         },
         "typeKind": {
-          "description": "Required. The top level type of this field. Can be any standard SQL data type (e.g., \"INT64\", \"DATE\", \"ARRAY\").",
+          "description": "Required. The top level type of this field. Can be any GoogleSQL data type (e.g., \"INT64\", \"DATE\", \"ARRAY\").",
           "enum": [
             "TYPE_KIND_UNSPECIFIED",
             "INT64",
@@ -6931,7 +7007,12 @@
           "type": "boolean"
         },
         "autoArimaMaxOrder": {
-          "description": "The max value of non-seasonal p and q.",
+          "description": "The max value of the sum of non-seasonal p and q.",
+          "format": "int64",
+          "type": "string"
+        },
+        "autoArimaMinOrder": {
+          "description": "The min value of the sum of non-seasonal p and q.",
           "format": "int64",
           "type": "string"
         },
@@ -7331,6 +7412,10 @@
           },
           "type": "array"
         },
+        "instanceWeightColumn": {
+          "description": "Name of the instance weight column for training data. This column isn't be used as a feature.",
+          "type": "string"
+        },
         "integratedGradientsNumSteps": {
           "description": "Number of integral steps for the integrated gradients explain method.",
           "format": "int64",
@@ -7507,6 +7592,10 @@
           "format": "double",
           "type": "number"
         },
+        "tfVersion": {
+          "description": "Based on the selected TF version, the corresponding docker image is used to train external models.",
+          "type": "string"
+        },
         "timeSeriesDataColumn": {
           "description": "Column to be designated as time series data for ARIMA model.",
           "type": "string"
@@ -7566,6 +7655,10 @@
         "warmStart": {
           "description": "Whether to train a model from the last checkpoint.",
           "type": "boolean"
+        },
+        "xgboostVersion": {
+          "description": "User-selected XGBoost versions for training of XGBoost models.",
+          "type": "string"
         }
       },
       "type": "object"
