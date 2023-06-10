@@ -7,7 +7,7 @@ import (
 	"github.com/mchmarny/disco/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	spdx "github.com/spdx/tools-golang/spdx/v2_2"
+	spdx "github.com/spdx/tools-golang/spdx/v2/v2_2"
 )
 
 func ParsePackages(path string, filter types.ItemFilter) (*types.PackageReport, error) {
