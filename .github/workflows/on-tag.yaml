@@ -117,7 +117,7 @@ jobs:
       run: |
         echo "IMAGE_DIGEST=${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}" >> $GITHUB_ENV
     - name: Install Cosign
-      uses: sigstore/cosign-installer@204a51a57a74d190b284a0ce69b44bc37201f343  # v3.0.3
+      uses: sigstore/cosign-installer@871cdc754496eb3792209f6e81422fac01b793b4  # v3.0.3
       with:
         cosign-release: ${{ env.COSIGN_VERSION }}
     - name: Auth Cosign
