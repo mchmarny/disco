@@ -15,7 +15,7 @@ cloud.google.com/go/bigquery/internal
 cloud.google.com/go/bigquery/internal/query
 cloud.google.com/go/bigquery/storage/apiv1
 cloud.google.com/go/bigquery/storage/apiv1/storagepb
-# cloud.google.com/go/compute v1.20.0
+# cloud.google.com/go/compute v1.20.1
 ## explicit; go 1.19
 cloud.google.com/go/compute/internal
 # cloud.google.com/go/compute/metadata v0.2.3
@@ -141,7 +141,7 @@ github.com/google/uuid
 ## explicit; go 1.19
 github.com/googleapis/enterprise-certificate-proxy/client
 github.com/googleapis/enterprise-certificate-proxy/client/util
-# github.com/googleapis/gax-go/v2 v2.10.0
+# github.com/googleapis/gax-go/v2 v2.11.0
 ## explicit; go 1.19
 github.com/googleapis/gax-go/v2
 github.com/googleapis/gax-go/v2/apierror
@@ -236,7 +236,7 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# golang.org/x/crypto v0.9.0
+# golang.org/x/crypto v0.13.0
 ## explicit; go 1.17
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
@@ -250,7 +250,7 @@ golang.org/x/crypto/internal/poly1305
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.10.0
+# golang.org/x/net v0.15.0
 ## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
@@ -259,8 +259,8 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.8.0
-## explicit; go 1.17
+# golang.org/x/oauth2 v0.12.0
+## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/authhandler
 golang.org/x/oauth2/google
@@ -272,12 +272,12 @@ golang.org/x/oauth2/jwt
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.8.0
+# golang.org/x/sys v0.12.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/unix
-# golang.org/x/text v0.9.0
+# golang.org/x/text v0.13.0
 ## explicit; go 1.17
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
@@ -424,7 +424,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.30.0
+# google.golang.org/protobuf v1.31.0
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
