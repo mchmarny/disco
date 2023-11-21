@@ -44,20 +44,29 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
-	arrowIterator *arrowIterator
+	arrowIterator ArrowIterator
+	arrowDecoder  *arrowDecoder
 
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	pf       pageFetcher
 
 	// StartIndex can be set before the first call to Next. If PageInfo().Token
-	// is also set, StartIndex is ignored.
+	// is also set, StartIndex is ignored. If Storage API is enabled,
+	// StartIndex is also ignored because is not supported. IsAccelerated()
+	// method can be called to check if Storage API is enabled for the RowIterator.
 	StartIndex uint64
 
-	// The schema of the table. Available after the first call to Next.
+	// The schema of the table.
+	// In some scenarios it will only be available after the first
+	// call to Next(), like when a call to Query.Read uses
+	// the jobs.query API for an optimized query path.
 	Schema Schema
 
-	// The total number of rows in the result. Available after the first call to Next.
+	// The total number of rows in the result.
+	// In some scenarios it will only be available after the first
+	// call to Next(), like when a call to Query.Read uses
+	// the jobs.query API for an optimized query path.
 	// May be zero just after rows were inserted.
 	TotalRows uint64
 
@@ -169,6 +178,8 @@ func isStructPtr(x interface{}) bool {
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// Currently pagination is not supported when the Storage API is enabled. IsAccelerated()
+// method can be called to check if Storage API is enabled for the RowIterator.
 func (it *RowIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
@@ -229,7 +240,11 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 		if src.j != nil {
 			return fetchJobResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
 		}
-		return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		if src.t != nil {
+			return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		}
+		// No rows, but no table or job reference.  Return an empty result set.
+		return &fetchPageResult{}, nil
 	}
 	return result, nil
 }
