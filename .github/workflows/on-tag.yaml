@@ -36,7 +36,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+      uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac  # v4.0.0
       with:
         fetch-depth: 2
     - name: Install Syft
@@ -75,7 +75,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+      uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac  # v4.0.0
     - name: Tidy Modules
       run: |
         go mod tidy
@@ -92,7 +92,7 @@ jobs:
         service_account: ${{ env.SA_EMAIL }}
     - name: Define Metadata
       id: meta
-      uses: docker/metadata-action@c4ee3adeed93b1fa6a762f209fb01608c1a22f1e  # v4.4.0
+      uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175  # v4.6.0
       with:
         images: |
           ${{ env.REG_URI }}/${{ env.IMAGE_REG }}/${{ env.IMAGE_NAME }}
@@ -100,14 +100,14 @@ jobs:
           type=raw,enable=true,value=${{ env.RELEASE_VERSION }}
           type=raw,enable=true,value=${{ env.GITHUB_SHA }}
     - name: Registry Auth
-      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
+      uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc  # v2.2.0
       with:
         registry: ${{ env.REG_URI }}
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
     - name: Image Push
       id: push
-      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+      uses: docker/build-push-action@4e4ee680f69700760d5620a94c020aef883043aa  # v4.2.0
       with:
         file: cmd/server/Dockerfile
         push: true
