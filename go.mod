@@ -5,7 +5,7 @@ go 1.21
 require (
 	cloud.google.com/go/bigquery v1.57.1
 	cloud.google.com/go/monitoring v1.16.3
-	cloud.google.com/go/storage v1.35.1
+	cloud.google.com/go/storage v1.36.0
 	github.com/google/uuid v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
