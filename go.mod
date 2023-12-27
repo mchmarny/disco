@@ -11,7 +11,7 @@ require (
 	github.com/rs/zerolog v1.31.0
 	github.com/spdx/tools-golang v0.5.3
 	github.com/stretchr/testify v1.8.4
-	github.com/urfave/cli/v2 v2.25.7
+	github.com/urfave/cli/v2 v2.27.0
 	golang.org/x/oauth2 v0.14.0
 	golang.org/x/sync v0.5.0
 	google.golang.org/api v0.151.0
