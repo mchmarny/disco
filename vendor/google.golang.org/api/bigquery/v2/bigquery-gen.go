@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC.
+// Copyright 2024 Google LLC.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -97,7 +97,9 @@ const apiId = "bigquery:v2"
 const apiName = "bigquery"
 const apiVersion = "v2"
 const basePath = "https://bigquery.googleapis.com/bigquery/v2/"
+const basePathTemplate = "https://bigquery.UNIVERSE_DOMAIN/bigquery/v2/"
 const mtlsBasePath = "https://bigquery.mtls.googleapis.com/bigquery/v2/"
+const defaultUniverseDomain = "googleapis.com"
 
 // OAuth2 scopes used by this API.
 const (
@@ -142,7 +144,9 @@ func NewService(ctx context.Context, opts ...option.ClientOption) (*Service, err
 	// NOTE: prepend, so we don't override user-specified scopes.
 	opts = append([]option.ClientOption{scopesOption}, opts...)
 	opts = append(opts, internaloption.WithDefaultEndpoint(basePath))
+	opts = append(opts, internaloption.WithDefaultEndpointTemplate(basePathTemplate))
 	opts = append(opts, internaloption.WithDefaultMTLSEndpoint(mtlsBasePath))
+	opts = append(opts, internaloption.WithDefaultUniverseDomain(defaultUniverseDomain))
 	client, endpoint, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
@@ -1473,11 +1477,34 @@ type Binding struct {
 	// For example, `admins@example.com`. * `domain:{domain}`: The G Suite
 	// domain (primary) that represents all the users of that domain. For
 	// example, `google.com` or `example.com`. *
-	// `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus
-	// unique identifier) representing a user that has been recently
-	// deleted. For example, `alice@example.com?uid=123456789012345678901`.
-	// If the user is recovered, this value reverts to `user:{emailid}` and
-	// the recovered user retains the role in the binding. *
+	// `principal://iam.googleapis.com/locations/global/workforcePools/{pool_
+	// id}/subject/{subject_attribute_value}`: A single identity in a
+	// workforce identity pool. *
+	// `principalSet://iam.googleapis.com/locations/global/workforcePools/{po
+	// ol_id}/group/{group_id}`: All workforce identities in a group. *
+	// `principalSet://iam.googleapis.com/locations/global/workforcePools/{po
+	// ol_id}/attribute.{attribute_name}/{attribute_value}`: All workforce
+	// identities with a specific attribute value. *
+	// `principalSet://iam.googleapis.com/locations/global/workforcePools/{po
+	// ol_id}/*`: All identities in a workforce identity pool. *
+	// `principal://iam.googleapis.com/projects/{project_number}/locations/gl
+	// obal/workloadIdentityPools/{pool_id}/subject/{subject_attribute_value}
+	// `: A single identity in a workload identity pool. *
+	// `principalSet://iam.googleapis.com/projects/{project_number}/locations
+	// /global/workloadIdentityPools/{pool_id}/group/{group_id}`: A workload
+	// identity pool group. *
+	// `principalSet://iam.googleapis.com/projects/{project_number}/locations
+	// /global/workloadIdentityPools/{pool_id}/attribute.{attribute_name}/{at
+	// tribute_value}`: All identities in a workload identity pool with a
+	// certain attribute. *
+	// `principalSet://iam.googleapis.com/projects/{project_number}/locations
+	// /global/workloadIdentityPools/{pool_id}/*`: All identities in a
+	// workload identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An
+	// email address (plus unique identifier) representing a user that has
+	// been recently deleted. For example,
+	// `alice@example.com?uid=123456789012345678901`. If the user is
+	// recovered, this value reverts to `user:{emailid}` and the recovered
+	// user retains the role in the binding. *
 	// `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
 	// (plus unique identifier) representing a service account that has been
 	// recently deleted. For example,
@@ -1489,7 +1516,12 @@ type Binding struct {
 	// that has been recently deleted. For example,
 	// `admins@example.com?uid=123456789012345678901`. If the group is
 	// recovered, this value reverts to `group:{emailid}` and the recovered
-	// group retains the role in the binding.
+	// group retains the role in the binding. *
+	// `deleted:principal://iam.googleapis.com/locations/global/workforcePool
+	// s/{pool_id}/subject/{subject_attribute_value}`: Deleted single
+	// identity in a workforce identity pool. For example,
+	// `deleted:principal://iam.googleapis.com/locations/global/workforcePool
+	// s/my-pool-id/subject/my-subject-attribute-value`.
 	Members []string `json:"members,omitempty"`
 
 	// Role: Role that is assigned to the list of `members`, or principals.
@@ -6712,6 +6744,10 @@ type QueryParameterType struct {
 	// array.
 	ArrayType *QueryParameterType `json:"arrayType,omitempty"`
 
+	// RangeElementType: [Optional] The element type of the range, if this
+	// is a range.
+	RangeElementType *QueryParameterType `json:"rangeElementType,omitempty"`
+
 	// StructTypes: [Optional] The types of the fields of this struct, in
 	// order, if this is a struct.
 	StructTypes []*QueryParameterTypeStructTypes `json:"structTypes,omitempty"`
@@ -6779,6 +6815,9 @@ type QueryParameterValue struct {
 	// ArrayValues: [Optional] The array values, if this is an array type.
 	ArrayValues []*QueryParameterValue `json:"arrayValues,omitempty"`
 
+	// RangeValue: [Optional] The range value, if this is a range type.
+	RangeValue *QueryParameterValueRangeValue `json:"rangeValue,omitempty"`
+
 	// StructValues: [Optional] The struct field values, in order of the
 	// struct type's declaration.
 	StructValues map[string]QueryParameterValue `json:"structValues,omitempty"`
@@ -6805,6 +6844,36 @@ type QueryParameterValue struct {
 
 func (s *QueryParameterValue) MarshalJSON() ([]byte, error) {
 	type NoMethod QueryParameterValue
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// QueryParameterValueRangeValue: [Optional] The range value, if this is
+// a range type.
+type QueryParameterValueRangeValue struct {
+	End *QueryParameterValue `json:"end,omitempty"`
+
+	Start *QueryParameterValue `json:"start,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "End") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "End") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *QueryParameterValueRangeValue) MarshalJSON() ([]byte, error) {
+	type NoMethod QueryParameterValueRangeValue
 	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
@@ -7182,6 +7251,39 @@ func (s *RangePartitioningRange) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+// RangeValue: Represents the value of a range.
+type RangeValue struct {
+	// End: Optional. The end value of the range. A missing value represents
+	// an unbounded end.
+	End *QueryParameterValue `json:"end,omitempty"`
+
+	// Start: Optional. The start value of the range. A missing value
+	// represents an unbounded start.
+	Start *QueryParameterValue `json:"start,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "End") to
+	// unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "End") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *RangeValue) MarshalJSON() ([]byte, error) {
+	type NoMethod RangeValue
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 // RankingMetrics: Evaluation metrics used by weighted-ALS models
 // specified by feedback_type=implicit.
 type RankingMetrics struct {
@@ -7396,7 +7498,20 @@ type RemoteModelInfo struct {
 	// See more details at [REST Resource:
 	// documents](https://cloud.google.com/natural-language/docs/reference/re
 	// st/v1/documents).
+	//   "CLOUD_AI_SPEECH_TO_TEXT_V2" - V2 Speech-to-Text API. See more
+	// details at [Google Cloud Speech-to-Text V2
+	// API](https://cloud.google.com/speech-to-text/v2/docs)
 	RemoteServiceType string `json:"remoteServiceType,omitempty"`
+
+	// SpeechRecognizer: Output only. The name of the speech recognizer to
+	// use for speech recognition. The expected format is
+	// `projects/{project}/locations/{location}/recognizers/{recognizer}`.
+	// Customers can specify this field at model creation. If not specified,
+	// a default recognizer `projects/{model
+	// project}/locations/global/recognizers/_` will be used. See more
+	// details at recognizers
+	// (https://cloud.google.com/speech-to-text/v2/docs/reference/rest/v2/projects.locations.recognizers)
+	SpeechRecognizer string `json:"speechRecognizer,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Connection") to
 	// unconditionally include in API requests. By default, fields with
@@ -7550,12 +7665,17 @@ type Routine struct {
 	// SparkOptions: Optional. Spark specific options.
 	SparkOptions *SparkOptions `json:"sparkOptions,omitempty"`
 
-	// StrictMode: Optional. Can be set for procedures only. If true
-	// (default), the definition body will be validated in the creation and
-	// the updates of the procedure. For procedures with an argument of ANY
-	// TYPE, the definition body validtion is not supported at
-	// creation/update time, and thus this field must be set to false
-	// explicitly.
+	// StrictMode: Optional. Use this option to catch many common errors.
+	// Error checking is not exhaustive, and successfully creating a
+	// procedure doesn't guarantee that the procedure will successfully
+	// execute at runtime. If `strictMode` is set to `TRUE`, the procedure
+	// body is further checked for errors such as non-existent tables or
+	// columns. The `CREATE PROCEDURE` statement fails if the body fails any
+	// of these checks. If `strictMode` is set to `FALSE`, the procedure
+	// body is checked only for syntax. For procedures that invoke
+	// themselves recursively, specify `strictMode=FALSE` to avoid
+	// non-existent procedure errors during validation. Default value is
+	// `TRUE`.
 	StrictMode bool `json:"strictMode,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -10376,6 +10496,54 @@ type UserDefinedFunctionResource struct {
 
 func (s *UserDefinedFunctionResource) MarshalJSON() ([]byte, error) {
 	type NoMethod UserDefinedFunctionResource
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// VectorSearchStatistics: Statistics for a vector search query.
+// Populated as part of JobStatistics2.
+type VectorSearchStatistics struct {
+	// IndexUnusedReasons: When `indexUsageMode` is `UNUSED` or
+	// `PARTIALLY_USED`, this field explains why indexes were not used in
+	// all or part of the vector search query. If `indexUsageMode` is
+	// `FULLY_USED`, this field is not populated.
+	IndexUnusedReasons []*IndexUnusedReason `json:"indexUnusedReasons,omitempty"`
+
+	// IndexUsageMode: Specifies the index usage mode for the query.
+	//
+	// Possible values:
+	//   "INDEX_USAGE_MODE_UNSPECIFIED" - Index usage mode not specified.
+	//   "UNUSED" - No vector indexes were used in the vector search query.
+	// See [`indexUnusedReasons`]
+	// (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for detailed
+	// reasons.
+	//   "PARTIALLY_USED" - Part of the vector search query used vector
+	// indexes. See [`indexUnusedReasons`]
+	// (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for why
+	// other parts of the query did not use vector indexes.
+	//   "FULLY_USED" - The entire vector search query used vector indexes.
+	IndexUsageMode string `json:"indexUsageMode,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "IndexUnusedReasons")
+	// to unconditionally include in API requests. By default, fields with
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "IndexUnusedReasons") to
+	// include in API requests with the JSON null value. By default, fields
+	// with empty values are omitted from API requests. However, any field
+	// with an empty value appearing in NullFields will be sent to the
+	// server as null. It is an error if a field in this list has a
+	// non-empty value. This may be used to include null fields in Patch
+	// requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *VectorSearchStatistics) MarshalJSON() ([]byte, error) {
+	type NoMethod VectorSearchStatistics
 	raw := NoMethod(*s)
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
