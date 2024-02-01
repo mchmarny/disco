@@ -40,7 +40,7 @@ jobs:
       with:
         fetch-depth: 2
     - name: Install Syft
-      uses: anchore/sbom-action/download-syft@4d571ad1038a9cc29d676154ef265ab8f9027042  # v0.14.2
+      uses: anchore/sbom-action/download-syft@b6a39da80722a2cb0ef5d197531764a89b5d48c3  # v0.15.8
       with:
         version: v0.13.1
     - name: Build CLI
